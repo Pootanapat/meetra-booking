@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ระบบจองห้องประชุม | KMITL Room Booking</title><link rel="stylesheet" href="css/style.css"></head><body>
+<div class="app"><aside class="sidebar">
+<div class="brand"><div class="brand-mark">K</div><div><strong>KMITL</strong><small>ROOM BOOKING</small></div></div>
+<div><div class="nav-label">WORKSPACE</div><nav class="nav"><a href="index.html" class="active"><span class="ico">▦</span>ระบบจองห้องประชุม</a><a href="my-bookings.html" class=""><span class="ico">▣</span>การจองของฉัน</a><a href="statistics.html" class=""><span class="ico">▤</span>สถิติการจอง</a><a href="rooms.html" class=""><span class="ico">▧</span>ข้อมูลห้องประชุม</a></nav></div>
+<div class="side-help"><b>เริ่มต้นจองห้องประชุม</b>เลือกห้องและช่วงเวลาที่ต้องการ ระบบจะตรวจสอบเวลาว่างให้อัตโนมัติ</div>
+<div class="profile"><div class="avatar" id="avatar">G</div><div><b id="userLabel">ผู้เยี่ยมชม</b><br><small style="color:var(--muted)">KMITL Room Booking</small></div></div>
+</aside><main class="main"><header class="topbar"><div class="crumb">KMITL / ระบบจองห้องประชุม</div><div class="top-actions"><button id="loginTop" onclick="location.href='login.html'">เข้าสู่ระบบ</button><button id="registerTop" onclick="location.href='register.html'">สมัครสมาชิก</button><button id="logoutTop" style="display:none" onclick="logout()">ออกจากระบบ</button></div></header>
+<div class="content">
+<div class="eyebrow">KMITL MEETING SPACES</div>
+<div class="page-title"><div><h1>พื้นที่สำหรับไอเดีย</h1><p class="sub">ค้นหาและเลือกห้องประชุมที่เหมาะกับการใช้งานของคุณ</p></div></div>
+<div class="hero"><div><span class="eyebrow">READY FOR YOUR NEXT BIG IDEA</span><h2>ทุกการประชุมที่ดี<br>เริ่มต้นจาก <span>พื้นที่ที่ใช่</span></h2><p>เลือกห้องประชุม พร้อมอุปกรณ์ให้คุณเริ่มต้นทำงานได้อย่างลงตัว</p></div><div class="hero-art">▤ </div></div>
+<div class="stats">
+<div class="stat"><div class="stat-icon">▦</div><div><small>ห้องประชุมทั้งหมด</small><strong id="roomCount">5</strong></div></div>
+<div class="stat"><div class="stat-icon">✓</div><div><small>ห้องว่างวันนี้</small><strong id="availableCount">5</strong></div></div>
+<div class="stat"><div class="stat-icon">▣</div><div><small>รายการจองวันนี้</small><strong id="todayCount">0</strong></div></div>
+<div class="stat"><div class="stat-icon">◷</div><div><small>เวลาให้บริการ</small><strong style="font-size:17px">07:00–17:00</strong></div></div></div>
+<div class="section-head"><div><h2>เลือกห้องประชุมของคุณ</h2><p class="sub">คลิกแล้วลากบนตารางเวลาเพื่อเลือกช่วงเวลาที่ต้องการ</p></div></div>
+<div class="toolbar"><div class="date-controls"><button class="secondary" id="prevDay">‹</button><input type="date" id="datePicker"><button class="secondary" id="nextDay">›</button><button class="secondary" id="todayBtn">วันนี้</button></div><input type="search" id="searchRoom" placeholder="⌕ ค้นหาชื่อห้องหรือหมายเลขห้อง..."><select id="capacityFilter"><option value="0">ทุกขนาดห้อง</option><option value="30">30 คนขึ้นไป</option><option value="40">40 คนขึ้นไป</option><option value="80">80 คนขึ้นไป</option></select></div>
+<div class="legend"><span><i class="dot" style="background:#20b486"></i>ว่าง</span><span><i class="dot" style="background:#ed6682"></i>จองแล้ว</span><span><i class="dot" style="background:#bcb7c4"></i>ผ่านไปแล้ว</span><span><i class="dot" style="background:#8b45cf"></i>กำลังเลือก</span></div>
+<div class="timeline-card"><div class="timeline-scroll"><div class="timeline-inner"><div class="time-head"><div class="room-head">ห้องประชุม / MEETING ROOM</div><div class="hours" id="timeHead"></div></div><div id="roomRows"></div></div></div><div class="timeline-foot">เวลาทำการ 07:00–17:00 น. • เลือกช่วงเวลาได้ครั้งละ 30 นาที</div>
+<div class="selection" id="selectionPanel"><div><strong id="selectionTitle">ช่วงเวลาที่เลือก</strong><p id="selectionInfo"></p><p id="selectionError" style="color:var(--red)"></p></div><div class="actions"><button class="secondary" id="clearSelection">ยกเลิก</button><button class="primary" id="confirmBooking">ยืนยันการจอง</button></div></div></div>
+</div></main></div>
+<script src="js/common.js"></script><script src="js/booking.js"></script></body></html>

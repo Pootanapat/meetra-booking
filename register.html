@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สมัครสมาชิก | KMITL Room Booking</title><link rel="stylesheet" href="css/style.css"></head><body>
+<div class="app"><aside class="sidebar">
+<div class="brand"><div class="brand-mark">K</div><div><strong>KMITL</strong><small>ROOM BOOKING</small></div></div>
+<div><div class="nav-label">WORKSPACE</div><nav class="nav"><a href="index.html" class=""><span class="ico">▦</span>ระบบจองห้องประชุม</a><a href="my-bookings.html" class=""><span class="ico">▣</span>การจองของฉัน</a><a href="statistics.html" class=""><span class="ico">▤</span>สถิติการจอง</a><a href="rooms.html" class=""><span class="ico">▧</span>ข้อมูลห้องประชุม</a></nav></div>
+<div class="side-help"><b>เริ่มต้นจองห้องประชุม</b>เลือกห้องและช่วงเวลาที่ต้องการ ระบบจะตรวจสอบเวลาว่างให้อัตโนมัติ</div>
+<div class="profile"><div class="avatar" id="avatar">G</div><div><b id="userLabel">ผู้เยี่ยมชม</b><br><small style="color:var(--muted)">KMITL Room Booking</small></div></div>
+</aside><main class="main"><header class="topbar"><div class="crumb">KMITL / สมัครสมาชิก</div><div class="top-actions"><button id="loginTop" onclick="location.href='login.html'">เข้าสู่ระบบ</button><button id="registerTop" onclick="location.href='register.html'">สมัครสมาชิก</button><button id="logoutTop" style="display:none" onclick="logout()">ออกจากระบบ</button></div></header>
+<div class="content">
+<div class="auth-wrap"><div class="auth-card"><div class="brand" style="padding:0;margin-bottom:22px"><div class="brand-mark">K</div><div><strong>KMITL</strong><small>ROOM BOOKING</small></div></div><h2>สมัครสมาชิก</h2><p>ระบบจองห้องประชุม KMITL</p><form id="authForm"><label>ชื่อ-นามสกุล</label><input id="name" required><label>อีเมล</label><input id="email" type="email" required><label>รหัสผ่าน</label><input id="password" type="password" minlength="6" required><button class="primary">สมัครสมาชิก</button></form><div class="auth-switch">มีบัญชีแล้ว? <a class="link" href="login.html">เข้าสู่ระบบ</a></div></div></div></div></main></div>
+<script src="js/common.js"></script><script>
+document.getElementById('authForm').onsubmit=e=>{e.preventDefault();let users=JSON.parse(localStorage.getItem('kmitlUsers')||'[]'),u={name:document.getElementById('name').value.trim(),email:document.getElementById('email').value.trim(),password:document.getElementById('password').value};if(users.some(x=>x.email===u.email)){alert('อีเมลนี้ถูกใช้แล้ว');return}users.push(u);localStorage.setItem('kmitlUsers',JSON.stringify(users));localStorage.setItem('kmitlCurrentUser',JSON.stringify(u));location.href='index.html'};
+</script></body></html>

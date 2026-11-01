@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>การจองของฉัน | KMITL Room Booking</title><link rel="stylesheet" href="css/style.css"></head><body>
+<div class="app"><aside class="sidebar">
+<div class="brand"><div class="brand-mark">K</div><div><strong>KMITL</strong><small>ROOM BOOKING</small></div></div>
+<div><div class="nav-label">WORKSPACE</div><nav class="nav"><a href="index.html" class=""><span class="ico">▦</span>ระบบจองห้องประชุม</a><a href="my-bookings.html" class="active"><span class="ico">▣</span>การจองของฉัน</a><a href="statistics.html" class=""><span class="ico">▤</span>สถิติการจอง</a><a href="rooms.html" class=""><span class="ico">▧</span>ข้อมูลห้องประชุม</a></nav></div>
+<div class="side-help"><b>เริ่มต้นจองห้องประชุม</b>เลือกห้องและช่วงเวลาที่ต้องการ ระบบจะตรวจสอบเวลาว่างให้อัตโนมัติ</div>
+<div class="profile"><div class="avatar" id="avatar">G</div><div><b id="userLabel">ผู้เยี่ยมชม</b><br><small style="color:var(--muted)">KMITL Room Booking</small></div></div>
+</aside><main class="main"><header class="topbar"><div class="crumb">KMITL / การจองของฉัน</div><div class="top-actions"><button id="loginTop" onclick="location.href='login.html'">เข้าสู่ระบบ</button><button id="registerTop" onclick="location.href='register.html'">สมัครสมาชิก</button><button id="logoutTop" style="display:none" onclick="logout()">ออกจากระบบ</button></div></header>
+<div class="content">
+<div class="eyebrow">MY WORKSPACE</div><div class="page-title"><div><h1>การจองของฉัน</h1><p class="sub">ตรวจสอบรายการจองและสถานะการจองห้องประชุม</p></div><a class="primary" style="text-decoration:none" href="index.html">＋ จองห้องใหม่</a></div>
+<div class="table-wrap"><table class="table"><thead><tr><th>ห้องประชุม</th><th>วันที่</th><th>เวลา</th><th>สถานะ</th></tr></thead><tbody id="mineRows"></tbody></table><div class="empty" id="mineEmpty">ยังไม่มีรายการจอง</div></div>
+</div></main></div>
+<script src="js/common.js"></script><script>
+let u=getUser(),items=getBookings().filter(b=>u&&b.owner===u.name);document.getElementById('mineEmpty').style.display=items.length?'none':'block';items.forEach(b=>{let r=ROOMS.find(x=>x.id===b.roomId),tr=document.createElement('tr');[r.name+' ('+r.id+')',b.date,b.start+' – '+b.end,b.status].forEach((v,i)=>{let td=document.createElement('td');td.textContent=v;if(i===3)td.innerHTML='<span class="pill">ยืนยันแล้ว</span>';tr.append(td)});document.getElementById('mineRows').append(tr)});
+</script></body></html>

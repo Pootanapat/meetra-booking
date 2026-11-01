@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สถิติการจอง | KMITL Room Booking</title><link rel="stylesheet" href="css/style.css"></head><body>
+<div class="app"><aside class="sidebar">
+<div class="brand"><div class="brand-mark">K</div><div><strong>KMITL</strong><small>ROOM BOOKING</small></div></div>
+<div><div class="nav-label">WORKSPACE</div><nav class="nav"><a href="index.html" class=""><span class="ico">▦</span>ระบบจองห้องประชุม</a><a href="my-bookings.html" class=""><span class="ico">▣</span>การจองของฉัน</a><a href="statistics.html" class="active"><span class="ico">▤</span>สถิติการจอง</a><a href="rooms.html" class=""><span class="ico">▧</span>ข้อมูลห้องประชุม</a></nav></div>
+<div class="side-help"><b>เริ่มต้นจองห้องประชุม</b>เลือกห้องและช่วงเวลาที่ต้องการ ระบบจะตรวจสอบเวลาว่างให้อัตโนมัติ</div>
+<div class="profile"><div class="avatar" id="avatar">G</div><div><b id="userLabel">ผู้เยี่ยมชม</b><br><small style="color:var(--muted)">KMITL Room Booking</small></div></div>
+</aside><main class="main"><header class="topbar"><div class="crumb">KMITL / สถิติการจอง</div><div class="top-actions"><button id="loginTop" onclick="location.href='login.html'">เข้าสู่ระบบ</button><button id="registerTop" onclick="location.href='register.html'">สมัครสมาชิก</button><button id="logoutTop" style="display:none" onclick="logout()">ออกจากระบบ</button></div></header>
+<div class="content">
+<div class="eyebrow">BOOKING ANALYTICS</div><div class="page-title"><div><h1>สถิติการจอง</h1><p class="sub">ภาพรวมการใช้งานห้องประชุมในระบบ</p></div></div>
+<div class="stats"><div class="stat"><div class="stat-icon">▣</div><div><small>การจองทั้งหมด</small><strong id="total">0</strong></div></div><div class="stat"><div class="stat-icon">◷</div><div><small>ชั่วโมงที่ถูกจอง</small><strong id="hours">0</strong></div></div><div class="stat"><div class="stat-icon">▦</div><div><small>ห้องที่มีการใช้งาน</small><strong id="used">0</strong></div></div><div class="stat"><div class="stat-icon">✓</div><div><small>ห้องประชุมในระบบ</small><strong>5</strong></div></div></div>
+<div class="data-card"><h3 style="font-size:14px;margin:0 0 20px">จำนวนการจองแยกตามห้อง</h3><div class="bar-list" id="statsRows"></div></div>
+</div></main></div>
+<script src="js/common.js"></script><script>
+let bs=getBookings(),mins=t=>{let [h,m]=t.split(':').map(Number);return h*60+m};document.getElementById('total').textContent=bs.length;document.getElementById('hours').textContent=bs.reduce((s,b)=>s+(mins(b.end)-mins(b.start))/60,0);document.getElementById('used').textContent=new Set(bs.map(b=>b.roomId)).size;ROOMS.forEach(r=>{let n=bs.filter(b=>b.roomId===r.id).length,row=document.createElement('div');row.className='bar-row';row.innerHTML='<span>'+r.name+' ('+r.id+')</span><div class="bar"><i style="width:'+(bs.length?n/bs.length*100:0)+'%"></i></div><b>'+n+'</b>';document.getElementById('statsRows').append(row)});
+</script></body></html>

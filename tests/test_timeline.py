@@ -1,7 +1,16 @@
 import unittest
 from datetime import datetime, timedelta, timezone
 
-from timeline import SlotStatus, TimeRange, find_conflicts, get_status, select_slot
+from timeline import (
+    Booking,
+    SlotStatus,
+    TimeRange,
+    find_conflicts,
+    get_room_status,
+    get_status,
+    select_room_slot,
+    select_slot,
+)
 
 
 class TimeRangeTests(unittest.TestCase):
@@ -75,6 +84,14 @@ class TimelineTests(unittest.TestCase):
         self.assertEqual(get_status(self.slot, [booking], self.now), SlotStatus.BOOKED)
         self.assertEqual(get_status(elapsed, [elapsed], self.now), SlotStatus.PAST)
 
+    def test_started_slot_is_past_even_if_it_has_not_ended(self):
+        ongoing = TimeRange(
+            self.now - timedelta(minutes=5),
+            self.now + timedelta(minutes=25),
+        )
+
+        self.assertEqual(get_status(ongoing, [], self.now), SlotStatus.PAST)
+
     def test_selects_available_slot_only(self):
         self.assertEqual(select_slot(self.slot, [], self.now), self.slot)
         with self.assertRaisesRegex(ValueError, "booked"):
@@ -86,6 +103,61 @@ class TimelineTests(unittest.TestCase):
         )
         with self.assertRaisesRegex(ValueError, "past"):
             select_slot(elapsed, [], self.now)
+
+
+class RoomTimelineTests(unittest.TestCase):
+    def setUp(self):
+        self.now = datetime(2026, 11, 6, 9, tzinfo=timezone.utc)
+        self.slot = TimeRange(
+            datetime(2026, 11, 6, 10, tzinfo=timezone.utc),
+            datetime(2026, 11, 6, 10, 30, tzinfo=timezone.utc),
+        )
+
+    def test_only_same_room_and_day_bookings_conflict(self):
+        same_room = Booking(
+            "701",
+            TimeRange(
+                self.slot.start - timedelta(minutes=15),
+                self.slot.start + timedelta(minutes=15),
+            ),
+        )
+        different_room = Booking("702", same_room.time_range)
+        different_day = Booking(
+            "701",
+            TimeRange(
+                self.slot.start + timedelta(days=1),
+                self.slot.end + timedelta(days=1),
+            ),
+        )
+
+        self.assertEqual(
+            get_room_status(
+                self.slot,
+                [different_room, different_day],
+                "701",
+                self.now,
+            ),
+            SlotStatus.AVAILABLE,
+        )
+        self.assertEqual(
+            get_room_status(self.slot, [same_room], "701", self.now),
+            SlotStatus.BOOKED,
+        )
+
+    def test_selects_room_slot_only_when_available(self):
+        booking = Booking("701", self.slot)
+
+        with self.assertRaisesRegex(ValueError, "booked"):
+            select_room_slot(self.slot, [booking], "701", self.now)
+
+        self.assertEqual(
+            select_room_slot(self.slot, [booking], "702", self.now),
+            self.slot,
+        )
+
+    def test_booking_requires_room_id(self):
+        with self.assertRaisesRegex(ValueError, "room ID"):
+            Booking(" ", self.slot)
 
 
 if __name__ == "__main__":

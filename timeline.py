@@ -25,6 +25,18 @@ class TimeRange:
             raise ValueError("A time range must end after it starts")
 
 
+@dataclass(frozen=True)
+class Booking:
+    """A room reservation on a half-open time interval."""
+
+    room_id: str
+    time_range: TimeRange
+
+    def __post_init__(self) -> None:
+        if not self.room_id.strip():
+            raise ValueError("A booking must have a room ID")
+
+
 def find_conflicts(
     slot: TimeRange, bookings: Iterable[TimeRange]
 ) -> list[TimeRange]:
@@ -41,13 +53,31 @@ def find_conflicts(
 def get_status(
     slot: TimeRange, bookings: Iterable[TimeRange], now: datetime
 ) -> SlotStatus:
-    """Resolve a slot's display state, prioritizing elapsed time over bookings."""
+    """Resolve a slot's state, treating started slots as unavailable."""
     _validate_datetime_pair(slot.start, now)
-    if slot.end <= now:
+    if slot.start <= now:
         return SlotStatus.PAST
     if find_conflicts(slot, bookings):
         return SlotStatus.BOOKED
     return SlotStatus.AVAILABLE
+
+
+def get_room_status(
+    slot: TimeRange,
+    bookings: Iterable[Booking],
+    room_id: str,
+    now: datetime,
+) -> SlotStatus:
+    """Resolve availability using only bookings for the same room and day."""
+    if not room_id.strip():
+        raise ValueError("A room ID is required")
+    room_bookings = (
+        booking.time_range
+        for booking in bookings
+        if booking.room_id == room_id
+        and booking.time_range.start.date() == slot.start.date()
+    )
+    return get_status(slot, room_bookings, now)
 
 
 def select_slot(
@@ -55,6 +85,19 @@ def select_slot(
 ) -> TimeRange:
     """Select an available slot, raising ValueError when it cannot be selected."""
     status = get_status(slot, bookings, now)
+    if status is not SlotStatus.AVAILABLE:
+        raise ValueError(f"Cannot select a {status.value} time range")
+    return slot
+
+
+def select_room_slot(
+    slot: TimeRange,
+    bookings: Iterable[Booking],
+    room_id: str,
+    now: datetime,
+) -> TimeRange:
+    """Select a slot only when it is available for the requested room and day."""
+    status = get_room_status(slot, bookings, room_id, now)
     if status is not SlotStatus.AVAILABLE:
         raise ValueError(f"Cannot select a {status.value} time range")
     return slot

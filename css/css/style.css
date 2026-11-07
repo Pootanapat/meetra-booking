@@ -1,0 +1,1623 @@
+
+/* ==========================================
+   KMITL ROOM BOOKING
+   Complete Main Stylesheet
+   Theme: Minimal White & Purple
+========================================== */
+
+/* ==========================================
+   1. GLOBAL
+========================================== */
+
+:root {
+    --purple: #7026b5;
+    --purple-dark: #58208d;
+    --purple-light: #f5edfc;
+    --purple-border: #e8d8f5;
+
+    --green: #20b486;
+    --green-light: #e7f7f0;
+
+    --red: #ed6682;
+    --red-light: #fff0f3;
+
+    --ink: #292333;
+    --text: #5f586b;
+    --muted: #a39bad;
+
+    --line: #eeeaf2;
+    --background: #f8f7fa;
+    --white: #ffffff;
+
+    --radius: 12px;
+    --shadow: 0 3px 12px rgba(40, 25, 60, 0.04);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: var(--background);
+    color: var(--ink);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+button,
+input,
+select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+a {
+    color: inherit;
+}
+
+::selection {
+    background: #eadcf8;
+    color: var(--purple-dark);
+}
+
+
+/* ==========================================
+   2. MAIN LAYOUT
+========================================== */
+
+.app {
+    display: grid;
+    grid-template-columns: 235px minmax(0, 1fr);
+    min-height: 100vh;
+}
+
+.main {
+    min-width: 0;
+    min-height: 100vh;
+}
+
+.content {
+    padding: 30px;
+    max-width: 1600px;
+    margin: auto;
+}
+
+
+/* ==========================================
+   3. SIDEBAR
+========================================== */
+
+.sidebar {
+    width: 235px;
+    min-width: 235px;
+    height: 100vh;
+
+    position: sticky;
+    top: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 22px 16px 16px;
+
+    background: #ffffff;
+    border-right: 1px solid var(--line);
+
+    overflow-y: auto;
+    z-index: 100;
+}
+
+/* BRAND */
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 3px 7px;
+    margin-bottom: 28px;
+}
+
+.brand-mark {
+    width: 39px;
+    height: 39px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--purple);
+    color: white;
+
+    border-radius: 12px;
+
+    font-size: 23px;
+    font-weight: 800;
+}
+
+.brand strong {
+    display: block;
+    font-size: 18px;
+    color: var(--ink);
+}
+
+.brand small {
+    display: block;
+    margin-top: 2px;
+
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--muted);
+}
+
+
+/* ORGANIZATION CARD */
+
+.organization {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 11px 10px;
+    margin-bottom: 25px;
+
+    border: 1px solid var(--line);
+    border-radius: 11px;
+
+    background: #ffffff;
+}
+
+.org-icon {
+    width: 34px;
+    height: 34px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 8px;
+
+    background: var(--purple-light);
+    color: var(--purple);
+}
+
+.org-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.org-info strong {
+    display: block;
+    font-size: 11px;
+    color: var(--ink);
+}
+
+.org-info small {
+    display: block;
+    font-size: 9px;
+    color: var(--muted);
+}
+
+.online-dot {
+    width: 7px;
+    height: 7px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+    background: var(--green);
+}
+
+
+/* ==========================================
+   4. MINIMAL NAVIGATION
+========================================== */
+
+.nav-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-label {
+    display: block;
+
+    margin: 0 10px 12px;
+
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+}
+
+.nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Navigation Item */
+
+.nav a {
+    min-height: 46px;
+
+    display: flex;
+    align-items: center;
+    gap: 11px;
+
+    padding: 7px 10px;
+
+    background: #ffffff;
+
+    border: 1px solid #eeeaf2;
+    border-radius: 10px;
+
+    color: #696174;
+
+    font-size: 12px;
+    font-weight: 500;
+
+    text-decoration: none;
+
+    transition: all 0.2s ease;
+}
+
+/* Navigation Icon */
+
+.nav a .ico {
+    width: 30px;
+    height: 30px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 8px;
+
+    background: #f7f5f9;
+    color: #898093;
+
+    font-size: 16px;
+
+    transition: all 0.2s ease;
+}
+
+/* Hover */
+
+.nav a:hover {
+    background: #faf7fd;
+    border-color: #ddc9ef;
+
+    color: var(--purple);
+
+    transform: translateY(-1px);
+}
+
+.nav a:hover .ico {
+    background: #eee2f9;
+    color: var(--purple);
+}
+
+/* Active */
+
+.nav a.active {
+    background: var(--purple-light);
+    border-color: #e6d6f4;
+
+    color: var(--purple);
+    font-weight: 600;
+
+    box-shadow: 0 2px 6px rgba(112, 38, 181, 0.05);
+}
+
+.nav a.active .ico {
+    background: #eadcf8;
+    color: var(--purple);
+}
+
+
+/* ==========================================
+   5. SIDEBAR HELP
+========================================== */
+
+.side-help {
+    margin-top: auto;
+    margin-bottom: 18px;
+
+    padding: 15px;
+
+    background: #faf6ff;
+
+    border: 1px solid #eee2fa;
+    border-radius: 13px;
+
+    font-size: 12px;
+}
+
+.help-icon {
+    width: 28px;
+    height: 28px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #ddc6f1;
+    border-radius: 50%;
+
+    color: var(--purple);
+    font-weight: 700;
+}
+
+.side-help h4 {
+    margin: 12px 0 5px;
+
+    color: var(--ink);
+    font-size: 12px;
+}
+
+.side-help p {
+    margin-bottom: 10px;
+
+    color: #92859e;
+    font-size: 10px;
+}
+
+.help-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 8px 10px;
+
+    background: white;
+
+    border: 1px solid #e8d9f3;
+    border-radius: 7px;
+
+    color: var(--purple);
+    font-size: 10px;
+
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.help-link:hover {
+    background: var(--purple-light);
+}
+
+
+/* ==========================================
+   6. USER PROFILE
+========================================== */
+
+.profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 14px 5px 2px;
+
+    border-top: 1px solid var(--line);
+}
+
+.avatar {
+    width: 35px;
+    height: 35px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #f0e4fb;
+    color: var(--purple);
+
+    border-radius: 50%;
+
+    font-weight: 700;
+}
+
+.profile-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.profile-info strong {
+    display: block;
+    color: var(--ink);
+    font-size: 11px;
+}
+
+.profile-info small {
+    display: block;
+    color: var(--muted);
+    font-size: 9px;
+}
+
+
+/* ==========================================
+   7. TOPBAR
+========================================== */
+
+.topbar {
+    height: 65px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 30px;
+
+    background: white;
+    border-bottom: 1px solid var(--line);
+}
+
+.crumb {
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.top-actions {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.top-actions button {
+    padding: 8px 13px;
+
+    background: white;
+
+    border: 1px solid var(--line);
+    border-radius: 8px;
+
+    color: var(--text);
+    font-size: 11px;
+
+    transition: 0.2s;
+}
+
+.top-actions button:hover {
+    color: var(--purple);
+    border-color: var(--purple-border);
+    background: var(--purple-light);
+}
+
+
+/* ==========================================
+   8. PAGE HEADER
+========================================== */
+
+.eyebrow {
+    margin-bottom: 7px;
+
+    color: #9d6dc4;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    letter-spacing: 1.5px;
+}
+
+.page-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+    margin-bottom: 24px;
+}
+
+.page-title h1 {
+    color: var(--ink);
+    font-size: 26px;
+    font-weight: 700;
+}
+
+.sub {
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin: 25px 0 15px;
+}
+
+.section-head h2 {
+    font-size: 17px;
+    color: var(--ink);
+}
+
+
+/* ==========================================
+   9. HERO BANNER
+========================================== */
+
+.hero {
+    min-height: 205px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 30px;
+
+    background: linear-gradient(
+        120deg,
+        #f7efff,
+        #ffffff
+    );
+
+    border: 1px solid #eadcf8;
+    border-radius: 15px;
+
+    overflow: hidden;
+    position: relative;
+}
+
+.hero h2 {
+    margin: 13px 0;
+
+    color: #30263a;
+    font-size: 25px;
+    line-height: 1.5;
+}
+
+.hero h2 span {
+    color: var(--purple);
+}
+
+.hero p {
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.hero-art {
+    width: 190px;
+    height: 150px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #eadcf8;
+
+    border-radius: 40px;
+
+    color: var(--purple);
+    font-size: 60px;
+
+    transform: rotate(-5deg);
+}
+
+
+/* ==========================================
+   10. STAT CARDS
+========================================== */
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+
+    margin: 18px 0 25px;
+}
+
+.stat {
+    min-height: 85px;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 16px;
+
+    background: white;
+
+    border: 1px solid var(--line);
+    border-radius: 11px;
+
+    box-shadow: var(--shadow);
+}
+
+.stat-icon {
+    width: 37px;
+    height: 37px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--purple-light);
+    color: var(--purple);
+
+    border-radius: 9px;
+
+    font-size: 17px;
+}
+
+.stat small {
+    display: block;
+    color: var(--muted);
+    font-size: 10px;
+}
+
+.stat strong {
+    display: block;
+
+    color: var(--ink);
+    font-size: 21px;
+    line-height: 1.5;
+}
+
+
+/* ==========================================
+   11. BUTTONS
+========================================== */
+
+.primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    padding: 10px 17px;
+
+    background: var(--purple);
+    color: white;
+
+    border: 1px solid var(--purple);
+    border-radius: 8px;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    text-decoration: none;
+
+    transition: all 0.2s ease;
+}
+
+.primary:hover {
+    background: var(--purple-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(112, 38, 181, 0.15);
+}
+
+.secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 9px 13px;
+
+    background: white;
+    color: var(--text);
+
+    border: 1px solid var(--line);
+    border-radius: 8px;
+
+    font-size: 11px;
+
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.secondary:hover {
+    background: var(--purple-light);
+    color: var(--purple);
+    border-color: var(--purple-border);
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
+/* ==========================================
+   12. TOOLBAR
+========================================== */
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 12px;
+
+    background: white;
+
+    border: 1px solid var(--line);
+    border-radius: 11px;
+
+    margin-bottom: 14px;
+}
+
+.date-controls {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.toolbar input,
+.toolbar select {
+    min-width: 0;
+    padding: 9px 11px;
+
+    background: white;
+
+    border: 1px solid var(--line);
+    border-radius: 8px;
+
+    outline: none;
+    color: var(--text);
+    font-size: 11px;
+}
+
+.toolbar input[type="search"] {
+    flex: 1;
+}
+
+.toolbar input:focus,
+.toolbar select:focus {
+    border-color: var(--purple);
+}
+
+
+/* ==========================================
+   13. TIMELINE LEGEND
+========================================== */
+
+.legend {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+
+    margin: 12px 2px;
+
+    color: var(--muted);
+    font-size: 10px;
+}
+
+.legend span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.dot {
+    width: 7px;
+    height: 7px;
+
+    display: inline-block;
+
+    border-radius: 50%;
+}
+
+
+/* ==========================================
+   14. TIMELINE CONTAINER
+========================================== */
+
+.timeline-card {
+    background: white;
+
+    border: 1px solid var(--line);
+    border-radius: 13px;
+
+    overflow: hidden;
+}
+
+.timeline-scroll {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.timeline-inner {
+    min-width: 850px;
+}
+
+.time-head {
+    height: 43px;
+
+    display: grid;
+    grid-template-columns: 195px minmax(0, 1fr);
+
+    align-items: center;
+
+    background: #fcfbfd;
+    border-bottom: 1px solid var(--line);
+}
+
+.room-head {
+    padding-left: 15px;
+
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.hours {
+    display: grid;
+    grid-template-columns: repeat(20, minmax(0, 1fr));
+
+    height: 100%;
+}
+
+.hour {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #a69bae;
+    font-size: 9px;
+}
+
+
+/* ==========================================
+   15. ROOM ROW
+========================================== */
+
+.room-row {
+    min-height: 82px;
+
+    display: grid;
+    grid-template-columns: 195px minmax(0, 1fr);
+
+    align-items: center;
+
+    padding: 10px 15px;
+
+    border-bottom: 1px solid var(--line);
+
+    transition: background 0.2s ease;
+}
+
+.room-row:hover {
+    background: #fdfbff;
+}
+
+.room-info {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.room-info b {
+    display: block;
+
+    color: var(--ink);
+    font-size: 11px;
+}
+
+.room-info small {
+    display: block;
+    color: var(--muted);
+    font-size: 9px;
+}
+
+.room-thumb {
+    width: 55px;
+    height: 48px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #f0e8f7;
+
+    border-radius: 8px;
+
+    color: var(--purple);
+    font-size: 21px;
+}
+
+
+/* ==========================================
+   16. TIME SLOTS
+========================================== */
+
+.slots {
+    height: 34px;
+
+    display: grid;
+    grid-template-columns: repeat(20, minmax(0, 1fr));
+
+    position: relative;
+
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.slot {
+    min-width: 0;
+    padding: 0;
+
+    appearance: none;
+    border: 0;
+    border-right: 1px solid rgba(32, 180, 134, 0.12);
+
+    cursor: pointer;
+
+    transition: all 0.15s ease;
+}
+
+.slot.available {
+    background: #e7f5ee;
+    border-top: 1px solid #c7ead8;
+    border-bottom: 1px solid #c7ead8;
+
+    animation: availablePulse 3s infinite;
+}
+
+.slot.available:hover {
+    background: #bdebd3;
+    transform: scaleY(1.08);
+    z-index: 2;
+}
+
+.slot.booked {
+    background: #f4a0b2;
+    border-color: #ed8ba2;
+
+    cursor: not-allowed;
+}
+
+.slot.past {
+    background: #e9e7ec;
+    border-color: #dedbe2;
+
+    cursor: not-allowed;
+}
+
+.slot:focus-visible {
+    outline: 2px solid var(--purple);
+    outline-offset: -2px;
+    z-index: 3;
+}
+
+.slot.selected {
+    background: #a77ad1 !important;
+    border-color: #8e57c1 !important;
+}
+
+.slot.invalid {
+    background: #ed6682 !important;
+}
+
+@keyframes availablePulse {
+    0%, 100% {
+        box-shadow: inset 0 0 0 rgba(32, 180, 134, 0);
+    }
+
+    50% {
+        box-shadow: inset 0 0 5px rgba(32, 180, 134, 0.08);
+    }
+}
+
+
+/* ==========================================
+   17. CURRENT TIME INDICATOR
+========================================== */
+
+.now-line {
+    position: absolute;
+    top: -5px;
+    bottom: -5px;
+
+    width: 2px;
+
+    background: #ed4b5d;
+
+    z-index: 5;
+    pointer-events: none;
+}
+
+.now-line::before {
+    content: "";
+
+    position: absolute;
+    top: -3px;
+    left: -4px;
+
+    width: 10px;
+    height: 10px;
+
+    background: #ed4b5d;
+
+    border-radius: 50%;
+}
+
+
+/* ==========================================
+   18. TIMELINE FOOTER
+========================================== */
+
+.timeline-foot {
+    padding: 11px 15px;
+
+    background: #fcfbfd;
+
+    border-top: 1px solid var(--line);
+
+    color: var(--muted);
+    font-size: 10px;
+}
+
+
+/* ==========================================
+   19. BOOKING SELECTION
+========================================== */
+
+.selection {
+    display: none;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding: 16px;
+
+    background: #faf6ff;
+
+    border-top: 1px solid var(--purple-border);
+}
+
+.selection.show {
+    display: flex;
+    animation: fadeIn 0.25s ease;
+}
+
+.selection strong {
+    color: var(--purple);
+    font-size: 13px;
+}
+
+.selection p {
+    color: var(--muted);
+    font-size: 10px;
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
+}
+
+
+/* ==========================================
+   20. BOOKING TABLE
+========================================== */
+
+.table-wrap {
+    background: white;
+
+    border: 1px solid var(--line);
+    border-radius: 12px;
+
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.table th {
+    padding: 15px;
+
+    background: #fcfbfd;
+
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 600;
+
+    border-bottom: 1px solid var(--line);
+}
+
+.table td {
+    padding: 15px;
+
+    color: var(--text);
+    font-size: 11px;
+
+    border-bottom: 1px solid var(--line);
+}
+
+.table tr:hover td {
+    background: #fdfbff;
+}
+
+.pill {
+    display: inline-block;
+
+    padding: 4px 9px;
+
+    background: var(--green-light);
+    color: #15966e;
+
+    border-radius: 20px;
+
+    font-size: 9px;
+    font-weight: 600;
+}
+
+.empty {
+    padding: 35px 15px;
+
+    color: var(--muted);
+    text-align: center;
+    font-size: 12px;
+}
+
+
+/* ==========================================
+   21. STATISTICS
+========================================== */
+
+.data-card {
+    margin-top: 20px;
+    padding: 22px;
+
+    background: white;
+
+    border: 1px solid var(--line);
+    border-radius: 12px;
+}
+
+.data-card h3 {
+    color: var(--ink);
+}
+
+.bar-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.bar-row {
+    display: grid;
+    grid-template-columns: 130px 1fr 35px;
+
+    align-items: center;
+    gap: 12px;
+
+    color: var(--text);
+    font-size: 11px;
+}
+
+.bar {
+    height: 9px;
+
+    background: #f0edf3;
+
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.bar i {
+    display: block;
+    height: 100%;
+
+    background: linear-gradient(
+        90deg,
+        #8d4bc0,
+        #c49be2
+    );
+
+    border-radius: 20px;
+
+    transition: width 0.5s ease;
+}
+
+.bar-row b {
+    color: var(--purple);
+    text-align: right;
+}
+
+
+/* ==========================================
+   22. ROOM INFORMATION
+========================================== */
+
+.room-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.room-card {
+    padding: 18px;
+
+    background: white;
+
+    border: 1px solid var(--line);
+    border-radius: 12px;
+
+    transition: all 0.2s ease;
+}
+
+.room-card:hover {
+    transform: translateY(-3px);
+
+    border-color: var(--purple-border);
+
+    box-shadow: 0 6px 18px rgba(40, 25, 60, 0.06);
+}
+
+.room-card .room-thumb {
+    width: 100%;
+    height: 125px;
+
+    margin-bottom: 14px;
+
+    font-size: 40px;
+}
+
+.room-card h3 {
+    margin-bottom: 6px;
+
+    color: var(--ink);
+    font-size: 14px;
+}
+
+.room-card p {
+    margin-bottom: 8px;
+
+    color: var(--muted);
+    font-size: 10px;
+}
+
+
+/* ==========================================
+   23. LOGIN / REGISTER
+========================================== */
+
+.auth-wrap {
+    min-height: calc(100vh - 65px);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 25px;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 390px;
+
+    padding: 32px;
+
+    background: white;
+
+    border: 1px solid var(--line);
+    border-radius: 15px;
+
+    box-shadow: 0 8px 30px rgba(40, 25, 60, 0.05);
+}
+
+.auth-card h2 {
+    margin-bottom: 5px;
+
+    color: var(--ink);
+    font-size: 23px;
+}
+
+.auth-card > p {
+    margin-bottom: 25px;
+
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.auth-card label {
+    display: block;
+
+    margin: 15px 0 6px;
+
+    color: var(--text);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.auth-card input {
+    width: 100%;
+    height: 42px;
+
+    padding: 0 12px;
+
+    background: #fff;
+
+    border: 1px solid var(--line);
+    border-radius: 8px;
+
+    outline: none;
+
+    font-size: 12px;
+    color: var(--ink);
+
+    transition: 0.2s;
+}
+
+.auth-card input:focus {
+    border-color: var(--purple);
+    box-shadow: 0 0 0 3px rgba(112, 38, 181, 0.08);
+}
+
+.auth-card .primary {
+    width: 100%;
+    height: 43px;
+
+    margin-top: 22px;
+}
+
+.auth-switch {
+    margin-top: 18px;
+
+    color: var(--muted);
+    font-size: 11px;
+    text-align: center;
+}
+
+.link {
+    color: var(--purple);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+
+
+/* ==========================================
+   24. ANIMATIONS
+========================================== */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.room-row {
+    animation: fadeIn 0.3s ease both;
+}
+
+
+/* ==========================================
+   25. FOCUS & ACCESSIBILITY
+========================================== */
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+    outline: 3px solid rgba(112, 38, 181, 0.18);
+    outline-offset: 2px;
+}
+
+
+/* ==========================================
+   26. RESPONSIVE TABLET
+========================================== */
+
+@media (max-width: 1100px) {
+
+    .content {
+        padding: 22px;
+    }
+
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .room-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+
+/* ==========================================
+   27. RESPONSIVE SMALL TABLET
+========================================== */
+
+@media (max-width: 900px) {
+
+    .app {
+        grid-template-columns: 200px minmax(0, 1fr);
+    }
+
+    .sidebar {
+        width: 200px;
+        min-width: 200px;
+        padding-left: 11px;
+        padding-right: 11px;
+    }
+
+    .topbar {
+        padding: 0 18px;
+    }
+
+}
+
+
+/* ==========================================
+   28. RESPONSIVE MOBILE
+========================================== */
+
+@media (max-width: 650px) {
+
+    .app {
+        display: block;
+    }
+
+    .sidebar {
+        width: 100%;
+        min-width: 0;
+        height: auto;
+
+        position: relative;
+
+        padding: 12px;
+
+        overflow: visible;
+
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+    }
+
+    .brand {
+        margin-bottom: 12px;
+    }
+
+    .organization,
+    .side-help,
+    .profile,
+    .nav-label {
+        display: none;
+    }
+
+    .nav {
+        flex-direction: row;
+        gap: 7px;
+
+        overflow-x: auto;
+        padding-bottom: 3px;
+    }
+
+    .nav a {
+        min-width: max-content;
+        min-height: 40px;
+        padding: 5px 9px;
+    }
+
+    .nav a .ico {
+        width: 27px;
+        height: 27px;
+    }
+
+    .content {
+        padding: 17px;
+    }
+
+    .topbar {
+        height: 55px;
+        padding: 0 15px;
+    }
+
+    .page-title h1 {
+        font-size: 21px;
+    }
+
+    .hero {
+        min-height: 160px;
+        padding: 20px;
+    }
+
+    .hero h2 {
+        font-size: 19px;
+    }
+
+    .hero-art {
+        width: 100px;
+        height: 100px;
+        font-size: 38px;
+    }
+
+    .toolbar {
+        flex-wrap: wrap;
+    }
+
+    .toolbar input[type="search"] {
+        flex-basis: 100%;
+        order: 2;
+    }
+
+    .legend {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .room-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .selection {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .bar-row {
+        grid-template-columns: 90px 1fr 25px;
+    }
+
+}
+
+
+/* ==========================================
+   29. RESPONSIVE SMALL MOBILE
+========================================== */
+
+@media (max-width: 400px) {
+
+    .stats {
+        grid-template-columns: 1fr;
+    }
+
+    .page-title {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .hero-art {
+        display: none;
+    }
+
+    .auth-card {
+        padding: 22px;
+    }
+
+}

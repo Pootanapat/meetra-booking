@@ -68,14 +68,13 @@ def get_room_status(
     room_id: str,
     now: datetime,
 ) -> SlotStatus:
-    """Resolve availability using only bookings for the same room and day."""
+    """Resolve availability using bookings for the same room that overlap the slot."""
     if not room_id.strip():
         raise ValueError("A room ID is required")
     room_bookings = (
         booking.time_range
         for booking in bookings
         if booking.room_id == room_id
-        and booking.time_range.start.date() == slot.start.date()
     )
     return get_status(slot, room_bookings, now)
 

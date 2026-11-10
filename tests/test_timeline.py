@@ -113,7 +113,7 @@ class RoomTimelineTests(unittest.TestCase):
             datetime(2026, 11, 6, 10, 30, tzinfo=timezone.utc),
         )
 
-    def test_only_same_room_and_day_bookings_conflict(self):
+    def test_only_same_room_overlapping_bookings_conflict(self):
         same_room = Booking(
             "701",
             TimeRange(
@@ -141,6 +141,20 @@ class RoomTimelineTests(unittest.TestCase):
         )
         self.assertEqual(
             get_room_status(self.slot, [same_room], "701", self.now),
+            SlotStatus.BOOKED,
+        )
+
+    def test_booking_from_previous_day_conflicts_if_it_overlaps(self):
+        overnight = Booking(
+            "701",
+            TimeRange(
+                self.slot.start - timedelta(days=1, minutes=15),
+                self.slot.start + timedelta(minutes=15),
+            ),
+        )
+
+        self.assertEqual(
+            get_room_status(self.slot, [overnight], "701", self.now),
             SlotStatus.BOOKED,
         )
 

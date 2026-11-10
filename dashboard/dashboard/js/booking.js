@@ -23,6 +23,11 @@ const timeline = new TimelineView({
     rooms: ROOMS,
     onSelectionChange: updateSelection,
 });
+const smartFilter = new SmartFilter({
+    container: $('smartFilter'),
+    rooms: ROOMS,
+    onChange: render,
+});
 
 function drawNow() {
     document.querySelectorAll('.now-line').forEach(line => line.remove());
@@ -48,12 +53,9 @@ function drawNow() {
 
 function render() {
     const date = $('datePicker').value;
-    const query = $('searchRoom').value.trim().toLowerCase();
-    const capacity = Number($('capacityFilter').value);
     const bookings = getBookings();
-    const visibleRooms = ROOMS.filter(room =>
-        `${room.name}${room.id}`.toLowerCase().includes(query)
-        && room.capacity >= capacity);
+    const visibleRooms = smartFilter.filterRooms();
+    smartFilter.updateCount(visibleRooms.length);
 
     timeline.render({
         date,
@@ -116,8 +118,6 @@ $('confirmBooking').addEventListener('click', () => {
 
 $('datePicker').value = todayISO();
 $('datePicker').addEventListener('change', render);
-$('searchRoom').addEventListener('input', render);
-$('capacityFilter').addEventListener('change', render);
 $('todayBtn').addEventListener('click', () => {
     $('datePicker').value = todayISO();
     render();

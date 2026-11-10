@@ -782,6 +782,56 @@ button:disabled {
     border-color: var(--purple);
 }
 
+.smart-filter-host {
+    flex: 1;
+    min-width: 0;
+}
+
+.smart-filter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.smart-filter input,
+.smart-filter select {
+    min-width: 0;
+    padding: 9px 11px;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    outline: none;
+    color: var(--text);
+    font-size: 11px;
+}
+
+.smart-filter input[type="search"] {
+    flex: 1 1 190px;
+}
+
+.smart-filter input:focus,
+.smart-filter select:focus {
+    border-color: var(--purple);
+}
+
+.smart-filter-count {
+    flex-shrink: 0;
+    color: var(--muted);
+    font-size: 10px;
+    white-space: nowrap;
+}
+
+.smart-filter-reset {
+    flex-shrink: 0;
+    padding: 8px 10px;
+}
+
+.room-card-link {
+    display: inline-block;
+    text-decoration: none;
+}
+
 
 /* ==========================================
    13. TIMELINE LEGEND
@@ -1574,6 +1624,18 @@ select:focus-visible {
     .toolbar input[type="search"] {
         flex-basis: 100%;
         order: 2;
+    }
+
+    .smart-filter {
+        flex-wrap: wrap;
+    }
+
+    .smart-filter input[type="search"] {
+        flex-basis: 100%;
+    }
+
+    .smart-filter select {
+        flex: 1 1 130px;
     }
 
     .legend {

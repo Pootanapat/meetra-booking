@@ -1,11 +1,12 @@
-const ROOMS=[
-{id:'701',name:'บุนนาค',capacity:100,floor:7,equipment:'โปรเจกเตอร์ • ไมโครโฟน • จอแสดงผล',icon:'🏢'},
-{id:'702',name:'ชงโค',capacity:30,floor:7,equipment:'จอแสดงผล • กระดานไวท์บอร์ด',icon:'🏛️'},
-{id:'703',name:'พิกุล',capacity:35,floor:7,equipment:'โปรเจกเตอร์ • ไมโครโฟน',icon:'🏢'},
-{id:'704',name:'ราชพฤกษ์',capacity:40,floor:7,equipment:'จอแสดงผล • ไมโครโฟน • Wi-Fi',icon:'🏛️'},
-{id:'706',name:'บัวหลวง',capacity:25,floor:7,equipment:'จอแสดงผล • กระดานไวท์บอร์ด',icon:'🏢'}
-];
-const getBookings=()=>JSON.parse(localStorage.getItem('kmitlBookings')||'[]');
+const getBookings=()=>{
+ const saved=localStorage.getItem('kmitlBookings');
+ if(saved===null){
+  const bookings=MOCK_BOOKINGS.map(booking=>({...booking}));
+  saveBookings(bookings);
+  return bookings;
+ }
+ return JSON.parse(saved);
+};
 const saveBookings=x=>localStorage.setItem('kmitlBookings',JSON.stringify(x));
 const getUser=()=>JSON.parse(localStorage.getItem('kmitlCurrentUser')||'null');
 const todayISO=()=>{let d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};

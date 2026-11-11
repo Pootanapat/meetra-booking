@@ -172,6 +172,16 @@ class RoomTimelineTests(unittest.TestCase):
     def test_booking_requires_room_id(self):
         with self.assertRaisesRegex(ValueError, "room ID"):
             Booking(" ", self.slot)
+        with self.assertRaisesRegex(ValueError, "room ID"):
+            Booking(None, self.slot)
+        with self.assertRaisesRegex(TypeError, "TimeRange"):
+            Booking("701", None)
+
+    def test_room_status_requires_room_id(self):
+        with self.assertRaisesRegex(ValueError, "room ID"):
+            get_room_status(self.slot, [], "", self.now)
+        with self.assertRaisesRegex(ValueError, "room ID"):
+            get_room_status(self.slot, [], None, self.now)
 
 
 if __name__ == "__main__":

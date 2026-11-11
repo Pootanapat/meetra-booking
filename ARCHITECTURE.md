@@ -1,9 +1,59 @@
-# Room filtering architecture
+# Booking timeline and room filtering architecture
 
-Room filtering is implemented as a Python application service, separate from the
-existing browser UI. This keeps the domain rules independently testable and
-avoids coupling the service to HTML, JavaScript, or a particular persistence
-provider.
+## Booking timeline
+
+The browser timeline stays in the project's existing HTML and JavaScript stack;
+there is no React or TypeScript build configuration, so the interactive
+`TimelineView.js` is the timeline component rather than a parallel `.tsx`
+implementation. It renders 30-minute slots from 07:00 to 17:00, supports click,
+mouse-drag, and keyboard selection, and reads/writes bookings through the
+existing `booking.js` local-storage flow.
+
+The Python `timeline.py` module contains the matching, independently testable
+domain rules. `TimeRange` and `Booking` are immutable values; ranges use
+half-open intervals (`[start, end)`), so adjacent bookings do not conflict.
+`find_conflicts`, `get_room_status`, and `select_room_slot` keep overlap,
+room-specific status, and selection validation separate from the UI.
+
+```mermaid
+classDiagram
+    class TimeRange {
+        +datetime start
+        +datetime end
+    }
+    class Booking {
+        +str room_id
+        +TimeRange time_range
+    }
+    class SlotStatus {
+        <<enumeration>>
+        AVAILABLE
+        BOOKED
+        PAST
+    }
+    Booking *-- TimeRange
+    Booking ..> SlotStatus : resolved by timeline rules
+    TimeRange ..> SlotStatus : resolved by timeline rules
+```
+
+```mermaid
+flowchart LR
+    BookingData["booking.js / localStorage"] --> Timeline["TimelineView.js"]
+    Timeline --> BrowserRules["Browser overlap and past-time checks"]
+    BrowserRules --> Colors["available / booked / past slot states"]
+    BrowserRules --> Selection["drag or keyboard selection"]
+    PythonRules["timeline.py domain rules"] --> PythonTests["tests/test_timeline.py"]
+```
+
+The Python rules are not called directly by the static browser pages; they
+provide a tested domain implementation for Python workflows and future API
+integration. The browser applies the same half-open overlap rule locally.
+
+## Room filtering
+
+Room filtering is implemented as a Python application service, separate from
+the browser UI. This keeps its domain rules independently testable and avoids
+coupling the service to HTML, JavaScript, or a particular persistence provider.
 
 ```mermaid
 classDiagram

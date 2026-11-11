@@ -30,6 +30,8 @@ const smartFilter = new SmartFilter({
 });
 
 function drawNow() {
+    timeline.refreshStatuses();
+    updateAvailableCount();
     document.querySelectorAll('.now-line').forEach(line => line.remove());
     if ($('datePicker').value !== todayISO()) {
         return;
@@ -65,11 +67,14 @@ function render() {
 
     $('roomCount').textContent = ROOMS.length;
     $('todayCount').textContent = bookings.filter(booking => booking.date === todayISO()).length;
+    drawNow();
+}
+
+function updateAvailableCount() {
     $('availableCount').textContent = ROOMS.filter(room =>
         Array.from({ length: TimelineView.slotCount }, (_, index) =>
             timeline.getStatus(room.id, TimelineView.timeAt(index), TimelineView.timeAt(index + 1)))
             .some(status => status === 'available')).length;
-    drawNow();
 }
 
 function shiftDate(amount) {

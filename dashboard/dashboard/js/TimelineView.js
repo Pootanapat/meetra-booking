@@ -42,11 +42,14 @@ class TimelineView {
             && endMinutes > bookingStartMinutes;
     }
 
-    static todayISO() {
-        const date = new Date();
+    static dateISO(date) {
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
         return `${date.getFullYear()}-${month}-${day}`;
+    }
+
+    static todayISO() {
+        return TimelineView.dateISO(new Date());
     }
 
     renderTimeHeader() {
@@ -190,12 +193,15 @@ class TimelineView {
     }
 
     getStatus(roomId, start, end) {
-        const startMinutes = TimelineView.minutesAt(start);
-        const now = new Date();
-        const nowMinutes = now.getHours() * 60 + now.getMinutes();
+        return this.getStatusAt(roomId, start, end, new Date());
+    }
 
-        if (this.date < TimelineView.todayISO()
-            || (this.date === TimelineView.todayISO() && startMinutes <= nowMinutes)) {
+    getStatusAt(roomId, start, end, now) {
+        const startMinutes = TimelineView.minutesAt(start);
+        const nowMinutes = now.getHours() * 60 + now.getMinutes();
+        const today = TimelineView.dateISO(now);
+
+        if (this.date < today || (this.date === today && startMinutes <= nowMinutes)) {
             return 'past';
         }
 
@@ -204,6 +210,31 @@ class TimelineView {
             && booking.date === this.date
             && TimelineView.overlaps(start, end, booking.start, booking.end));
         return conflicts ? 'booked' : 'available';
+    }
+
+    refreshStatuses() {
+        const now = new Date();
+        const roomsById = new Map(this.rooms.map(room => [room.id, room]));
+
+        this.roomRows.querySelectorAll('.slot').forEach(slot => {
+            const slots = slot.closest('.slots');
+            const roomId = slots.dataset.room;
+            const index = Number(slot.dataset.index);
+            const start = TimelineView.timeAt(index);
+            const end = TimelineView.timeAt(index + 1);
+            const status = this.getStatusAt(roomId, start, end, now);
+            const room = roomsById.get(roomId);
+
+            slot.classList.remove('available', 'booked', 'past');
+            slot.classList.add(status);
+            slot.setAttribute(
+                'aria-label',
+                `${room.name} ${room.id}, ${start}–${end}, ${this.statusLabel(status)}`,
+            );
+            slot.title = `${start} - ${end} • ${this.statusLabel(status)}`;
+        });
+
+        this.updateSelection();
     }
 
     selectSlot(slot) {

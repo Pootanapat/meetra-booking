@@ -33,8 +33,10 @@ class Booking:
     time_range: TimeRange
 
     def __post_init__(self) -> None:
-        if not self.room_id.strip():
+        if not isinstance(self.room_id, str) or not self.room_id.strip():
             raise ValueError("A booking must have a room ID")
+        if not isinstance(self.time_range, TimeRange):
+            raise TypeError("A booking time range must be a TimeRange")
 
 
 def find_conflicts(
@@ -69,7 +71,7 @@ def get_room_status(
     now: datetime,
 ) -> SlotStatus:
     """Resolve availability using bookings for the same room that overlap the slot."""
-    if not room_id.strip():
+    if not isinstance(room_id, str) or not room_id.strip():
         raise ValueError("A room ID is required")
     room_bookings = (
         booking.time_range

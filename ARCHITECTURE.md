@@ -1,12 +1,23 @@
 # Meetra Booking architecture
 
+รายละเอียด Class Diagram, ความสัมพันธ์ระหว่าง Object และตัวอย่าง SOLID อยู่ที่
+[`docs/architecture/class-diagram.md`](docs/architecture/class-diagram.md)
+
 ## Runtime
 
-Meetra Booking uses one runtime architecture:
+Meetra Booking uses a layered runtime architecture:
 
 ```text
-Browser HTML/JavaScript -> Express API -> SQLite
+Browser HTML/JavaScript
+        -> Express Router / Controllers
+        -> Services (business rules)
+        -> Repositories (SQL)
+        -> SQLite
 ```
+
+`server.js` is the composition root. It creates repositories, injects them into
+services, injects services into controllers, and connects controllers to routes.
+Business rules do not depend directly on Express or SQLite initialization.
 
 Vite builds the six HTML pages into `dist/`. Express serves only `dist/` and
 stores runtime data under the ignored `data/` directory. Source files and the

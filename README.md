@@ -23,7 +23,10 @@ npm start
 
 ## สถาปัตยกรรม
 
-- `server.js` — API, authentication, validation, ownership และ SQLite
+- `server.js` — Composition Root สำหรับประกอบ Dependency
+- `server/controllers/` — HTTP request/response handlers
+- `server/services/` — Authentication, validation, ownership และ business rules
+- `server/repositories/` — การเข้าถึงข้อมูล SQLite
 - `public/js/common.js` — session และ API helper ฝั่ง browser
 - `index.html` — ค้นหาและจองห้อง
 - `my-bookings.html` — แก้ไขและยกเลิกการจองของผู้ใช้
@@ -31,6 +34,8 @@ npm start
 - `statistics.html` — สถิติจาก SQLite
 
 Room ID และ Room data มีแหล่งหลักเพียงจุดเดียวคือ SQLite ผ่าน `/api/rooms`
+
+ดู [Class Diagram และการประยุกต์ใช้ SOLID](docs/architecture/class-diagram.md)
 
 ## ความปลอดภัย
 

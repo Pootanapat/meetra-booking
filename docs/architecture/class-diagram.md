@@ -105,7 +105,9 @@ classDiagram
     +listForUser(userId) Booking[]
     +findOwnedById(bookingId, userId) Booking
     +create(booking) Result
+    +createIfAvailable(booking) boolean
     +update(booking) Result
+    +updateIfAvailable(booking) boolean
     +cancel(bookingId, userId) Result
   }
 
@@ -137,8 +139,17 @@ classDiagram
 
   class AuthController {
     -authService: AuthService
+    -loginRateLimiter: LoginRateLimiter
     +register(request, response, next)
     +login(request, response, next)
+    +logout(request, response, next)
+  }
+
+  class LoginRateLimiter {
+    -attempts: Map
+    +check(request) void
+    +recordFailure(request) void
+    +reset(request) void
   }
 
   class BookingController {
@@ -180,6 +191,7 @@ classDiagram
   BookingRepository --> SQLiteDatabase : queries
 
   AuthController --> AuthService : delegates
+  AuthController --> LoginRateLimiter : limits failed login
   BookingController --> BookingService : delegates
   RoomController --> RoomService : delegates
 
@@ -205,6 +217,7 @@ classDiagram
 | Frontend utility | `IcsExporter` | แปลง Booking เป็น iCalendar และเริ่มดาวน์โหลดไฟล์ `.ics` |
 | Composition root | `server.js` | สร้าง Object และเชื่อม Dependency เข้าด้วยกัน |
 | Controller | `AuthController`, `BookingController`, `RoomController`, `SystemController` | แปลง HTTP request/response และส่ง Error ให้ middleware |
+| Security | `LoginRateLimiter`, session-cookie helper, security-header middleware | จำกัด Brute force, จัดการ HttpOnly cookie และ HTTP security headers |
 | Service | `AuthService`, `BookingService`, `RoomService` | Business rules, authorization decision และ use-case orchestration |
 | Repository | `UserRepository`, `SessionRepository`, `RoomRepository`, `BookingRepository` | SQL และ data mapping เท่านั้น |
 | Infrastructure | `DatabaseManager` | เปิด DB, สร้าง schema, seed และปิด connection |
@@ -219,6 +232,10 @@ Object ถูกสร้างและ Inject ใน [`server.js`](../../serve
 3. Repository ถูกส่งให้ Service ผ่าน Constructor
 4. Service ถูกส่งให้ Controller ผ่าน Constructor
 5. Router ผูก Controller เข้ากับ Endpoint
+
+การสร้าง แก้ไข และยกเลิก Booking ผ่านคิว Write ของ `BookingRepository` โดยการสร้าง/แก้ไข
+ใช้ `BEGIN IMMEDIATE` ครอบ Conflict check และ Write เพื่อไม่ให้ Request พร้อมกัน
+แทรกรายการเวลาชนกันระหว่างสองคำสั่ง
 
 ไม่มี Controller หรือ Service สร้าง Dependency ของตัวเอง ทำให้เปลี่ยน Database adapter
 หรือใช้ Test double ได้โดยไม่แก้ Business logic

@@ -20,6 +20,8 @@ npm start
 - `npm start` — เปิด API และเว็บจาก `dist/`
 - `npm test` — รัน API integration tests
 - `npm run check` — build และ test ทั้งหมด
+- `npm run db:backup` — สร้าง Consistent SQLite backup ใน `backups/`
+- `npm run db:restore -- <file.db> --confirm` — Restore แบบสำรองไฟล์ปัจจุบันก่อน
 
 ## ฟีเจอร์หลัก
 
@@ -60,9 +62,15 @@ Room ID และ Room data มีแหล่งหลักเพียงจ�
 ## ความปลอดภัย
 
 - Password ถูก hash ด้วย `scrypt` และ salt แยกรายผู้ใช้
+- Session token อยู่ใน HttpOnly/SameSite cookie และถูก Revoke เมื่อ Logout
+- Login มี Rate limit และ API ส่ง Security headers/CSP
 - API แก้ไข/ยกเลิกตรวจเจ้าของรายการ
+- Conflict check และ Write อยู่ใน SQLite transaction เดียวกัน
 - ไฟล์ฐานข้อมูลไม่ถูก commit และไม่ถูก serve เป็น static file
 
 เอกสาร Threat Model, DFD, Misuse Case, Asset List, Security Requirements,
 Risk Register และ Traceability Matrix อยู่ที่
 [`docs/security/README.md`](docs/security/README.md)
+
+ขั้นตอนสำรองและกู้คืนฐานข้อมูลอยู่ที่
+[`docs/security/backup-restore.md`](docs/security/backup-restore.md)

@@ -1,9 +1,18 @@
 const SESSION_STORAGE_KEY = 'meetra_session';
 
+function escapeForHtml(value) {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
 function getSession() {
   try {
-    const session = JSON.parse(localStorage.getItem(SESSION_STORAGE_KEY));
-    if (!session?.token || !session?.user?.id || !session.user.email) return null;
+    const session = JSON.parse(sessionStorage.getItem(SESSION_STORAGE_KEY));
+    if (!session?.user?.id || !session.user.email) return null;
     return session;
   } catch {
     return null;
@@ -14,21 +23,21 @@ function getUser() {
   return getSession()?.user ?? null;
 }
 
-function setSession(user, token) {
-  localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify({ user, token }));
+function setSession(user) {
+  sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify({ user }));
   updateUserUI();
 }
 
 function clearSession() {
-  localStorage.removeItem(SESSION_STORAGE_KEY);
+  sessionStorage.removeItem(SESSION_STORAGE_KEY);
   updateUserUI();
 }
 
 async function apiFetch(url, options = {}) {
   const headers = new Headers(options.headers || {});
-  const token = getSession()?.token;
-  if (token) headers.set('Authorization', `Bearer ${token}`);
-  return fetch(url, { ...options, headers });
+  const response = await fetch(url, { ...options, headers, credentials: 'same-origin' });
+  if (response.status === 401) clearSession();
+  return response;
 }
 
 function updateUserUI() {
@@ -45,12 +54,17 @@ function updateUserUI() {
   if (logoutButton) logoutButton.style.display = user ? '' : 'none';
 }
 
-function logout() {
-  clearSession();
-  location.href = 'index.html';
+async function logout() {
+  try { await fetch('/api/logout', { method: 'POST', credentials: 'same-origin' }); }
+  finally {
+    clearSession();
+    location.href = 'index.html';
+  }
 }
 
-Object.assign(window, { getSession, getUser, setSession, clearSession, apiFetch, updateUserUI, logout });
+Object.assign(window, {
+  getSession, getUser, setSession, clearSession, apiFetch, updateUserUI, logout, escapeForHtml,
+});
 
 document.addEventListener('DOMContentLoaded', updateUserUI);
 window.addEventListener('pageshow', updateUserUI);

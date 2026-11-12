@@ -3,9 +3,18 @@ import { CLOSING_MINUTES, OPENING_MINUTES } from '../config.js';
 import { ApplicationError } from '../errors/ApplicationError.js';
 
 const minutesFromTime = value => {
-  if (!/^\d{2}:\d{2}$/.test(value ?? '')) return Number.NaN;
+  if (!/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(value ?? '')) return Number.NaN;
   const [hours, minutes] = value.split(':').map(Number);
   return hours * 60 + minutes;
+};
+
+const isValidDate = value => {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value ?? '')) return false;
+  const [year, month, day] = value.split('-').map(Number);
+  const parsed = new Date(Date.UTC(year, month - 1, day));
+  return parsed.getUTCFullYear() === year &&
+    parsed.getUTCMonth() === month - 1 &&
+    parsed.getUTCDate() === day;
 };
 
 const localDate = () => {
@@ -22,7 +31,7 @@ export class BookingService {
   }
 
   validate(input) {
-    if (!input.roomId || !/^\d{4}-\d{2}-\d{2}$/.test(input.date ?? '')) {
+    if (!input.roomId || String(input.roomId).length > 100 || !isValidDate(input.date)) {
       throw new ApplicationError(400, 'กรุณาระบุห้องและวันที่ให้ถูกต้อง');
     }
     if (input.date < localDate()) throw new ApplicationError(400, 'ไม่สามารถจองวันที่ย้อนหลังได้');
@@ -35,6 +44,9 @@ export class BookingService {
       throw new ApplicationError(400, 'เวลาจองต้องอยู่ระหว่าง 07:00–17:00 น.');
     }
     if (start >= end) throw new ApplicationError(400, 'เวลาเริ่มต้องน้อยกว่าเวลาสิ้นสุด');
+    if (String(input.purpose ?? '').length > 500) {
+      throw new ApplicationError(400, 'วัตถุประสงค์ต้องไม่เกิน 500 ตัวอักษร');
+    }
   }
 
   listForUser(userId) {
@@ -46,12 +58,9 @@ export class BookingService {
     if (!await this.roomRepository.exists(input.roomId)) {
       throw new ApplicationError(404, 'ไม่พบห้องประชุม');
     }
-    if (await this.bookingRepository.findConflict(input)) {
-      throw new ApplicationError(409, 'ช่วงเวลานี้ถูกจองแล้ว');
-    }
     const booking = {
-      id: input.id || `bkg-${crypto.randomUUID()}`,
-      refCode: input.refCode || `KMITL-${crypto.randomInt(10000, 100000)}`,
+      id: `bkg-${crypto.randomUUID()}`,
+      refCode: `KMITL-${crypto.randomInt(10000, 100000)}`,
       roomId: input.roomId,
       userId,
       date: input.date,
@@ -59,7 +68,9 @@ export class BookingService {
       endTime: input.endTime,
       purpose: String(input.purpose ?? '').trim(),
     };
-    await this.bookingRepository.create(booking);
+    if (!await this.bookingRepository.createIfAvailable(booking)) {
+      throw new ApplicationError(409, 'ช่วงเวลานี้ถูกจองแล้ว');
+    }
     return { id: booking.id, refCode: booking.refCode };
   }
 
@@ -77,17 +88,16 @@ export class BookingService {
       excludeId: existing.id,
     };
     this.validate(updated);
-    if (await this.bookingRepository.findConflict(updated)) {
-      throw new ApplicationError(409, 'ช่วงเวลานี้ถูกจองแล้ว');
-    }
-    await this.bookingRepository.update({
+    const saved = await this.bookingRepository.updateIfAvailable({
       id: existing.id,
       userId,
+      roomId: updated.roomId,
       date: updated.date,
       startTime: updated.startTime,
       endTime: updated.endTime,
       purpose: String(input.purpose ?? '').trim(),
     });
+    if (!saved) throw new ApplicationError(409, 'ช่วงเวลานี้ถูกจองแล้ว');
   }
 
   async cancel(userId, bookingId) {

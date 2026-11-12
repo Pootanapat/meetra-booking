@@ -14,8 +14,10 @@ import { BookingController } from './server/controllers/BookingController.js';
 import { RoomController } from './server/controllers/RoomController.js';
 import { SystemController } from './server/controllers/SystemController.js';
 import { createAuthenticationMiddleware } from './server/middleware/createAuthenticationMiddleware.js';
+import { createSecurityHeadersMiddleware } from './server/middleware/createSecurityHeadersMiddleware.js';
 import { createApiRouter } from './server/routes/createApiRouter.js';
 import { ApplicationError } from './server/errors/ApplicationError.js';
+import { LoginRateLimiter } from './server/security/LoginRateLimiter.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,6 +27,7 @@ const DEFAULT_STATIC_DIRECTORY = path.join(__dirname, 'dist');
 export async function createApplication({
   databaseFilename = process.env.DATABASE_FILE || DEFAULT_DATABASE_FILE,
   staticDirectory = DEFAULT_STATIC_DIRECTORY,
+  production = process.env.NODE_ENV === 'production',
 } = {}) {
   const databaseManager = new DatabaseManager(databaseFilename);
   const database = await databaseManager.connect();
@@ -36,7 +39,8 @@ export async function createApplication({
   const authService = new AuthService(userRepository, sessionRepository);
   const bookingService = new BookingService(bookingRepository, roomRepository);
   const roomService = new RoomService(roomRepository, bookingRepository);
-  const authController = new AuthController(authService);
+  const loginRateLimiter = new LoginRateLimiter();
+  const authController = new AuthController(authService, loginRateLimiter, { secureCookies: production });
   const bookingController = new BookingController(bookingService);
   const roomController = new RoomController(roomService);
   const systemController = new SystemController();
@@ -44,6 +48,8 @@ export async function createApplication({
 
   const app = express();
   app.disable('x-powered-by');
+  if (production) app.set('trust proxy', 1);
+  app.use(createSecurityHeadersMiddleware({ production }));
   app.use(express.json({ limit: '32kb' }));
   app.use('/api', createApiRouter({
     authController,

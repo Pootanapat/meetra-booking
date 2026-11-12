@@ -1,15 +1,167 @@
 <!DOCTYPE html>
-<html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ข้อมูลห้องประชุม | KMITL Room Booking</title><link rel="stylesheet" href="css/style.css"></head><body>
-<div class="app"><aside class="sidebar">
-<div class="brand"><div class="brand-mark">K</div><div><strong>KMITL</strong><small>ROOM BOOKING</small></div></div>
-<div><div class="nav-label">WORKSPACE</div><nav class="nav"><a href="index.html" class=""><span class="ico">▦</span>ระบบจองห้องประชุม</a><a href="my-bookings.html" class=""><span class="ico">▣</span>การจองของฉัน</a><a href="statistics.html" class=""><span class="ico">▤</span>สถิติการจอง</a><a href="rooms.html" class="active"><span class="ico">▧</span>ข้อมูลห้องประชุม</a></nav></div>
-<div class="side-help"><b>เริ่มต้นจองห้องประชุม</b>เลือกห้องและช่วงเวลาที่ต้องการ ระบบจะตรวจสอบเวลาว่างให้อัตโนมัติ</div>
-<div class="profile"><div class="avatar" id="avatar">G</div><div><b id="userLabel">ผู้เยี่ยมชม</b><br><small style="color:var(--muted)">KMITL Room Booking</small></div></div>
-</aside><main class="main"><header class="topbar"><div class="crumb">KMITL / ข้อมูลห้องประชุม</div><div class="top-actions"><button id="loginTop" onclick="location.href='login.html'">เข้าสู่ระบบ</button><button id="registerTop" onclick="location.href='register.html'">สมัครสมาชิก</button><button id="logoutTop" style="display:none" onclick="logout()">ออกจากระบบ</button></div></header>
-<div class="content">
-<div class="eyebrow">MEETING SPACES</div><div class="page-title"><div><h1>ข้อมูลห้องประชุม</h1><p class="sub">รายละเอียดและสิ่งอำนวยความสะดวกของแต่ละห้อง</p></div></div><div class="room-grid" id="roomCards"></div>
-</div></main></div>
-<script src="js/common.js"></script><script>
-ROOMS.forEach(r=>{let c=document.createElement('article');c.className='room-card';c.innerHTML='<div class="room-thumb">'+r.icon+'</div><h3>'+r.name+' <span style="color:var(--purple)">#'+r.id+'</span></h3><p>รองรับ '+r.capacity+' คน • ชั้น '+r.floor+'</p><p>'+r.equipment+'</p><a class="secondary" style="display:inline-block;text-decoration:none" href="index.html">ดูตารางเวลาจอง</a>';document.getElementById('roomCards').append(c)});
-</script></body></html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ข้อมูลห้องประชุม | KMITL Room Booking</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .room-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            margin-top: 20px;
+        }
+
+        .room-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .room-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-mark">K</div>
+            <div>
+                <strong>KMITL</strong>
+                <small>ROOM BOOKING</small>
+            </div>
+        </div>
+        <div>
+            <div class="nav-label">WORKSPACE</div>
+            <nav class="nav">
+                <a href="index.html" class=""><span class="ico">▦</span>ระบบจองห้องประชุม</a>
+                <a href="my-bookings.html" class=""><span class="ico">▣</span>การจองของฉัน</a>
+                <a href="statistics.html" class=""><span class="ico">▤</span>สถิติการจอง</a>
+                <a href="rooms.html" class="active"><span class="ico">▧</span>ข้อมูลห้องประชุม</a>
+            </nav>
+        </div>
+        <div class="side-help"><b>เริ่มต้นจองห้องประชุม</b>เลือกห้องและช่วงเวลาที่ต้องการ ระบบจะตรวจสอบเวลาว่างให้อัตโนมัติ</div>
+        <div class="profile">
+            <div class="avatar" id="avatar">G</div>
+            <div><b id="userLabel">ผู้เยี่ยมชม</b><br><small style="color:var(--muted)">KMITL Room Booking</small></div>
+        </div>
+    </aside>
+
+    <main class="main">
+        <header class="topbar">
+            <div class="crumb">KMITL / ข้อมูลห้องประชุม</div>
+            <div class="top-actions">
+                <button id="loginTop" onclick="location.href='login.html'">เข้าสู่ระบบ</button>
+                <button id="registerTop" onclick="location.href='register.html'">สมัครสมาชิก</button>
+                <button id="logoutTop" style="display:none" onclick="logout()">ออกจากระบบ</button>
+            </div>
+        </header>
+
+        <div class="content">
+            <div class="eyebrow">MEETING SPACES</div>
+            <div class="page-title">
+                <div>
+                    <h1>ข้อมูลห้องประชุม</h1>
+                    <p class="sub">รายละเอียดและสิ่งอำนวยความสะดวกของแต่ละห้อง</p>
+                </div>
+            </div>
+            <div class="room-grid" id="roomCards"></div>
+        </div>
+    </main>
+</div>
+
+<script src="js/common.js"></script>
+<script>
+// ข้อมูลห้องประชุม
+const ROOMS = [
+  {
+    id: 'room-101',
+    name: 'ห้องประชุม 101 - อาคารเรียนรวม',
+    capacity: 10,
+    floor: '1',
+    equipment: 'ระบบ VDO Conference, Smart Board, โปรเจคเตอร์',
+    icon: '🏢',
+    location: 'ชั้น 1 อาคารเรียนรวม KMITL',
+    image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&q=80',
+    description: 'ห้องประชุมขนาดกลาง พร้อมระบบ VDO Conference และ Smart Board'
+  },
+  {
+    id: 'room-lab-b',
+    name: 'ห้องปฏิบัติการคอมพิวเตอร์ B',
+    capacity: 30,
+    floor: '3',
+    equipment: 'คอมพิวเตอร์ 30 เครื่อง, โปรเจคเตอร์, ระบบเสียง',
+    icon: '💻',
+    location: 'ชั้น 3 คณะเทคโนโลยีสารสนเทศ',
+    image: 'https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=600&q=80',
+    description: 'ห้องปฏิบัติการคอมพิวเตอร์ 30 เครื่อง เหมาะสำหรับการอบรมเชิงปฏิบัติการ'
+  },
+  {
+    id: 'room-sem-b',
+    name: 'ห้องสัมมนาใหญ่ B',
+    capacity: 50,
+    floor: '2',
+    equipment: 'เวที, ระบบเครื่องเสียง, ไมโครโฟนไร้สาย',
+    icon: '🎤',
+    location: 'ชั้น 2 อาคารหอประชุมใหญ่',
+    image: 'https://images.unsplash.com/photo-1431540015161-0bf868a2d407?auto=format&fit=crop&w=600&q=80',
+    description: 'ห้องสัมมนาพร้อมเวที ระบบเครื่องเสียง และไมโครโฟนไร้สายครบชุด'
+  },
+  {
+    id: 'room-coworking',
+    name: 'Co-Working Space Zone A',
+    capacity: 15,
+    floor: '1',
+    equipment: 'ปลั๊กไฟ, Wi-Fi ความเร็วสูง, โต๊ะทำงานกลุ่ม',
+    icon: '🪑',
+    location: 'ชั้น 1 สำนักหอสมุดกลาง',
+    image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80',
+    description: 'พื้นที่ทำงานกลุ่มแบบเป็นกันเอง พร้อมปลั๊กไฟและ Wi-Fi ความเร็วสูง'
+  },
+  {
+    id: 'room-mac-lab',
+    name: 'ห้องปฏิบัติการ Mac Lab 402',
+    capacity: 25,
+    floor: '4',
+    equipment: 'iMac 25 เครื่อง, ซอฟต์แวร์ Adobe, ระบบเสียง',
+    icon: '🍎',
+    location: 'ชั้น 4 คณะเทคโนโลยีสารสนเทศ',
+    image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=600&q=80',
+    description: 'ห้องปฏิบัติการ iMac สำหรับงานดีไซน์ ออกแบบ และตัดต่อสื่อประสม'
+  }
+];
+
+// แสดงรายการห้องประชุม
+ROOMS.forEach(r => {
+  let c = document.createElement('article');
+  c.className = 'room-card';
+  c.innerHTML = `
+    <div style="position:relative; height:180px; width:100%; background:#f3f4f6;">
+      <img src="${r.image}" alt="${r.name}" style="width:100%; height:100%; object-fit:cover;">
+      <div style="position:absolute; top:12px; right:12px; background:rgba(255,255,255,0.92); backdrop-filter:blur(4px); padding:4px 10px; border-radius:20px; font-size:11px; font-weight:bold; color:#374151;">
+        👥 ${r.capacity} คน
+      </div>
+    </div>
+    <div style="padding:16px;">
+      <h3 style="margin:0 0 6px 0; font-size:16px; font-weight:bold; color:#111827;">${r.name}</h3>
+      <p style="margin:0 0 10px 0; font-size:12px; color:#6b7280;">📍 ${r.location}</p>
+      <div style="background:#f9fafb; padding:10px; border-radius:10px; border:1px solid #f3f4f6; font-size:12px; color:#374151; margin-bottom:12px;">
+        <b>อุปกรณ์:</b> ${r.equipment}
+      </div>
+      <a href="index.html" style="display:block; text-align:center; padding:10px; background:#7c3aed; color:white; border-radius:10px; text-decoration:none; font-size:13px; font-weight:600;">
+        ดูตารางเวลาจอง
+      </a>
+    </div>
+  `;
+  document.getElementById('roomCards').append(c);
+});
+</script>
+</body>
+</html>

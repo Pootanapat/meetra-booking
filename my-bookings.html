@@ -130,7 +130,7 @@
             <div class="top-actions">
                 <button id="loginTop" onclick="location.href='login.html'">เข้าสู่ระบบ</button>
                 <button id="registerTop" onclick="location.href='register.html'">สมัครสมาชิก</button>
-                <button id="logoutTop" style="display:none" onclick="logout()">ออกจากระบบ</button>
+                <button id="logoutTop" style="display:none" onclick="localStorage.removeItem('kmitlCurrentUser'); location.href='index.html'">ออกจากระบบ</button>
             </div>
         </header>
 
@@ -163,6 +163,7 @@
         </div>
         <form id="editForm" onsubmit="handleEditSubmit(event)" style="padding: 20px 24px 24px 24px;">
             <input type="hidden" id="editBookingId">
+            <p id="editError" role="alert" hidden style="margin:0 0 12px;color:#dc2626;font-size:12px;"></p>
             <div class="ios-input-group">
                 <label>
                     <svg class="icon-svg" style="color:#7c3aed;" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
@@ -209,22 +210,22 @@
     </div>
 </div>
 
-<script src="js/common.js"></script>
+<script type="module">
+import { validateBookingTime } from './src/utils/bookingTime.ts';
+window.validateBookingTime = validateBookingTime;
+</script>
 <script>
 let pendingCancelId = null;
 
 function getSavedBookingsData() {
-    let rawPreview = localStorage.getItem('my_bookings_preview_data');
-    let rawStandard = localStorage.getItem('bookings');
-    let previewData = rawPreview ? JSON.parse(rawPreview) : [];
-    let standardData = rawStandard ? JSON.parse(rawStandard) : [];
-    
-    let combined = [...previewData, ...standardData];
-    let uniqueMap = new Map();
-    combined.forEach(item => {
-        if (item && item.id) uniqueMap.set(item.id, item);
-    });
-    return Array.from(uniqueMap.values());
+    const raw = localStorage.getItem('kmitlBookings');
+    if (!raw) return [];
+
+    const bookings = JSON.parse(raw);
+    if (!Array.isArray(bookings)) {
+        throw new Error('ข้อมูลรายการจองต้องเป็นรายการ array');
+    }
+    return bookings;
 }
 
 function renderMyBookings() {
@@ -311,8 +312,7 @@ function renderMyBookings() {
 }
 
 function updateStorageData(updatedList) {
-    localStorage.setItem('my_bookings_preview_data', JSON.stringify(updatedList));
-    localStorage.setItem('bookings', JSON.stringify(updatedList));
+    localStorage.setItem('kmitlBookings', JSON.stringify(updatedList));
 }
 
 function openCancelModal(bookingId) {
@@ -328,7 +328,7 @@ function closeCancelModal() {
 document.getElementById('confirmCancelBtn').addEventListener('click', function() {
     if (!pendingCancelId) return;
     let items = getSavedBookingsData();
-    let updated = items.map(b => b.id === pendingCancelId ? { ...b, status: 'cancelled' } : b);
+    let updated = items.map(b => String(b.id) === String(pendingCancelId) ? { ...b, status: 'cancelled' } : b);
     updateStorageData(updated);
     closeCancelModal();
     renderMyBookings();
@@ -339,11 +339,44 @@ function openEditModal(id, date, start, end) {
     document.getElementById('editDate').value = date;
     document.getElementById('editStart').value = start;
     document.getElementById('editEnd').value = end;
+    document.getElementById('editError').hidden = true;
     document.getElementById('iosEditModal').classList.add('active');
 }
 
 function closeEditModal() {
     document.getElementById('iosEditModal').classList.remove('active');
+    document.getElementById('editError').hidden = true;
+}
+
+function validateBookingEdit(bookingId, date, start, end, items = getSavedBookingsData()) {
+    const booking = items.find(item => String(item.id) === String(bookingId));
+    if (!booking) return 'ไม่พบรายการจองที่ต้องการแก้ไข';
+    if (!booking.roomId) return 'ไม่พบข้อมูลห้องของรายการจอง';
+    if (typeof window.validateBookingTime !== 'function') {
+        return 'โหลดระบบตรวจสอบเวลาไม่สำเร็จ กรุณาลองใหม่';
+    }
+
+    const normalize = item => ({
+        id: item.id,
+        roomId: String(item.roomId || ''),
+        roomName: item.roomName || item.name || '',
+        location: item.location || '',
+        date: item.date || '',
+        startTime: item.startTime || item.start || '',
+        endTime: item.endTime || item.end || '',
+        status: item.status || 'approved',
+        userEmail: item.userEmail || '',
+    });
+    const normalizedItems = items.map(normalize);
+    const editedBooking = normalizedItems.find(item => String(item.id) === String(bookingId));
+    if (!editedBooking) return 'ไม่พบรายการจองที่ต้องการแก้ไข';
+
+    return window.validateBookingTime(
+        { ...editedBooking, date, startTime: start, endTime: end },
+        normalizedItems,
+        new Date(),
+        bookingId,
+    ) || '';
 }
 
 function handleEditSubmit(e) {
@@ -354,14 +387,23 @@ function handleEditSubmit(e) {
     let newEnd = document.getElementById('editEnd').value;
 
     let items = getSavedBookingsData();
+    const error = validateBookingEdit(id, newDate, newStart, newEnd, items);
+    const errorElement = document.getElementById('editError');
+    if (error) {
+        errorElement.textContent = error;
+        errorElement.hidden = false;
+        return;
+    }
+
     let updated = items.map(b => {
-        if (b.id === id) {
+        if (String(b.id) === String(id)) {
             return { ...b, date: newDate, start: newStart, end: newEnd, startTime: newStart, endTime: newEnd };
         }
         return b;
     });
 
     updateStorageData(updated);
+    errorElement.hidden = true;
     closeEditModal();
     renderMyBookings();
 }

@@ -1,5 +1,4 @@
 
-<script>
 let selection=null,dragging=false;
 const $=id=>document.getElementById(id);
 const time=i=>{let n=420+i*30;return `${String(Math.floor(n/60)).padStart(2,'0')}:${String(n%60).padStart(2,'0')}`};
@@ -33,4 +32,3 @@ function shift(d){let x=new Date($('datePicker').value+'T12:00:00');x.setDate(x.
 $('prevDay').onclick=()=>shift(-1);$('nextDay').onclick=()=>shift(1);
 for(let i=0;i<20;i++){let e=document.createElement('div');e.className='hour';e.textContent=i%2===0?time(i):'';$('timeHead').append(e)}
 render();setInterval(drawNow,30000);
-</script>

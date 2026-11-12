@@ -1,53 +1,51 @@
-import React, { useState, useEffect } from 'react';
-import { Booking } from '../types/booking';
+import React, { useState, useEffect, useRef } from 'react';
+import type { Booking } from '../types/booking';
 import { useAuth } from '../context/AuthContext';
+import { validateBookingTime } from '../utils/bookingTime';
+import { BOOKING_STORAGE_KEY, loadBookings } from '../utils/bookingStorage';
 import { generateICSFile } from '../utils/icsGenerator';
-
-// ข้อมูลเริ่มต้นกรณีเปิดครั้งแรก
-const defaultBookings: Booking[] = [
-  {
-    id: 'bkg-101',
-    roomName: 'ห้องประชุม 101 - อาคารเรียนรวม',
-    location: 'ชั้น 1 อาคารเรียนรวม KMITL',
-    date: '2026-11-10',
-    startTime: '09:00',
-    endTime: '11:00',
-    status: 'approved',
-    userEmail: 'somchai@kmitl.ac.th'
-  },
-  {
-    id: 'bkg-102',
-    roomName: 'ห้องปฏิบัติการคอมพิวเตอร์ B',
-    location: 'ชั้น 3 คณะเทคโนโลยีสารสนเทศ',
-    date: '2026-11-15',
-    startTime: '13:00',
-    endTime: '16:00',
-    status: 'approved',
-    userEmail: 'somchai@kmitl.ac.th'
-  }
-];
 
 export const MyBookings: React.FC = () => {
   const { user } = useAuth();
-  
-  // โหลดข้อมูลจาก LocalStorage ถ้าไม่มีให้ใช้ defaultBookings
-  const [bookings, setBookings] = useState<Booking[]>(() => {
-    const saved = localStorage.getItem('my_bookings_data');
-    return saved ? JSON.parse(saved) : defaultBookings;
-  });
+  const [initial] = useState(loadBookings);
+  const [bookings, setBookings] = useState<Booking[]>(initial.bookings);
+  const [storageError, setStorageError] = useState(initial.error);
+  const skipStorageWrite = useRef(false);
 
   const [editingBooking, setEditingBooking] = useState<Booking | null>(null);
+  const [editError, setEditError] = useState('');
 
-  // ทุกครั้งที่ bookings เปลี่ยนแปลง ให้เซฟลง LocalStorage
   useEffect(() => {
-    localStorage.setItem('my_bookings_data', JSON.stringify(bookings));
-  }, [bookings]);
+    const refreshFromStorage = (event: StorageEvent) => {
+      if (event.key !== BOOKING_STORAGE_KEY && event.key !== null) return;
+      const latest = loadBookings();
+      skipStorageWrite.current = true;
+      setBookings(latest.bookings);
+      setStorageError(latest.error);
+    };
+    window.addEventListener('storage', refreshFromStorage);
+    return () => window.removeEventListener('storage', refreshFromStorage);
+  }, []);
+
+  useEffect(() => {
+    if (skipStorageWrite.current) {
+      skipStorageWrite.current = false;
+      return;
+    }
+    if (storageError) return;
+
+    try {
+      localStorage.setItem(BOOKING_STORAGE_KEY, JSON.stringify(bookings));
+    } catch (error) {
+      setStorageError(error instanceof Error ? error.message : 'บันทึกข้อมูลการจองไม่สำเร็จ');
+    }
+  }, [bookings, storageError]);
 
   // 1. ฟีเจอร์: ยกเลิกการจอง (Cancel Feature)
-  const handleCancelBooking = (id: string) => {
+  const handleCancelBooking = (id: Booking['id']) => {
     if (window.confirm('คุณแน่ใจหรือไม่ว่าต้องการยกเลิกรายการจองนี้?')) {
       setBookings(prev =>
-        prev.map(item => (item.id === id ? { ...item, status: 'cancelled' } : item))
+        prev.map(item => (String(item.id) === String(id) ? { ...item, status: 'cancelled' } : item))
       );
     }
   };
@@ -57,14 +55,32 @@ export const MyBookings: React.FC = () => {
     e.preventDefault();
     if (!editingBooking) return;
 
-    setBookings(prev =>
-      prev.map(item => (item.id === editingBooking.id ? editingBooking : item))
+    const error = validateBookingTime(
+      {
+        roomId: editingBooking.roomId,
+        date: editingBooking.date,
+        startTime: editingBooking.startTime,
+        endTime: editingBooking.endTime,
+      },
+      bookings,
+      new Date(),
+      editingBooking.id,
     );
+    if (error) {
+      setEditError(error);
+      return;
+    }
+
+    setBookings(prev =>
+      prev.map(item => (String(item.id) === String(editingBooking.id) ? editingBooking : item))
+    );
+    setEditError('');
     setEditingBooking(null); // ปิด Modal
   };
 
   return (
     <div className="w-full max-w-5xl mx-auto p-4 space-y-6">
+      {storageError && <p className="text-sm text-red-600" role="alert">ข้อมูลการจองมีปัญหา: {storageError}</p>}
       {/* Header Bar */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-5 rounded-xl shadow-sm border border-purple-100">
         <div>
@@ -120,7 +136,7 @@ export const MyBookings: React.FC = () => {
                   <>
                     {/* ปุ่มแก้ไข */}
                     <button
-                      onClick={() => setEditingBooking(item)}
+                      onClick={() => { setEditError(''); setEditingBooking(item); }}
                       className="px-3.5 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-sm font-medium transition shadow-sm"
                     >
                       ✏️ แก้ไข
@@ -165,6 +181,7 @@ export const MyBookings: React.FC = () => {
                 ✕
               </button>
             </div>
+            {editError && <p className="text-sm text-red-600" role="alert">{editError}</p>}
 
             <div>
               <label className="block text-xs font-semibold text-gray-600 mb-1">ชื่อห้องประชุม</label>

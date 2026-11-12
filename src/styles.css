@@ -1,0 +1,12 @@
+.timeline-error {
+  margin: 8px 0;
+  color: #b42318;
+  font-size: 12px;
+}
+
+.timeline-filter-count {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 10px;
+  text-align: right;
+}

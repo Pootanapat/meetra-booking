@@ -130,5 +130,11 @@ $('todayBtn').addEventListener('click', () => {
 $('prevDay').addEventListener('click', () => shiftDate(-1));
 $('nextDay').addEventListener('click', () => shiftDate(1));
 
+window.addEventListener('storage', event => {
+    if (event.key === 'kmitlBookings' || event.key === null) {
+        render();
+    }
+});
+
 render();
 setInterval(drawNow, 30000);

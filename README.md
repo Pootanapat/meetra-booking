@@ -67,4 +67,10 @@ Room ID และ Room data มีแหล่งหลักเพียงจ�
 - API แก้ไข/ยกเลิกตรวจเจ้าของรายการ
 - Conflict check และ Write อยู่ใน SQLite transaction เดียวกัน
 - ไฟล์ฐานข้อมูลไม่ถูก commit และไม่ถูก serve เป็น static file
-- ดู [Risk Register](docs/security/risk-register.md) และ [Backup/Restore Plan](docs/security/backup-restore.md)
+
+เอกสาร Threat Model, DFD, Misuse Case, Asset List, Security Requirements,
+Risk Register และ Traceability Matrix อยู่ที่
+[`docs/security/README.md`](docs/security/README.md)
+
+ขั้นตอนสำรองและกู้คืนฐานข้อมูลอยู่ที่
+[`docs/security/backup-restore.md`](docs/security/backup-restore.md)

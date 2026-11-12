@@ -29,6 +29,30 @@ SQL, Service ไม่รู้จัก Express Request/Response และ Repo
 
 ```mermaid
 classDiagram
+  class BookingPageController {
+    -apiClient: BookingApiClient
+    -bookingPolicy: BookingPolicy
+    +init() void
+    +handleFilter() void
+    +renderRooms(rooms) void
+    +handleFormSubmit(event) void
+  }
+
+  class BookingApiClient {
+    -publicFetch: Function
+    -authenticatedFetch: Function
+    +listRooms() Response
+    +listAvailability() Response
+    +createBooking(booking) Response
+  }
+
+  class BookingPolicy {
+    +timeToMinutes(time) number
+    +activeBookings(bookings) Booking[]
+    +getRoomStatus(input) RoomStatus
+    +checkConflict(input) ConflictResult
+  }
+
   class DatabaseManager {
     -filename: string
     -database: Database
@@ -124,6 +148,9 @@ classDiagram
     <<external>>
   }
 
+  BookingPageController --> BookingApiClient : loads / writes data
+  BookingPageController --> BookingPolicy : evaluates schedule
+
   DatabaseManager --> SQLiteDatabase : opens / initializes
   UserRepository --> SQLiteDatabase : queries
   SessionRepository --> SQLiteDatabase : queries
@@ -149,6 +176,9 @@ classDiagram
 
 | Layer | Class | Responsibility |
 |---|---|---|
+| Frontend controller | `BookingPageController` | ผูก Event และประสาน View/API/Policy |
+| Frontend gateway | `BookingApiClient` | การเรียก HTTP API และแปลง JSON |
+| Frontend domain | `BookingPolicy` | กฎสถานะห้องและตรวจเวลาชนแบบไม่พึ่ง DOM |
 | Composition root | `server.js` | สร้าง Object และเชื่อม Dependency เข้าด้วยกัน |
 | Controller | `AuthController`, `BookingController`, `RoomController` | แปลง HTTP request/response และส่ง Error ให้ middleware |
 | Service | `AuthService`, `BookingService`, `RoomService` | Business rules, authorization decision และ use-case orchestration |
@@ -183,6 +213,11 @@ Object ถูกสร้างและ Inject ใน [`server.js`](../../serve
 ตัวอย่างสำคัญคือ `BookingService.create()` ทำ orchestration ของ Use Case แต่ไม่รู้ว่า
 SQL ถูกเขียนอย่างไร และไม่รู้จัก Express `request/response`
 
+Frontend ใช้หลักเดียวกัน: [`BookingApiClient`](../../public/js/booking/BookingApiClient.js)
+รับผิดชอบ HTTP, [`BookingPolicy`](../../public/js/booking/BookingPolicy.js) รับผิดชอบกฎเวลา
+และ [`BookingPageController`](../../public/js/booking/BookingPageController.js) รับผิดชอบ
+ประสาน DOM/Event เท่านั้น
+
 ### 2. Open/Closed Principle (OCP)
 
 สามารถเพิ่ม Controller/Service ใหม่ เช่น `AuditService` หรือ `CalendarService` โดยประกอบ
@@ -215,6 +250,9 @@ const bookingController = new BookingController(bookingService);
 `BookingService` ไม่เรียก `open()` และไม่สร้าง SQLite connection เอง จึงลด Coupling ระหว่าง
 Business logic กับ Infrastructure และช่วยให้ Unit test ด้วย In-memory/Test repository ได้
 
+ฝั่ง Browser ใช้ Constructor Injection เช่นกัน โดย Controller รับ `BookingApiClient` และ
+`BookingPolicy` ทำให้ Unit test Policy และ API client ได้โดยไม่ต้องเปิด Browser หรือ Server
+
 ## High Cohesion และ Low Coupling
 
 - **High Cohesion:** method ที่เกี่ยวกับกฎจองอยู่ใน `BookingService`; SQL จองอยู่ใน
@@ -231,5 +269,5 @@ Business logic กับ Infrastructure และช่วยให้ Unit test
 2. Conflict check กับ write ยังไม่ atomic ควรเพิ่ม Transaction/locking
 3. Security logging และ logout/revoke session ยังไม่มี
 4. ควรเพิ่ม Unit tests แยกสำหรับ Service โดย Inject fake repositories
-5. Frontend `BookingPageController` ยังมีหลายหน้าที่ ควรแยก View, API client และ state
+5. Frontend rendering ยังอยู่ใน `BookingPageController`; หาก UI โตขึ้นควรแยก `BookingPageView`
 

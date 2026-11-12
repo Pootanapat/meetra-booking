@@ -28,6 +28,9 @@ npm start
 - `server/services/` — Authentication, validation, ownership และ business rules
 - `server/repositories/` — การเข้าถึงข้อมูล SQLite
 - `public/js/common.js` — session และ API helper ฝั่ง browser
+- `public/js/booking/BookingApiClient.js` — API gateway ของหน้าจอง
+- `public/js/booking/BookingPolicy.js` — กฎสถานะห้องและตรวจเวลาชนแบบ Pure JavaScript
+- `public/js/booking/BookingPageController.js` — Event และ UI orchestration
 - `index.html` — ค้นหาและจองห้อง
 - `my-bookings.html` — แก้ไขและยกเลิกการจองของผู้ใช้
 - `rooms.html` — ดึงข้อมูลห้องจาก API

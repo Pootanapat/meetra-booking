@@ -37,3 +37,7 @@ Room ID และ Room data มีแหล่งหลักเพียงจ�
 - Password ถูก hash ด้วย `scrypt` และ salt แยกรายผู้ใช้
 - API แก้ไข/ยกเลิกตรวจเจ้าของรายการ
 - ไฟล์ฐานข้อมูลไม่ถูก commit และไม่ถูก serve เป็น static file
+
+เอกสาร Threat Model, DFD, Misuse Case, Asset List, Security Requirements,
+Risk Register และ Traceability Matrix อยู่ที่
+[`docs/security/README.md`](docs/security/README.md)

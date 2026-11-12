@@ -2,16 +2,32 @@
 
 ## Booking timeline
 
-The browser timeline stays in the project's existing HTML and JavaScript stack;
-there is no React or TypeScript build configuration, so the interactive
-`TimelineView.js` is the timeline component rather than a parallel `.tsx`
-implementation. It renders 30-minute slots from 07:00 to 17:00, supports click,
-mouse-drag, and keyboard selection, and reads/writes bookings through the
-existing `booking.js` local-storage flow.
+The booking homepage is built with Vite, React, and TypeScript. `src/main.tsx`
+mounts `BookingApp`, which renders the interactive `TimelineView.tsx` with
+30-minute slots from 07:00 to 17:00. Slots can be selected by click, pointer
+drag, or keyboard; available, booked, and past states are derived from the
+selected date and current booking data.
 
-The Python `timeline.py` module contains the matching, independently testable
-domain rules. `TimeRange` and `Booking` are immutable values; ranges use
-half-open intervals (`[start, end)`), so adjacent bookings do not conflict.
+`src/utils/bookingTime.ts` is the shared source for date/time validation,
+half-open overlap checks (`[start, end)`), cancelled-booking handling, and slot
+status. Both the timeline and booking edit form use these rules.
+`src/utils/bookingStorage.ts` normalizes supported legacy booking shapes and
+uses the `kmitlBookings` storage key shared with the existing browser scripts.
+
+Install and run the browser app from this directory:
+
+```sh
+npm install
+npm run dev
+npm test
+```
+
+`npm run build` type-checks the TypeScript sources and creates the production
+build in `dist/`. Python domain tests run with
+`python -m unittest discover -s tests`.
+
+The Python `timeline.py` module contains matching, independently testable
+domain rules. `TimeRange` and `Booking` are immutable values;
 `find_conflicts`, `get_room_status`, and `select_room_slot` keep overlap,
 room-specific status, and selection validation separate from the UI.
 
@@ -38,16 +54,17 @@ classDiagram
 
 ```mermaid
 flowchart LR
-    BookingData["booking.js / localStorage"] --> Timeline["TimelineView.js"]
-    Timeline --> BrowserRules["Browser overlap and past-time checks"]
-    BrowserRules --> Colors["available / booked / past slot states"]
-    BrowserRules --> Selection["drag or keyboard selection"]
-    PythonRules["timeline.py domain rules"] --> PythonTests["tests/test_timeline.py"]
+BookingData["bookingStorage.ts / kmitlBookings"] --> Timeline["TimelineView.tsx"]
+Timeline --> BrowserRules["bookingTime.ts validation"]
+BrowserRules --> Colors["available / booked / past slot states"]
+BrowserRules --> Selection["click, drag, or keyboard selection"]
+BrowserRules --> Edit["my-bookings.html edit validation"]
+PythonRules["timeline.py domain rules"] --> PythonTests["tests/test_timeline.py"]
 ```
 
-The Python rules are not called directly by the static browser pages; they
-provide a tested domain implementation for Python workflows and future API
-integration. The browser applies the same half-open overlap rule locally.
+The Python rules are not called directly by the browser; they provide a tested
+domain implementation for Python workflows and future API integration. The
+browser applies the same half-open overlap rule locally.
 
 ## Room filtering
 

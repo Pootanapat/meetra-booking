@@ -42,6 +42,10 @@ class TimelineView {
             && endMinutes > bookingStartMinutes;
     }
 
+    static isCancelled(booking) {
+        return booking.status === 'cancelled' || booking.status === 'ยกเลิกแล้ว';
+    }
+
     static dateISO(date) {
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
@@ -96,21 +100,7 @@ class TimelineView {
         });
 
         this.roomRows.addEventListener('keydown', event => {
-            if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') {
-                return;
-            }
-
-            const slot = event.target.closest('.slot');
-            if (!slot) {
-                return;
-            }
-
-            const direction = event.key === 'ArrowRight' ? 1 : -1;
-            const next = slot.parentElement.querySelector(`[data-index="${Number(slot.dataset.index) + direction}"]`);
-            if (next) {
-                event.preventDefault();
-                next.focus();
-            }
+            this.handleKeydown(event);
         });
 
         document.addEventListener('pointerup', () => {
@@ -119,6 +109,33 @@ class TimelineView {
         document.addEventListener('pointercancel', () => {
             this.pointerSelecting = false;
         });
+    }
+
+    handleKeydown(event) {
+        if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') {
+            return;
+        }
+
+        const slot = event.target.closest('.slot');
+        if (!slot) {
+            return;
+        }
+
+        const direction = event.key === 'ArrowRight' ? 1 : -1;
+        const next = slot.parentElement.querySelector(`[data-index="${Number(slot.dataset.index) + direction}"]`);
+        if (!next) {
+            return;
+        }
+
+        event.preventDefault();
+        if (event.shiftKey) {
+            const room = slot.closest('.slots').dataset.room;
+            if (!this.selection || this.selection.room !== room) {
+                this.selectSlot(slot);
+            }
+            this.extendSelection(next);
+        }
+        next.focus();
     }
 
     render({ date, rooms = this.rooms, bookings = [] }) {
@@ -208,6 +225,7 @@ class TimelineView {
         const conflicts = this.bookings.some(booking =>
             booking.roomId === roomId
             && booking.date === this.date
+            && !TimelineView.isCancelled(booking)
             && TimelineView.overlaps(start, end, booking.start, booking.end));
         return conflicts ? 'booked' : 'available';
     }
@@ -288,6 +306,7 @@ class TimelineView {
         const conflict = bookings.some(booking =>
             booking.roomId === selection.room
             && booking.date === selection.date
+            && !TimelineView.isCancelled(booking)
             && TimelineView.overlaps(selection.start, selection.end, booking.start, booking.end));
         const startMinutes = TimelineView.minutesAt(selection.start);
         const now = new Date();

@@ -186,6 +186,7 @@
                     <input type="time" id="editEnd" required class="ios-input">
                 </div>
             </div>
+            <p id="editError" role="alert" style="color:#b91c1c" hidden></p>
             <div style="display: flex; gap: 10px; margin-top: 24px;">
                 <button type="button" onclick="closeEditModal()" class="ios-btn" style="flex: 1; background: #f3f4f6; color: #4b5563;">ยกเลิก</button>
                 <button type="submit" class="ios-btn" style="flex: 1.5; background: #7c3aed; color: #ffffff; box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);">บันทึก</button>
@@ -210,8 +211,10 @@
 </div>
 
 <script src="js/common.js"></script>
+<script src="js/auth.js"></script>
 <script src="js/booking-data.js"></script>
 <script src="js/rooms-data.js"></script>
+<script src="js/booking-api.js"></script>
 <script>
 let pendingCancelId = null;
 
@@ -319,6 +322,7 @@ document.getElementById('confirmCancelBtn').addEventListener('click', function()
 });
 
 function openEditModal(id, date, start, end) {
+    document.getElementById('editError').hidden = true;
     document.getElementById('editBookingId').value = id;
     document.getElementById('editDate').value = date;
     document.getElementById('editStart').value = start;
@@ -327,27 +331,60 @@ function openEditModal(id, date, start, end) {
 }
 
 function closeEditModal() {
+    document.getElementById('editBookingId').value = '';
     document.getElementById('iosEditModal').classList.remove('active');
 }
 
-function handleEditSubmit(e) {
+async function handleEditSubmit(e) {
     e.preventDefault();
-    let id = document.getElementById('editBookingId').value;
-    let newDate = document.getElementById('editDate').value;
-    let newStart = document.getElementById('editStart').value;
-    let newEnd = document.getElementById('editEnd').value;
+    const submit = e.currentTarget.querySelector('button[type="submit"]');
+    if (submit.disabled) return;
+    const idInput = document.getElementById('editBookingId');
+    const id = idInput.value;
+    const date = document.getElementById('editDate').value;
+    const start = document.getElementById('editStart').value;
+    const end = document.getElementById('editEnd').value;
+    const errorBox = document.getElementById('editError');
+    const items = getBookings();
+    const booking = items.find(item => String(item.id) === id);
 
-    let items = getBookings();
-    let updated = items.map(b => {
-        if (b.id === id) {
-            return { ...b, date: newDate, start: newStart, end: newEnd, startTime: newStart, endTime: newEnd };
+    if (!booking || isCancelledBooking(booking)) {
+        errorBox.textContent = 'รายการนี้ไม่สามารถแก้ไขได้';
+        errorBox.hidden = false;
+        return;
+    }
+
+    submit.disabled = true;
+    errorBox.hidden = true;
+    try {
+        const result = await checkBookingOnServer(booking.roomId, date, start, end, id);
+        if (idInput.value !== id) return;
+
+        const message = bookingTimeError(result);
+        if (message) {
+            errorBox.textContent = message;
+            errorBox.hidden = false;
+            return;
         }
-        return b;
-    });
 
-    saveBookings(updated);
-    closeEditModal();
-    renderMyBookings();
+        if (JSON.stringify(items) !== JSON.stringify(getBookings())) {
+            errorBox.textContent = 'รายการจองมีการเปลี่ยนแปลง กรุณากดบันทึกอีกครั้ง';
+            errorBox.hidden = false;
+            return;
+        }
+
+        saveBookings(items.map(item => item === booking
+            ? { ...item, date, start, end, startTime: start, endTime: end }
+            : item));
+        closeEditModal();
+        renderMyBookings();
+    } catch {
+        if (idInput.value !== id) return;
+        errorBox.textContent = 'ตรวจสอบหรือบันทึกเวลาจองไม่สำเร็จ กรุณาลองใหม่';
+        errorBox.hidden = false;
+    } finally {
+        submit.disabled = false;
+    }
 }
 
 document.addEventListener('DOMContentLoaded', renderMyBookings);

@@ -338,6 +338,7 @@
     </div>
 
     <script src="js/common.js"></script>
+    <script src="js/auth.js"></script>
     <script src="js/booking-data.js"></script>
     <script src="js/rooms-data.js"></script>
     <script src="js/booking-api.js"></script>
@@ -538,16 +539,12 @@
                 try {
                     const result = await checkBookingOnServer(room.id, dateVal, startVal, endVal);
                     if (this.selectedRoom !== room || this.formModal.classList.contains('hidden')) return;
-                    if (result.status === 'booked') {
-                        errorBox.textContent = `ช่วงเวลานี้ถูกจองแล้ว (${result.start} - ${result.end} น.) กรุณาเลือกช่วงเวลาอื่น`;
-                    } else if (result.status === 'invalid_time') {
-                        errorBox.textContent = 'เวลาเริ่มต้นต้องน้อยกว่าเวลาสิ้นสุด';
-                    } else if (result.status === 'available') {
+                    const message = bookingTimeError(result);
+                    if (!message) {
                         this.saveReservation(room, dateVal, startVal, endVal, purposeVal);
                         return;
-                    } else {
-                        throw new Error('Unexpected booking status');
                     }
+                    errorBox.textContent = message;
                     errorBox.classList.remove('hidden');
                 } catch {
                     if (this.selectedRoom !== room || this.formModal.classList.contains('hidden')) return;

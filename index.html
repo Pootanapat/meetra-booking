@@ -341,65 +341,13 @@
     </div>
 
     <script src="js/common.js"></script>
-    <script src="js/booking.js"></script>
+    <script src="js/booking-data.js"></script>
+    <script src="js/rooms-data.js"></script>
 
     <script>
-        const ROOM_DATABASE = [
-            {
-                id: 'room-101',
-                name: 'ห้องประชุม 101 - อาคารเรียนรวม',
-                capacity: 10,
-                status: 'available',
-                statusText: 'ว่าง',
-                location: 'ชั้น 1 อาคารเรียนรวม KMITL',
-                image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&q=80',
-                description: 'ห้องประชุมขนาดกลาง พร้อมระบบ VDO Conference และ Smart Board'
-            },
-            {
-                id: 'room-lab-b',
-                name: 'ห้องปฏิบัติการคอมพิวเตอร์ B',
-                capacity: 30,
-                status: 'available',
-                statusText: 'ว่าง',
-                location: 'ชั้น 3 คณะเทคโนโลยีสารสนเทศ',
-                image: 'https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=600&q=80',
-                description: 'ห้องปฏิบัติการคอมพิวเตอร์ 30 เครื่อง เหมาะสำหรับการอบรมเชิงปฏิบัติการ'
-            },
-            {
-                id: 'room-sem-b',
-                name: 'ห้องสัมมนาใหญ่ B',
-                capacity: 50,
-                status: 'booked',
-                statusText: 'จองแล้ว',
-                location: 'ชั้น 2 อาคารหอประชุมใหญ่',
-                image: 'https://images.unsplash.com/photo-1431540015161-0bf868a2d407?auto=format&fit=crop&w=600&q=80',
-                description: 'ห้องสัมมนาพร้อมเวที ระบบเครื่องเสียง และไมโครโฟนไร้สายครบชุด'
-            },
-            {
-                id: 'room-coworking',
-                name: 'Co-Working Space Zone A',
-                capacity: 15,
-                status: 'selected',
-                statusText: 'กำลังเลือก',
-                location: 'ชั้น 1 สำนักหอสมุดกลาง',
-                image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80',
-                description: 'พื้นที่ทำงานกลุ่มแบบเป็นกันเอง พร้อมปลั๊กไฟและ Wi-Fi ความเร็วสูง'
-            },
-            {
-                id: 'room-mac-lab',
-                name: 'ห้องปฏิบัติการ Mac Lab 402',
-                capacity: 25,
-                status: 'available',
-                statusText: 'ว่าง',
-                location: 'ชั้น 4 คณะเทคโนโลยีสารสนเทศ',
-                image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=600&q=80',
-                description: 'ห้องปฏิบัติการ iMac สำหรับงานดีไซน์ ออกแบบ และตัดต่อสื่อประสม'
-            }
-        ];
-
         class BookingPageController {
             constructor() {
-                this.rooms = ROOM_DATABASE;
+                this.rooms = ROOMS;
                 this.selectedRoom = null;
 
                 this.gridContainer = document.getElementById('roomGridContainer');
@@ -414,7 +362,10 @@
             }
 
             init() {
-                this.renderRooms(this.rooms);
+                const roomId = new URLSearchParams(location.search).get('room');
+                if (this.rooms.some(room => room.id === roomId)) this.searchInput.value = roomId;
+                document.getElementById('roomCount').textContent = this.rooms.length;
+                this.handleFilter();
                 this.bindEvents();
             }
 
@@ -444,7 +395,7 @@
                 const capType = this.capacityFilter?.value || 'all';
 
                 const filtered = this.rooms.filter(room => {
-                    const matchQuery = room.name.toLowerCase().includes(query) || room.location.toLowerCase().includes(query);
+                    const matchQuery = `${room.id} ${room.name} ${room.location}`.toLowerCase().includes(query);
                     let matchCap = true;
                     if (capType === 'small') matchCap = room.capacity <= 15;
                     if (capType === 'large') matchCap = room.capacity > 15;
@@ -570,9 +521,7 @@
             }
 
             checkTimeConflict(roomId, date, startTime, endTime) {
-                const previewData = JSON.parse(localStorage.getItem('my_bookings_preview_data') || '[]');
-                const bookingsData = JSON.parse(localStorage.getItem('bookings') || '[]');
-                const allBookings = [...previewData, ...bookingsData];
+                const allBookings = getBookings();
 
                 const newStart = this.timeToMinutes(startTime);
                 const newEnd = this.timeToMinutes(endTime);
@@ -582,9 +531,9 @@
                 }
 
                 for (let b of allBookings) {
-                    if (!b || b.status === 'cancelled' || b.status === 'ยกเลิกแล้ว') continue;
+                    if (isCancelledBooking(b)) continue;
 
-                    const sameRoom = (b.roomId === roomId || b.roomName === this.selectedRoom.name);
+                    const sameRoom = b.roomId === roomId;
                     const sameDate = (b.date === date);
 
                     if (sameRoom && sameDate) {
@@ -638,14 +587,7 @@
                     userEmail: 'somchai@kmitl.ac.th'
                 };
 
-                const existingPreview = JSON.parse(localStorage.getItem('my_bookings_preview_data') || '[]');
-                const existingBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
-                
-                existingPreview.unshift(newBooking);
-                existingBookings.unshift(newBooking);
-
-                localStorage.setItem('my_bookings_preview_data', JSON.stringify(existingPreview));
-                localStorage.setItem('bookings', JSON.stringify(existingBookings));
+                saveBookings([newBooking, ...getBookings()]);
 
                 this.closeFormModal();
 

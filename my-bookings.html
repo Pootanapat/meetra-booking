@@ -210,25 +210,13 @@
 </div>
 
 <script src="js/common.js"></script>
+<script src="js/booking-data.js"></script>
+<script src="js/rooms-data.js"></script>
 <script>
 let pendingCancelId = null;
 
-function getSavedBookingsData() {
-    let rawPreview = localStorage.getItem('my_bookings_preview_data');
-    let rawStandard = localStorage.getItem('bookings');
-    let previewData = rawPreview ? JSON.parse(rawPreview) : [];
-    let standardData = rawStandard ? JSON.parse(rawStandard) : [];
-    
-    let combined = [...previewData, ...standardData];
-    let uniqueMap = new Map();
-    combined.forEach(item => {
-        if (item && item.id) uniqueMap.set(item.id, item);
-    });
-    return Array.from(uniqueMap.values());
-}
-
 function renderMyBookings() {
-    let items = getSavedBookingsData();
+    let items = getBookings();
     let grid = document.getElementById('mineCardsGrid');
     let emptyState = document.getElementById('mineEmpty');
     grid.innerHTML = '';
@@ -243,14 +231,15 @@ function renderMyBookings() {
     grid.style.display = 'grid';
 
     items.forEach(b => {
-        let roomName = b.roomName || b.name || 'ห้องประชุม KMITL';
-        let location = b.location || 'อาคารเรียนรวม KMITL';
-        let image = b.image || 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&q=80';
-        let capacity = b.capacity || 10;
+        const room = ROOMS.find(room => room.id === b.roomId);
+        let roomName = room?.name || b.roomName || b.name || 'ห้องประชุม KMITL';
+        let location = room?.location || b.location || 'อาคารเรียนรวม KMITL';
+        let image = room?.image || b.image || 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&q=80';
+        let capacity = room?.capacity || b.capacity || 10;
         let dateVal = b.date || '-';
         let startVal = b.startTime || b.start || '09:00';
         let endVal = b.endTime || b.end || '11:00';
-        let isCancelled = b.status === 'cancelled' || b.status === 'ยกเลิกแล้ว';
+        let isCancelled = isCancelledBooking(b);
 
         let card = document.createElement('div');
         card.className = 'room-card';
@@ -310,11 +299,6 @@ function renderMyBookings() {
     });
 }
 
-function updateStorageData(updatedList) {
-    localStorage.setItem('my_bookings_preview_data', JSON.stringify(updatedList));
-    localStorage.setItem('bookings', JSON.stringify(updatedList));
-}
-
 function openCancelModal(bookingId) {
     pendingCancelId = bookingId;
     document.getElementById('iosCancelModal').classList.add('active');
@@ -327,9 +311,9 @@ function closeCancelModal() {
 
 document.getElementById('confirmCancelBtn').addEventListener('click', function() {
     if (!pendingCancelId) return;
-    let items = getSavedBookingsData();
+    let items = getBookings();
     let updated = items.map(b => b.id === pendingCancelId ? { ...b, status: 'cancelled' } : b);
-    updateStorageData(updated);
+    saveBookings(updated);
     closeCancelModal();
     renderMyBookings();
 });
@@ -353,7 +337,7 @@ function handleEditSubmit(e) {
     let newStart = document.getElementById('editStart').value;
     let newEnd = document.getElementById('editEnd').value;
 
-    let items = getSavedBookingsData();
+    let items = getBookings();
     let updated = items.map(b => {
         if (b.id === id) {
             return { ...b, date: newDate, start: newStart, end: newEnd, startTime: newStart, endTime: newEnd };
@@ -361,7 +345,7 @@ function handleEditSubmit(e) {
         return b;
     });
 
-    updateStorageData(updated);
+    saveBookings(updated);
     closeEditModal();
     renderMyBookings();
 }

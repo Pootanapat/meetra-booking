@@ -1,6 +1,7 @@
-function isCancelledBooking(b) {
-  const status = String(b.status || '').toLowerCase();
-  return status === 'cancelled' || status === 'canceled' || status.includes('ยกเลิก');
+function escapeBookingText(value) {
+  const element = document.createElement('span');
+  element.textContent = value;
+  return element.innerHTML;
 }
 
 function timeToMinutes(timeStr) {
@@ -10,62 +11,23 @@ function timeToMinutes(timeStr) {
 }
 
 function getDurationHours(booking) {
-  if (booking.duration) return Number(booking.duration);
   const start = booking.start || booking.startTime || '';
   const end = booking.end || booking.endTime || '';
   const diff = timeToMinutes(end) - timeToMinutes(start);
-  return diff > 0 ? diff / 60 : 1;
-}
-
-function fetchAllBookings() {
-  if (typeof getBookings === 'function') {
-    const data = getBookings();
-    if (Array.isArray(data)) return data;
-  }
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (key && key.toLowerCase().includes('book')) {
-      try {
-        const parsed = JSON.parse(localStorage.getItem(key));
-        if (Array.isArray(parsed)) return parsed;
-      } catch (e) {}
-    }
-  }
-  return [];
-}
-
-function getSystemRooms(bookings) {
-  if (typeof ROOMS !== 'undefined' && Array.isArray(ROOMS) && ROOMS.length > 0) {
-    return ROOMS;
-  }
-  const roomMap = new Map();
-  bookings.forEach(b => {
-    const id = b.roomId || b.room_id;
-    const name = b.roomName || b.room || id;
-    if (id && !roomMap.has(id)) roomMap.set(id, { id, name });
-  });
-  return Array.from(roomMap.values());
-}
-
-function matchRoom(booking, room) {
-  const bId = String(booking.roomId || booking.room_id || '').trim().toLowerCase();
-  const bName = String(booking.roomName || booking.room || '').trim().toLowerCase();
-  const rId = String(room.id).trim().toLowerCase();
-  const rName = String(room.name).trim().toLowerCase();
-  return (bId && bId === rId) || (bName && (bName === rName || bName.includes(rId)));
+  return diff > 0 ? diff / 60 : 0;
 }
 
 function initPage() {
-  const allBookings = fetchAllBookings();
+  const allBookings = getBookings();
   const activeBookings = allBookings.filter(b => !isCancelledBooking(b));
-  const rooms = getSystemRooms(allBookings);
+  const rooms = ROOMS;
 
   document.getElementById('total').textContent = activeBookings.length;
   const totalHours = activeBookings.reduce((sum, b) => sum + getDurationHours(b), 0);
   document.getElementById('hours').textContent = Number.isInteger(totalHours) ? totalHours : totalHours.toFixed(1);
-  const usedCount = new Set(activeBookings.map(b => b.roomId || b.roomName || b.room).filter(Boolean)).size;
+  const usedCount = rooms.filter(room => activeBookings.some(booking => booking.roomId === room.id)).length;
   document.getElementById('used').textContent = usedCount;
-  document.getElementById('totalRooms').textContent = rooms.length || 5;
+  document.getElementById('totalRooms').textContent = rooms.length;
 
   const statsRowsEl = document.getElementById('statsRows');
   statsRowsEl.innerHTML = '';
@@ -73,7 +35,7 @@ function initPage() {
   let topRoomName = 'ยังไม่มีการใช้งาน';
 
   rooms.forEach(room => {
-    const count = activeBookings.filter(b => matchRoom(b, room)).length;
+    const count = activeBookings.filter(b => b.roomId === room.id).length;
     const pct = activeBookings.length > 0 ? (count / activeBookings.length) * 100 : 0;
     if (count > maxCount) {
       maxCount = count;
@@ -116,7 +78,7 @@ function initPage() {
 
   const latest = allBookings.slice(0, 5);
   container.innerHTML = `<div class="recent-list">` + latest.map(b => {
-    const matched = rooms.find(r => matchRoom(b, r));
+    const matched = rooms.find(r => b.roomId === r.id);
     const rCode = matched ? matched.id : (b.roomId || 'ROOM');
     const rName = matched ? matched.name : (b.roomName || b.room || 'ห้องประชุม');
     const topic = b.title || b.topic || b.purpose || 'การจองห้องประชุม';
@@ -130,10 +92,10 @@ function initPage() {
     return `
       <div class="recent-item" style="${cancelled ? 'opacity: 0.72;' : ''}">
         <div class="recent-left">
-          <div class="room-tag">${rCode}</div>
+          <div class="room-tag">${escapeBookingText(rCode)}</div>
           <div class="recent-item-info">
-            <strong>${rName} — ${topic}</strong>
-            <small>วันที่ ${b.date || '-'} • เวลา ${timeStr} • ผู้จอง: ${user}</small>
+            <strong>${escapeBookingText(rName)} — ${escapeBookingText(topic)}</strong>
+            <small>วันที่ ${escapeBookingText(b.date || '-')} • เวลา ${escapeBookingText(timeStr)} • ผู้จอง: ${escapeBookingText(user)}</small>
           </div>
         </div>
         <span class="status-pill" style="${badgeStyle}">${cancelled ? 'ยกเลิกแล้ว' : 'ยืนยันแล้ว'}</span>
@@ -143,3 +105,7 @@ function initPage() {
 }
 
 document.addEventListener('DOMContentLoaded', initPage);
+window.addEventListener('pageshow', event => { if (event.persisted) initPage(); });
+window.addEventListener('storage', event => {
+  if (event.key === BOOKING_STORAGE_KEY || event.key === null) initPage();
+});

@@ -32,9 +32,11 @@ classDiagram
   class BookingPageController {
     -apiClient: BookingApiClient
     -bookingPolicy: BookingPolicy
+    -roomFilterPolicy: RoomFilterPolicy
     +init() void
     +handleFilter() void
     +renderRooms(rooms) void
+    +renderTimeline() void
     +handleFormSubmit(event) void
   }
 
@@ -51,6 +53,21 @@ classDiagram
     +activeBookings(bookings) Booking[]
     +getRoomStatus(input) RoomStatus
     +checkConflict(input) ConflictResult
+    +buildTimeline(input) TimelineSlot[]
+  }
+
+  class RoomFilterPolicy {
+    +getBuilding(location) string
+    +getEquipmentOptions(rooms) string[]
+    +getBuildingOptions(rooms) string[]
+    +filter(rooms, criteria) Room[]
+  }
+
+  class IcsExporter {
+    +escapeText(value) string
+    +formatLocalDateTime(date, time) string
+    +buildContent(booking, now) string
+    +download(booking) void
   }
 
   class DatabaseManager {
@@ -139,6 +156,10 @@ classDiagram
     +statistics(request, response, next)
   }
 
+  class SystemController {
+    +health(request, response)
+  }
+
   class ApplicationError {
     +statusCode: number
     +message: string
@@ -150,6 +171,7 @@ classDiagram
 
   BookingPageController --> BookingApiClient : loads / writes data
   BookingPageController --> BookingPolicy : evaluates schedule
+  BookingPageController --> RoomFilterPolicy : filters rooms
 
   DatabaseManager --> SQLiteDatabase : opens / initializes
   UserRepository --> SQLiteDatabase : queries
@@ -179,8 +201,10 @@ classDiagram
 | Frontend controller | `BookingPageController` | ผูก Event และประสาน View/API/Policy |
 | Frontend gateway | `BookingApiClient` | การเรียก HTTP API และแปลง JSON |
 | Frontend domain | `BookingPolicy` | กฎสถานะห้องและตรวจเวลาชนแบบไม่พึ่ง DOM |
+| Frontend domain | `RoomFilterPolicy` | กฎค้นหา/กรองห้องและสร้างค่าตัวเลือกจาก Room data |
+| Frontend utility | `IcsExporter` | แปลง Booking เป็น iCalendar และเริ่มดาวน์โหลดไฟล์ `.ics` |
 | Composition root | `server.js` | สร้าง Object และเชื่อม Dependency เข้าด้วยกัน |
-| Controller | `AuthController`, `BookingController`, `RoomController` | แปลง HTTP request/response และส่ง Error ให้ middleware |
+| Controller | `AuthController`, `BookingController`, `RoomController`, `SystemController` | แปลง HTTP request/response และส่ง Error ให้ middleware |
 | Service | `AuthService`, `BookingService`, `RoomService` | Business rules, authorization decision และ use-case orchestration |
 | Repository | `UserRepository`, `SessionRepository`, `RoomRepository`, `BookingRepository` | SQL และ data mapping เท่านั้น |
 | Infrastructure | `DatabaseManager` | เปิด DB, สร้าง schema, seed และปิด connection |
@@ -215,8 +239,10 @@ SQL ถูกเขียนอย่างไร และไม่รู้จ
 
 Frontend ใช้หลักเดียวกัน: [`BookingApiClient`](../../public/js/booking/BookingApiClient.js)
 รับผิดชอบ HTTP, [`BookingPolicy`](../../public/js/booking/BookingPolicy.js) รับผิดชอบกฎเวลา
+[`RoomFilterPolicy`](../../public/js/booking/RoomFilterPolicy.js) รับผิดชอบกฎตัวกรอง
 และ [`BookingPageController`](../../public/js/booking/BookingPageController.js) รับผิดชอบ
-ประสาน DOM/Event เท่านั้น
+ประสาน DOM/Event เท่านั้น ส่วน [`IcsExporter`](../../public/js/calendar/IcsExporter.js)
+แยกการสร้างไฟล์ปฏิทินออกจากหน้า `my-bookings.html`
 
 ### 2. Open/Closed Principle (OCP)
 

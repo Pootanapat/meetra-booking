@@ -12,6 +12,7 @@ import { RoomService } from './server/services/RoomService.js';
 import { AuthController } from './server/controllers/AuthController.js';
 import { BookingController } from './server/controllers/BookingController.js';
 import { RoomController } from './server/controllers/RoomController.js';
+import { SystemController } from './server/controllers/SystemController.js';
 import { createAuthenticationMiddleware } from './server/middleware/createAuthenticationMiddleware.js';
 import { createApiRouter } from './server/routes/createApiRouter.js';
 import { ApplicationError } from './server/errors/ApplicationError.js';
@@ -38,6 +39,7 @@ export async function createApplication({
   const authController = new AuthController(authService);
   const bookingController = new BookingController(bookingService);
   const roomController = new RoomController(roomService);
+  const systemController = new SystemController();
   const requireAuthentication = createAuthenticationMiddleware(authService);
 
   const app = express();
@@ -47,6 +49,7 @@ export async function createApplication({
     authController,
     bookingController,
     roomController,
+    systemController,
     requireAuthentication,
   }));
 

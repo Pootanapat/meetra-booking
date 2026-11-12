@@ -101,6 +101,9 @@ test('validation rejects past, outside-hours, and invalid time ranges', async ()
 });
 
 test('database and source files are not exposed as static assets', async () => {
+  const health = await request('/api/health');
+  assert.equal(health.response.status, 200);
+  assert.deepEqual(health.data, { status: 'ok' });
   assert.equal((await fetch(`${baseUrl}/kmitl_booking.db`)).status, 404);
   assert.equal((await fetch(`${baseUrl}/server.js`)).status, 404);
 });

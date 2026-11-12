@@ -21,6 +21,21 @@ npm start
 - `npm test` — รัน API integration tests
 - `npm run check` — build และ test ทั้งหมด
 
+## ฟีเจอร์หลัก
+
+- ค้นหาและกรองห้องแบบ Real-time ตามความจุ อุปกรณ์ และอาคาร
+- เลือกช่วงเวลาจองจาก Timeline ครั้งละ 30 นาที พร้อมสถานะว่าง จองแล้ว และเวลาที่ผ่านไปแล้ว
+- สร้าง แก้ไข และยกเลิกการจอง โดย Server ตรวจเวลาชนและเจ้าของรายการ
+- Export รายการจองเป็นไฟล์ `.ics` สำหรับ Google Calendar และ Outlook
+- ดูสถิติและข้อมูลห้องจาก API/SQLite แหล่งเดียว
+
+## CI/CD และ Deploy
+
+- GitHub Actions รัน clean install, build, tests และ dependency audit ทุก PR/main
+- `Dockerfile` ใช้สำหรับสร้าง Production image แบบทำซ้ำได้
+- Railway ใช้ `/api/health` เป็น Healthcheck และต้อง mount Volume ที่ `/app/data`
+- ขั้นตอนติดตั้งและหลักฐานอยู่ใน [`docs/deployment.md`](docs/deployment.md)
+
 ## สถาปัตยกรรม
 
 - `server.js` — Composition Root สำหรับประกอบ Dependency
@@ -30,7 +45,9 @@ npm start
 - `public/js/common.js` — session และ API helper ฝั่ง browser
 - `public/js/booking/BookingApiClient.js` — API gateway ของหน้าจอง
 - `public/js/booking/BookingPolicy.js` — กฎสถานะห้องและตรวจเวลาชนแบบ Pure JavaScript
+- `public/js/booking/RoomFilterPolicy.js` — กฎกรองห้องและสร้างตัวเลือกอุปกรณ์/อาคาร
 - `public/js/booking/BookingPageController.js` — Event และ UI orchestration
+- `public/js/calendar/IcsExporter.js` — สร้างและดาวน์โหลดไฟล์ปฏิทิน `.ics`
 - `index.html` — ค้นหาและจองห้อง
 - `my-bookings.html` — แก้ไขและยกเลิกการจองของผู้ใช้
 - `rooms.html` — ดึงข้อมูลห้องจาก API

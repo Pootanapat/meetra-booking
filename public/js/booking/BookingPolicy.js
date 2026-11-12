@@ -2,6 +2,10 @@ const OPENING_MINUTES = 7 * 60;
 const CLOSING_MINUTES = 17 * 60;
 
 export class BookingPolicy {
+  minutesToTime(minutes) {
+    return `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`;
+  }
+
   timeToMinutes(time) {
     if (!time) return 0;
     const [hours, minutes] = time.split(':').map(Number);
@@ -66,6 +70,34 @@ export class BookingPolicy {
       }
     }
     return { hasConflict: false, message: '' };
+  }
+
+  buildTimeline({ roomId, roomName, date, bookings, now = new Date(), intervalMinutes = 30 }) {
+    const today = [
+      now.getFullYear(),
+      String(now.getMonth() + 1).padStart(2, '0'),
+      String(now.getDate()).padStart(2, '0'),
+    ].join('-');
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    const activeBookings = this.activeBookings(bookings).filter(booking =>
+      (booking.roomId === roomId || booking.roomName === roomName) && booking.date === date
+    );
+    const slots = [];
+    for (let start = OPENING_MINUTES; start < CLOSING_MINUTES; start += intervalMinutes) {
+      const end = Math.min(start + intervalMinutes, CLOSING_MINUTES);
+      const isPast = date < today || (date === today && end <= currentMinutes);
+      const isBooked = activeBookings.some(booking => {
+        const bookedStart = this.timeToMinutes(booking.startTime || booking.start);
+        const bookedEnd = this.timeToMinutes(booking.endTime || booking.end);
+        return Math.max(start, bookedStart) < Math.min(end, bookedEnd);
+      });
+      slots.push({
+        startTime: this.minutesToTime(start),
+        endTime: this.minutesToTime(end),
+        status: isPast ? 'past' : isBooked ? 'booked' : 'available',
+      });
+    }
+    return slots;
   }
 }
 

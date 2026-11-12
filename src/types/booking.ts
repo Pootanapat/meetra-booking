@@ -9,6 +9,13 @@ export interface Booking {
   endTime: string;    // HH:mm
   status: BookingStatus;
   userEmail: string;
+  roomId?: string;
+  image?: string;
+  purpose?: string;
+  refCode?: string;
+  start?: string;
+  end?: string;
+  owner?: string;
 }
 
 export interface User {

@@ -7,10 +7,6 @@
 
     <link rel="stylesheet" href="css/style.css">
     
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = { corePlugins: { preflight: false } }
-    </script>
     <style>
         .btn-purple-pill {
             background: #7c3aed !important;
@@ -174,7 +170,7 @@
 
                 <div class="toolbar flex flex-wrap gap-3 items-center">
                     <div class="date-controls flex items-center gap-2">
-                        <button class="secondary" id="prevDay"><</button>
+                        <button class="secondary" id="prevDay">&lt;</button>
                         <input type="date" id="bookingDateInput" class="border px-3 py-1.5 rounded-lg text-sm bg-white" value="2026-11-20">
                         <button class="secondary" id="nextDay">></button>
                         <button class="secondary" id="todayBtn">วันนี้</button>
@@ -340,10 +336,10 @@
         </div>
     </div>
 
-    <script src="js/common.js"></script>
-    <script src="js/booking.js"></script>
+    <script type="module" src="js/common.js"></script>
+    <script type="module" src="js/booking.js"></script>
 
-    <script>
+    <script type="module">
         const ROOM_DATABASE = [
             {
                 id: 'room-101',
@@ -570,9 +566,7 @@
             }
 
             checkTimeConflict(roomId, date, startTime, endTime) {
-                const previewData = JSON.parse(localStorage.getItem('my_bookings_preview_data') || '[]');
-                const bookingsData = JSON.parse(localStorage.getItem('bookings') || '[]');
-                const allBookings = [...previewData, ...bookingsData];
+                const allBookings = window.getBookings();
 
                 const newStart = this.timeToMinutes(startTime);
                 const newEnd = this.timeToMinutes(endTime);
@@ -638,14 +632,9 @@
                     userEmail: 'somchai@kmitl.ac.th'
                 };
 
-                const existingPreview = JSON.parse(localStorage.getItem('my_bookings_preview_data') || '[]');
-                const existingBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
-                
-                existingPreview.unshift(newBooking);
-                existingBookings.unshift(newBooking);
-
-                localStorage.setItem('my_bookings_preview_data', JSON.stringify(existingPreview));
-                localStorage.setItem('bookings', JSON.stringify(existingBookings));
+                const currentUser = window.getUser();
+                newBooking.userEmail = currentUser ? currentUser.email : newBooking.userEmail;
+                window.bookingStorage.add(newBooking);
 
                 this.closeFormModal();
 
@@ -665,9 +654,7 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            window.bookingController = new BookingPageController();
-        });
+        window.BookingPageController = BookingPageController;
     </script>
 </body>
 </html>

@@ -10,6 +10,6 @@
 <div class="content">
 <div class="eyebrow">MEETING SPACES</div><div class="page-title"><div><h1>ข้อมูลห้องประชุม</h1><p class="sub">รายละเอียดและสิ่งอำนวยความสะดวกของแต่ละห้อง</p></div></div><div class="room-grid" id="roomCards"></div>
 </div></main></div>
-<script src="js/common.js"></script><script>
+<script type="module" src="js/common.js"></script><script type="module">
 ROOMS.forEach(r=>{let c=document.createElement('article');c.className='room-card';c.innerHTML='<div class="room-thumb">'+r.icon+'</div><h3>'+r.name+' <span style="color:var(--purple)">#'+r.id+'</span></h3><p>รองรับ '+r.capacity+' คน • ชั้น '+r.floor+'</p><p>'+r.equipment+'</p><a class="secondary" style="display:inline-block;text-decoration:none" href="index.html">ดูตารางเวลาจอง</a>';document.getElementById('roomCards').append(c)});
 </script></body></html>

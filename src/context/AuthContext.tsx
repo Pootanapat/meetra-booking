@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User } from '../types/booking';
 
 interface AuthContextType {
@@ -8,23 +8,52 @@ interface AuthContextType {
   logout: () => void;
 }
 
-const mockUser: User = {
-  id: 'usr_001',
-  name: 'สมชาย สายจอง (นิสิต KMITL)',
-  email: 'somchai@kmitl.ac.th',
-  role: 'student'
-};
-
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+function getStoredUser(): User | null {
+  const rawUser = localStorage.getItem('kmitlCurrentUser');
+  if (!rawUser) return null;
+
+  const storedUser: Partial<User> = JSON.parse(rawUser);
+  if (!storedUser.email || !storedUser.name) {
+    throw new TypeError('Stored user must have a name and email');
+  }
+  return {
+    id: storedUser.id || storedUser.email,
+    name: storedUser.name,
+    email: storedUser.email,
+    role: storedUser.role || 'student',
+  };
+}
+
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(mockUser);
+  const [user, setUser] = useState<User | null>(getStoredUser);
+
+  useEffect(() => {
+    const syncUser = () => setUser(getStoredUser());
+    window.addEventListener('storage', syncUser);
+    return () => window.removeEventListener('storage', syncUser);
+  }, []);
 
   const login = (email: string) => {
-    setUser({ ...mockUser, email });
+    const users: Partial<User>[] = JSON.parse(localStorage.getItem('kmitlUsers') || '[]');
+    const account = users.find(candidate => candidate.email === email);
+    if (!account || !account.name || !account.email) {
+      throw new Error('No registered user found for this email');
+    }
+
+    const nextUser: User = {
+      id: account.id || account.email,
+      name: account.name,
+      email: account.email,
+      role: account.role || 'student',
+    };
+    localStorage.setItem('kmitlCurrentUser', JSON.stringify(nextUser));
+    setUser(nextUser);
   };
 
   const logout = () => {
+    localStorage.removeItem('kmitlCurrentUser');
     setUser(null);
   };
 

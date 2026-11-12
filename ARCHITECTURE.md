@@ -1,53 +1,22 @@
-# Booking timeline and room filtering architecture
+# Booking application architecture
 
-## Booking timeline
+## Browser application
 
-The browser timeline stays in the project's existing HTML and JavaScript stack;
-there is no React or TypeScript build configuration, so the interactive
-`TimelineView.js` is the timeline component rather than a parallel `.tsx`
-implementation. It renders 30-minute slots from 07:00 to 17:00, supports click,
-mouse-drag, and keyboard selection, and reads/writes bookings through the
-existing `booking.js` local-storage flow.
+The static HTML pages share their browser-side helpers from `js/common.js`.
+`js/booking.js` initializes the booking controller on `index.html` and exposes
+the shared local-storage booking adapter; `js/statistics.js` powers the
+statistics page. The old, unused script copies under `dashboard/` have been
+removed so there is one canonical browser JavaScript directory.
 
-The Python `timeline.py` module contains the matching, independently testable
-domain rules. `TimeRange` and `Booking` are immutable values; ranges use
-half-open intervals (`[start, end)`), so adjacent bookings do not conflict.
-`find_conflicts`, `get_room_status`, and `select_room_slot` keep overlap,
-room-specific status, and selection validation separate from the UI.
+The `my-bookings.html` page mounts the React application from `src/main.tsx`.
+Its `AuthContext` reads the same `kmitlCurrentUser` value as the existing
+login/register pages, and its booking component reads and updates the existing
+`my_bookings_preview_data` and `bookings` storage keys. The ICS generator is
+imported directly by the React component.
 
-```mermaid
-classDiagram
-    class TimeRange {
-        +datetime start
-        +datetime end
-    }
-    class Booking {
-        +str room_id
-        +TimeRange time_range
-    }
-    class SlotStatus {
-        <<enumeration>>
-        AVAILABLE
-        BOOKED
-        PAST
-    }
-    Booking *-- TimeRange
-    Booking ..> SlotStatus : resolved by timeline rules
-    TimeRange ..> SlotStatus : resolved by timeline rules
-```
-
-```mermaid
-flowchart LR
-    BookingData["booking.js / localStorage"] --> Timeline["TimelineView.js"]
-    Timeline --> BrowserRules["Browser overlap and past-time checks"]
-    BrowserRules --> Colors["available / booked / past slot states"]
-    BrowserRules --> Selection["drag or keyboard selection"]
-    PythonRules["timeline.py domain rules"] --> PythonTests["tests/test_timeline.py"]
-```
-
-The Python rules are not called directly by the static browser pages; they
-provide a tested domain implementation for Python workflows and future API
-integration. The browser applies the same half-open overlap rule locally.
+Install dependencies with `npm install`, run the local app with `npm run dev`,
+and create a production build of all HTML pages with `npm run build`. The
+generated static site is written to `dist/`.
 
 ## Room filtering
 

@@ -2,52 +2,24 @@ import React, { useState, useEffect } from 'react';
 import { Booking } from '../types/booking';
 import { useAuth } from '../context/AuthContext';
 import { generateICSFile } from '../utils/icsGenerator';
-
-// ข้อมูลเริ่มต้นกรณีเปิดครั้งแรก
-const defaultBookings: Booking[] = [
-  {
-    id: 'bkg-101',
-    roomName: 'ห้องประชุม 101 - อาคารเรียนรวม',
-    location: 'ชั้น 1 อาคารเรียนรวม KMITL',
-    date: '2026-11-10',
-    startTime: '09:00',
-    endTime: '11:00',
-    status: 'approved',
-    userEmail: 'somchai@kmitl.ac.th'
-  },
-  {
-    id: 'bkg-102',
-    roomName: 'ห้องปฏิบัติการคอมพิวเตอร์ B',
-    location: 'ชั้น 3 คณะเทคโนโลยีสารสนเทศ',
-    date: '2026-11-15',
-    startTime: '13:00',
-    endTime: '16:00',
-    status: 'approved',
-    userEmail: 'somchai@kmitl.ac.th'
-  }
-];
+import { getBookings, saveBookings } from '../utils/bookingStorage';
 
 export const MyBookings: React.FC = () => {
   const { user } = useAuth();
   
-  // โหลดข้อมูลจาก LocalStorage ถ้าไม่มีให้ใช้ defaultBookings
-  const [bookings, setBookings] = useState<Booking[]>(() => {
-    const saved = localStorage.getItem('my_bookings_data');
-    return saved ? JSON.parse(saved) : defaultBookings;
-  });
+  const [bookings, setBookings] = useState<Booking[]>(getBookings);
 
   const [editingBooking, setEditingBooking] = useState<Booking | null>(null);
 
-  // ทุกครั้งที่ bookings เปลี่ยนแปลง ให้เซฟลง LocalStorage
   useEffect(() => {
-    localStorage.setItem('my_bookings_data', JSON.stringify(bookings));
+    saveBookings(bookings);
   }, [bookings]);
 
   // 1. ฟีเจอร์: ยกเลิกการจอง (Cancel Feature)
   const handleCancelBooking = (id: string) => {
     if (window.confirm('คุณแน่ใจหรือไม่ว่าต้องการยกเลิกรายการจองนี้?')) {
-      setBookings(prev =>
-        prev.map(item => (item.id === id ? { ...item, status: 'cancelled' } : item))
+      setBookings(current =>
+        current.map(item => item.id === id ? { ...item, status: 'cancelled' } : item),
       );
     }
   };
@@ -56,11 +28,17 @@ export const MyBookings: React.FC = () => {
   const handleSaveEdit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingBooking) return;
+    if (editingBooking.startTime >= editingBooking.endTime) {
+      window.alert('เวลาสิ้นสุดต้องอยู่หลังเวลาเริ่มต้น');
+      return;
+    }
 
-    setBookings(prev =>
-      prev.map(item => (item.id === editingBooking.id ? editingBooking : item))
+    setBookings(current =>
+      current.map(item => item.id === editingBooking.id
+        ? { ...editingBooking, start: editingBooking.startTime, end: editingBooking.endTime }
+        : item),
     );
-    setEditingBooking(null); // ปิด Modal
+    setEditingBooking(null);
   };
 
   return (

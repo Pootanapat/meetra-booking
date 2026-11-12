@@ -1,104 +1,112 @@
-// ข้อมูลห้องประชุมทั้ง 5 ห้องในระบบ KMITL Room Booking
-const ROOMS = [
-  {
-    id: "101",
-    name: "ห้องประชุม 101 (Smart Meeting Room)",
-    icon: "🏢",
-    capacity: 20,
-    floor: "1",
-    equipment: "Smart TV 75\", ระบบประชุมออนไลน์, ไวท์บอร์ด, Wi-Fi"
-  },
-  {
-    id: "102",
-    name: "ห้องประชุม 102 (Brainstorm Studio)",
-    icon: "💡",
-    capacity: 10,
-    floor: "1",
-    equipment: "กระจกเขียนได้รอบด้าน, โปรเจคเตอร์, ปลั๊กพ่วงรอบโต๊ะ"
-  },
-  {
-    id: "201",
-    name: "ห้องประชุม 201 (Executive Boardroom)",
-    icon: "🏛️",
-    capacity: 16,
-    floor: "2",
-    equipment: "ชุดไมค์ประชุมไร้สาย, จอ Interactive, ระบบเสียงรอบทิศทาง"
-  },
-  {
-    id: "202",
-    name: "ห้องประชุม 202 (Seminar Room)",
-    icon: "🎓",
-    capacity: 40,
-    floor: "2",
-    equipment: "โปรเจคเตอร์คู่, ไมโครโฟน 2 ตัว, โพเดียมบรรยาย"
-  },
-  {
-    id: "301",
-    name: "ห้องประชุม 301 (Co-Working Pod)",
-    icon: "💻",
-    capacity: 6,
-    floor: "3",
-    equipment: "จอมอนิเตอร์เสริม, สาย HDMI/Type-C, เครื่องปรับอากาศ"
-  }
-];
+// js/common.js (เวอร์ชันรวม - รองรับทั้งข้อมูลเก่าและใหม่)
 
-// ฟังก์ชันดึงข้อมูลการจองทั้งหมดจาก LocalStorage
-function getBookings() {
-  const possibleKeys = ["bookings", "kmitl_bookings", "meetra_bookings", "roomBookings"];
-  for (const key of possibleKeys) {
-    try {
-      const raw = localStorage.getItem(key);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) return parsed;
-      }
-    } catch (e) {}
-  }
+// ============================================
+// 1. จัดการ LocalStorage (รวม Key เก่าและใหม่)
+// ============================================
+const getBookings = () => {
+    // อ่านจาก Key ใหม่
+    let savedNew = localStorage.getItem('kmitlBookings');
+    // อ่านจาก Key เก่า
+    let savedOld1 = localStorage.getItem('bookings');
+    let savedOld2 = localStorage.getItem('my_bookings_preview_data');
 
-  // ค้นหาอัตโนมัติเผื่อหน้าจองบันทึกด้วยชื่อ key อื่นที่มีคำว่า book
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (key && key.toLowerCase().includes("book")) {
-      try {
-        const parsed = JSON.parse(localStorage.getItem(key));
-        if (Array.isArray(parsed)) return parsed;
-      } catch (e) {}
+    let bookings = [];
+
+    // แปลงข้อมูลใหม่
+    if (savedNew) {
+        try { bookings.push(...JSON.parse(savedNew)); } catch (e) {}
     }
-  }
-  return [];
+    // แปลงข้อมูลเก่า
+    if (savedOld1) {
+        try { bookings.push(...JSON.parse(savedOld1)); } catch (e) {}
+    }
+    if (savedOld2) {
+        try { bookings.push(...JSON.parse(savedOld2)); } catch (e) {}
+    }
+
+    // ลบข้อมูลซ้ำ (ใช้ id เป็นตัวเช็ค)
+    const uniqueMap = new Map();
+    bookings.forEach(b => {
+        if (b && b.id) uniqueMap.set(String(b.id), normalizeBooking(b));
+    });
+
+    const finalBookings = Array.from(uniqueMap.values());
+    
+    // บันทึกกลับไปที่ Key เดียว (kmitlBookings) เพื่อความสะอาดในอนาคต
+    localStorage.setItem('kmitlBookings', JSON.stringify(finalBookings));
+    
+    // ถ้าไม่มีข้อมูลเลย ให้ใช้ Mock Data
+    if (finalBookings.length === 0 && typeof MOCK_BOOKINGS !== 'undefined') {
+        saveBookings(MOCK_BOOKINGS.map(normalizeBooking));
+        return MOCK_BOOKINGS.map(normalizeBooking);
+    }
+
+    return finalBookings;
+};
+
+const saveBookings = (bookings) => {
+    const normalized = bookings.map(normalizeBooking);
+    // บันทึกลง Key ใหม่เป็นหลัก
+    localStorage.setItem('kmitlBookings', JSON.stringify(normalized));
+    // บันทึกลง Key เก่าด้วย (เผื่อหน้าเก่าเรียกใช้)
+    localStorage.setItem('bookings', JSON.stringify(normalized));
+    localStorage.setItem('my_bookings_preview_data', JSON.stringify(normalized));
+};
+
+// ฟังก์ชันแปลงโครงสร้างข้อมูลเก่า -> ใหม่ (Adapter)
+function normalizeBooking(b) {
+    return {
+        id: b.id,
+        roomId: b.roomId || b.roomName || '', // รองรับทั้ง id และชื่อ
+        date: b.date,
+        start: b.start || b.startTime || '09:00', // แปลง startTime -> start
+        end: b.end || b.endTime || '10:00',       // แปลง endTime -> end
+        owner: b.owner || b.userName || b.userEmail || 'ผู้เยี่ยมชม',
+        status: b.status || 'ยืนยันแล้ว',
+        // เก็บข้อมูลอื่นๆ ไว้เผื่อหน้าเก่าใช้
+        roomName: b.roomName,
+        location: b.location,
+        image: b.image,
+        capacity: b.capacity,
+        userEmail: b.userEmail,
+        purpose: b.purpose
+    };
 }
 
-// ฟังก์ชันบันทึกข้อมูลการจองลง LocalStorage
-function saveBookings(bookings) {
-  localStorage.setItem("bookings", JSON.stringify(bookings));
-}
+// ============================================
+// 2. จัดการ User (Login)
+// ============================================
+const getUser = () => JSON.parse(localStorage.getItem('kmitlCurrentUser') || 'null');
 
-// จัดการสถานะผู้ใช้บนแถบด้านบนและด้านข้าง (ถ้ามีระบบ Login)
-function syncUserUI() {
-  try {
-    const userRaw = localStorage.getItem("currentUser") || localStorage.getItem("user");
-    if (!userRaw) return;
-    const user = JSON.parse(userRaw);
-    const name = user.name || user.username || user.email || "ผู้ใช้งาน";
+const todayISO = () => {
+    let d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
 
-    const avatarEl = document.getElementById("avatar");
-    const labelEl = document.getElementById("userLabel");
-    const loginBtn = document.getElementById("loginTop");
-    const regBtn = document.getElementById("registerTop");
-    const logoutBtn = document.getElementById("logoutTop");
+function updateUserUI() {
+    const u = getUser();
+    const label = document.getElementById('userLabel');
+    const avatar = document.getElementById('avatar');
+    const loginBtn = document.getElementById('loginTop');
+    const regBtn = document.getElementById('registerTop');
+    const logoutBtn = document.getElementById('logoutTop');
 
-    if (avatarEl) avatarEl.textContent = name.charAt(0).toUpperCase();
-    if (labelEl) labelEl.textContent = name;
-    if (loginBtn) loginBtn.style.display = "none";
-    if (regBtn) regBtn.style.display = "none";
-    if (logoutBtn) logoutBtn.style.display = "inline-block";
-  } catch (e) {}
+    if (label) label.textContent = u ? u.name : 'ผู้เยี่ยมชม';
+    if (avatar) avatar.textContent = u ? u.name.charAt(0) : 'G';
+    
+    if (loginBtn) loginBtn.style.display = u ? 'none' : '';
+    if (regBtn) regBtn.style.display = u ? 'none' : '';
+    if (logoutBtn) logoutBtn.style.display = u ? '' : 'none';
 }
 
 function logout() {
-  localStorage.removeItem("currentUser");
-  localStorage.removeItem("user");
-  location.href = "login.html";
+    if(confirm('ต้องการออกจากระบบใช่หรือไม่?')) {
+        localStorage.removeItem('kmitlCurrentUser');
+        location.href = 'index.html';
+    }
 }
 
-document.addEventListener("DOMContentLoaded", syncUserUI);
+// ============================================
+// 3. Auto-run เมื่อโหลดหน้า
+// ============================================
+document.addEventListener('DOMContentLoaded', updateUserUI);

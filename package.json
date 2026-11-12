@@ -20,4 +20,7 @@
   "devDependencies": {
     "vite": "^6.4.4"
   }
+{
+  "check": "npm test"
+}
 }

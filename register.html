@@ -1,14 +1,312 @@
 <!DOCTYPE html>
-<html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>สมัครสมาชิก | KMITL Room Booking</title><link rel="stylesheet" href="css/style.css"></head><body>
-<div class="app"><aside class="sidebar">
-<div class="brand"><div class="brand-mark">K</div><div><strong>KMITL</strong><small>ROOM BOOKING</small></div></div>
-<div><div class="nav-label">WORKSPACE</div><nav class="nav"><a href="index.html" class=""><span class="ico">▦</span>ระบบจองห้องประชุม</a><a href="my-bookings.html" class=""><span class="ico">▣</span>การจองของฉัน</a><a href="statistics.html" class=""><span class="ico">▤</span>สถิติการจอง</a><a href="rooms.html" class=""><span class="ico">▧</span>ข้อมูลห้องประชุม</a></nav></div>
-<div class="side-help"><b>เริ่มต้นจองห้องประชุม</b>เลือกห้องและช่วงเวลาที่ต้องการ ระบบจะตรวจสอบเวลาว่างให้อัตโนมัติ</div>
-<div class="profile"><div class="avatar" id="avatar">G</div><div><b id="userLabel">ผู้เยี่ยมชม</b><br><small style="color:var(--muted)">KMITL Room Booking</small></div></div>
-</aside><main class="main"><header class="topbar"><div class="crumb">KMITL / สมัครสมาชิก</div><div class="top-actions"><button id="loginTop" onclick="location.href='login.html'">เข้าสู่ระบบ</button><button id="registerTop" onclick="location.href='register.html'">สมัครสมาชิก</button><button id="logoutTop" style="display:none" onclick="logout()">ออกจากระบบ</button></div></header>
-<div class="content">
-<div class="auth-wrap"><div class="auth-card"><div class="brand" style="padding:0;margin-bottom:22px"><div class="brand-mark">K</div><div><strong>KMITL</strong><small>ROOM BOOKING</small></div></div><h2>สมัครสมาชิก</h2><p>ระบบจองห้องประชุม KMITL</p><form id="authForm"><label>ชื่อ-นามสกุล</label><input id="name" required><label>อีเมล</label><input id="email" type="email" required><label>รหัสผ่าน</label><input id="password" type="password" minlength="6" required><label>ยืนยันรหัสผ่าน</label><input id="confirmPassword" type="password" minlength="6" required><button class="primary">สมัครสมาชิก</button></form><div class="auth-switch">มีบัญชีแล้ว? <a class="link" href="login.html">เข้าสู่ระบบ</a></div></div></div></div></main></div>
-<script src="js/common.js"></script><script>
-document.getElementById('authForm').onsubmit=e=>{e.preventDefault();const passwordValue=document.querySelector('#password').value;if(passwordValue!==document.querySelector('#confirmPassword').value){alert('รหัสผ่านไม่ตรงกัน');return}let users=JSON.parse(localStorage.getItem('kmitlUsers')||'[]'),u={name:document.getElementById('name').value.trim(),email:document.getElementById('email').value.trim(),password:passwordValue};if(users.some(x=>x.email===u.email)){alert('อีเมลนี้ถูกใช้แล้ว');return}users.push(u);localStorage.setItem('kmitlUsers',JSON.stringify(users));localStorage.setItem('kmitlCurrentUser',JSON.stringify(u));location.href='index.html'};
-</script></body></html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สมัครสมาชิก | KMITL Room Booking</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* iOS Modal Overlay & Card */
+        .ios-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            z-index: 9999;
+            animation: fadeInOverlay 0.2s ease;
+        }
+        .ios-modal-overlay.show {
+            display: flex;
+        }
+        .ios-modal-card {
+            background: #ffffff;
+            border-radius: 26px;
+            max-width: 360px;
+            width: 100%;
+            padding: 28px 24px 24px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.16);
+            border: 1px solid #f3f4f6;
+            animation: popInCard 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .ios-modal-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 18px;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .ios-modal-icon.error {
+            background: #fef2f2;
+            color: #ef4444;
+        }
+        .ios-modal-icon.success {
+            background: #ecfdf5;
+            color: #10b981;
+        }
+        .ios-modal-title {
+            margin: 0 0 8px;
+            font-size: 19px;
+            font-weight: 700;
+            color: #111827;
+        }
+        .ios-modal-desc {
+            margin: 0 0 22px;
+            font-size: 13.5px;
+            line-height: 1.55;
+            color: #6b7280;
+        }
+        .ios-modal-btn {
+            width: 100%;
+            padding: 12px 18px;
+            border-radius: 9999px;
+            border: none;
+            background: #7c3aed;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+            transition: all 0.2s ease;
+        }
+        .ios-modal-btn:hover {
+            background: #6d28d9;
+            box-shadow: 0 6px 16px rgba(124, 58, 237, 0.4);
+        }
+        @keyframes fadeInOverlay {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes popInCard {
+            from { opacity: 0; transform: scale(0.92) translateY(8px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-mark">K</div>
+            <div>
+                <strong>KMITL</strong>
+                <small>ROOM BOOKING</small>
+            </div>
+        </div>
+        <div>
+            <div class="nav-label">WORKSPACE</div>
+            <nav class="nav">
+                <a href="index.html"><span class="ico">▦</span>ระบบจองห้องประชุม</a>
+                <a href="my-bookings.html"><span class="ico">▣</span>การจองของฉัน</a>
+                <a href="statistics.html"><span class="ico">▤</span>สถิติการจอง</a>
+                <a href="rooms.html"><span class="ico">▧</span>ข้อมูลห้องประชุม</a>
+            </nav>
+        </div>
+        <div class="side-help"><b>เริ่มต้นจองห้องประชุม</b>เลือกห้องและช่วงเวลาที่ต้องการ ระบบจะตรวจสอบเวลาว่างให้อัตโนมัติ</div>
+        <div class="profile">
+            <div class="avatar" id="avatar">G</div>
+            <div><b id="userLabel">ผู้เยี่ยมชม</b><br><small style="color:var(--muted)">KMITL Room Booking</small></div>
+        </div>
+    </aside>
+
+    <main class="main">
+        <header class="topbar">
+            <div class="crumb">KMITL / สมัครสมาชิก</div>
+            <div class="top-actions">
+                <button id="loginTop" onclick="location.href='login.html'">เข้าสู่ระบบ</button>
+                <button id="registerTop" onclick="location.href='register.html'">สมัครสมาชิก</button>
+                <button id="logoutTop" style="display:none" onclick="logout()">ออกจากระบบ</button>
+            </div>
+        </header>
+
+        <div class="content">
+            <div class="auth-wrap">
+                <div class="auth-card">
+                    <div class="brand" style="padding:0;margin-bottom:22px">
+                        <div class="brand-mark">K</div>
+                        <div>
+                            <strong>KMITL</strong>
+                            <small>ROOM BOOKING</small>
+                        </div>
+                    </div>
+                    <h2>สมัครสมาชิก</h2>
+                    <p>ระบบจองห้องประชุม KMITL</p>
+                    <form id="registerForm">
+                        <label>ชื่อ-นามสกุล</label>
+                        <input id="fullName" type="text" placeholder="กรอกชื่อ-นามสกุลของคุณ" required>
+                        <label>อีเมล</label>
+                        <input id="email" type="email" placeholder="name@kmitl.ac.th" required>
+                        <label>รหัสผ่าน</label>
+                        <input id="password" type="password" placeholder="กำหนดรหัสผ่านอย่างน้อย 4 ตัวอักษร" required>
+                        <label>ยืนยันรหัสผ่าน</label>
+                        <input id="confirmPassword" type="password" placeholder="กรอกรหัสผ่านอีกครั้ง" required>
+                        <button type="submit" id="submitBtn" class="primary">สมัครสมาชิก</button>
+                    </form>
+                    <div class="auth-switch">มีบัญชีแล้ว? <a class="link" href="login.html">เข้าสู่ระบบ</a></div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- iOS Modal แจ้งเตือนสวยๆ -->
+<div id="iosAlertModal" class="ios-modal-overlay" onclick="if(event.target === this) closeIosModal()">
+    <div class="ios-modal-card">
+        <div id="iosModalIcon" class="ios-modal-icon error">
+            <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </div>
+        <h3 id="iosModalTitle" class="ios-modal-title">แจ้งเตือน</h3>
+        <p id="iosModalDesc" class="ios-modal-desc">ข้อความแจ้งเตือน</p>
+        <button id="iosModalBtn" type="button" class="ios-modal-btn" onclick="closeIosModal()">ตกลง</button>
+    </div>
+</div>
+
+<script src="js/common.js"></script>
+<script>
+let modalRedirectUrl = null;
+
+function showIosModal(type, title, message, btnText = 'ตกลง', redirectUrl = null) {
+    const modal = document.getElementById('iosAlertModal');
+    const iconBox = document.getElementById('iosModalIcon');
+    const titleEl = document.getElementById('iosModalTitle');
+    const descEl = document.getElementById('iosModalDesc');
+    const btnEl = document.getElementById('iosModalBtn');
+
+    modalRedirectUrl = redirectUrl;
+    titleEl.textContent = title;
+    descEl.textContent = message;
+    btnEl.textContent = btnText;
+
+    if (type === 'success') {
+        iconBox.className = 'ios-modal-icon success';
+        iconBox.innerHTML = `
+            <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+        `;
+    } else {
+        iconBox.className = 'ios-modal-icon error';
+        iconBox.innerHTML = `
+            <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        `;
+    }
+
+    modal.classList.add('show');
+}
+
+function closeIosModal() {
+    const modal = document.getElementById('iosAlertModal');
+    modal.classList.remove('show');
+    if (modalRedirectUrl) {
+        window.location.href = modalRedirectUrl;
+    }
+}
+
+async function hashPasswordSHA256(password) {
+    if (window.crypto && window.crypto.subtle) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(password);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+    let hash = 0;
+    for (let i = 0; i < password.length; i++) {
+        hash = ((hash << 5) - hash) + password.charCodeAt(i);
+        hash |= 0;
+    }
+    return 'hash_' + Math.abs(hash).toString(16);
+}
+
+document.getElementById('registerForm').onsubmit = async (e) => {
+    e.preventDefault();
+
+    const nameVal = document.getElementById('fullName').value.trim();
+    const emailVal = document.getElementById('email').value.trim().toLowerCase();
+    const passVal = document.getElementById('password').value;
+    const confirmVal = document.getElementById('confirmPassword').value;
+    const submitBtn = document.getElementById('submitBtn');
+
+    if (!nameVal) {
+        showIosModal('error', 'ข้อมูลไม่ครบถ้วน', 'กรุณากรอกชื่อ-นามสกุลของคุณ', 'ตกลง');
+        return;
+    }
+
+    if (passVal.length < 4) {
+        showIosModal('error', 'รหัสผ่านสั้นเกินไป', 'กรุณาตั้งรหัสผ่านอย่างน้อย 4 ตัวอักษร', 'ตกลง');
+        return;
+    }
+
+    if (passVal !== confirmVal) {
+        showIosModal('error', 'รหัสผ่านไม่ตรงกัน', 'รหัสผ่านและการยืนยันรหัสผ่านไม่ตรงกัน กรุณากรอกใหม่อีกครั้ง', 'ตกลง');
+        return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'กำลังบันทึกข้อมูล...';
+
+    try {
+        const hashedPassword = await hashPasswordSHA256(passVal);
+        const response = await fetch('http://localhost:3000/api/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id: 'user-' + Date.now(),
+                name: nameVal,
+                email: emailVal,
+                passwordHash: hashedPassword
+            })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            showIosModal(
+                'error',
+                'สมัครสมาชิกไม่สำเร็จ',
+                result.error || 'เกิดข้อผิดพลาดในการบันทึกข้อมูล',
+                'ตกลง'
+            );
+            return;
+        }
+
+        // เคลียร์ session เก่า แล้วพาไปหน้า login.html เพื่อให้กรอกรหัสผ่านเข้าสู่ระบบ
+        localStorage.removeItem('kmitl_current_user');
+        localStorage.removeItem('kmitlCurrentUser');
+        localStorage.removeItem('currentUser');
+
+        showIosModal(
+            'success',
+            'สมัครสมาชิกสำเร็จ',
+            'บันทึกข้อมูลลงฐานข้อมูลเรียบร้อยแล้ว กรุณาเข้าสู่ระบบด้วยอีเมลและรหัสผ่านของคุณ',
+            'ไปหน้าเข้าสู่ระบบ',
+            `login.html?email=${encodeURIComponent(emailVal)}`
+        );
+    } catch (err) {
+        showIosModal(
+            'error',
+            'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้',
+            'กรุณาตรวจสอบว่าเปิด MySQL ใน XAMPP และรัน node server.js แล้ว',
+            'ตกลง'
+        );
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'สมัครสมาชิก';
+    }
+};
+</script>
+</body>
+</html>

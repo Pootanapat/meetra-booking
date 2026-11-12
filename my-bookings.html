@@ -5,101 +5,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>การจองของฉัน | KMITL Room Booking</title>
     <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { corePlugins: { preflight: false } }
+    </script>
     <style>
-        .ios-modal-backdrop {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.25s ease;
+        .btn-purple-pill {
+            background: #7c3aed !important;
+            color: #ffffff !important;
+            border-radius: 9999px !important;
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3) !important;
+            border: none !important;
+            transition: all 0.2s ease !important;
         }
-        .ios-modal-backdrop.active {
-            opacity: 1;
-            pointer-events: auto;
+        .btn-purple-pill:hover {
+            background: #6d28d9 !important;
+            box-shadow: 0 6px 16px rgba(124, 58, 237, 0.4) !important;
         }
-        .ios-modal-card {
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 24px;
-            max-width: 400px;
-            width: 100%;
-            overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            transform: scale(0.92) translateY(10px);
-            transition: transform 0.25s ease;
+        .btn-gray-back {
+            background: #f3f4f6 !important;
+            color: #4b5563 !important;
+            border: 1px solid #d1d5db !important;
+            border-radius: 9999px !important;
+            transition: all 0.2s ease !important;
         }
-        .ios-modal-backdrop.active .ios-modal-card {
-            transform: scale(1) translateY(0);
+        .btn-gray-back:hover {
+            background: #e5e7eb !important;
+            color: #1f2937 !important;
         }
-        .ios-input-group {
-            margin-bottom: 14px;
-        }
-        .ios-input-group label {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 12px;
+        .tab-btn {
+            padding: 9px 22px;
+            border-radius: 9999px;
+            font-size: 13px;
             font-weight: 600;
-            color: #374151;
-            margin-bottom: 6px;
-        }
-        .ios-input {
-            width: 100%;
-            padding: 12px 14px;
-            background: #f9fafb;
             border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            font-size: 14px;
-            color: #1f2937;
-            outline: none;
-            box-sizing: border-box;
-            transition: all 0.2s ease;
-        }
-        .ios-input:focus {
             background: #ffffff;
-            border-color: #7c3aed;
-            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
-        }
-        .ios-btn {
-            border: none;
-            border-radius: 12px;
-            padding: 12px;
-            font-size: 14px;
-            font-weight: 600;
+            color: #4b5563;
             cursor: pointer;
-            transition: all 0.15s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
+            transition: all 0.2s;
         }
-        .ios-btn:active {
-            transform: scale(0.97);
+        .tab-btn:hover {
+            border-color: #c4b5fd;
         }
-        .icon-svg {
-            width: 14px;
-            height: 14px;
-            stroke-width: 2;
-            stroke: currentColor;
-            fill: none;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            display: inline-block;
-            vertical-align: middle;
+        .tab-btn.active {
+            background: #7c3aed;
+            color: #ffffff;
+            border-color: #7c3aed;
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.28);
+        }
+        .ios-input-pill {
+            width: 100%;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 10px 16px;
+            font-size: 14px;
+            outline: none;
+            background-color: #f9fafb;
+            box-sizing: border-box;
+            transition: all 0.2s;
+        }
+        .ios-input-pill:focus {
+            background-color: #ffffff;
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
         }
     </style>
 </head>
 <body>
 <div class="app">
-    <!-- Sidebar ด้านซ้าย (ปรับโครงสร้างโลโก้ให้เท่ากันกับทุกหน้า) -->
+    <!-- Sidebar ด้านซ้าย -->
     <aside class="sidebar">
         <div class="brand">
             <div class="brand-mark">K</div>
@@ -111,304 +85,475 @@
         <div>
             <div class="nav-label">WORKSPACE</div>
             <nav class="nav">
-                <a href="index.html" class=""><span class="ico">▦</span>ระบบจองห้องประชุม</a>
-                <a href="my-bookings.html" class="active"><span class="ico">▣</span>การจองของฉัน</a>
-                <a href="statistics.html" class=""><span class="ico">▤</span>สถิติการจอง</a>
-                <a href="rooms.html" class=""><span class="ico">▧</span>ข้อมูลห้องประชุม</a>
+                <a href="index.html">
+                    <span class="nav-icon">⣿</span>
+                    <span>ระบบจองห้องประชุม</span>
+                </a>
+                <a href="my-bookings.html" class="active">
+                    <span class="nav-icon">▣</span>
+                    <span>การจองของฉัน</span>
+                </a>
+                <a href="statistics.html">
+                    <span class="nav-icon">▤</span>
+                    <span>สถิติการจอง</span>
+                </a>
+                <a href="rooms.html">
+                    <span class="nav-icon">▧</span>
+                    <span>ข้อมูลห้องประชุม</span>
+                </a>
             </nav>
         </div>
-        <div class="side-help"><b>เริ่มต้นจองห้องประชุม</b>เลือกห้องและช่วงเวลาที่ต้องการ ระบบจะตรวจสอบเวลาว่างให้อัตโนมัติ</div>
+        <div class="side-help">
+            <b>จัดการรายการจอง</b>ตรวจสอบข้อมูล แก้ไขเวลา หรือยกเลิกการจองล่วงหน้าได้ตลอดเวลา
+        </div>
         <div class="profile">
             <div class="avatar" id="avatar">G</div>
-            <div><b id="userLabel">ผู้เยี่ยมชม</b><br><small style="color:var(--muted)">KMITL Room Booking</small></div>
+            <div><b id="userLabel">ผู้เยี่ยมชม</b><br><small>KMITL Room Booking</small></div>
         </div>
     </aside>
 
+    <!-- Main Content -->
     <main class="main">
         <header class="topbar">
             <div class="crumb">KMITL / การจองของฉัน</div>
             <div class="top-actions">
                 <button id="loginTop" onclick="location.href='login.html'">เข้าสู่ระบบ</button>
                 <button id="registerTop" onclick="location.href='register.html'">สมัครสมาชิก</button>
-                <button id="logoutTop" style="display:none" onclick="localStorage.removeItem('kmitlCurrentUser'); location.href='index.html'">ออกจากระบบ</button>
+                <button id="logoutTop" style="display:none" onclick="logout()">ออกจากระบบ</button>
             </div>
         </header>
 
         <div class="content">
-            <div class="eyebrow">MY WORKSPACE</div>
-            <div class="page-title">
+            <div class="eyebrow">MY RESERVATIONS</div>
+            <div class="page-title flex flex-wrap justify-between items-center gap-4">
                 <div>
                     <h1>การจองของฉัน</h1>
-                    <p class="sub">ตรวจสอบรายการจองและสถานะการจองห้องประชุม</p>
+                    <p class="sub">ตรวจสอบข้อมูล แก้ไขช่วงเวลา หรือยกเลิกรายการจองของคุณ</p>
                 </div>
-                <a class="primary" style="text-decoration:none" href="index.html">＋ จองห้องใหม่</a>
+                <button onclick="location.href='index.html'" class="px-5 py-2.5 btn-purple-pill text-xs font-semibold cursor-pointer">
+                    ＋ จองห้องประชุมเพิ่ม
+                </button>
             </div>
 
-            <div class="room-grid" id="mineCardsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; margin-top: 20px;">
+            <!-- ปุ่มเลือกสถานะ 2 ปุ่ม (ยืนยันแล้ว / ยกเลิกแล้ว) -->
+            <div class="flex items-center gap-3 my-5">
+                <button class="tab-btn active" id="tabApproved" onclick="setFilter('approved', this)">ยืนยันแล้ว</button>
+                <button class="tab-btn" id="tabCancelled" onclick="setFilter('cancelled', this)">ยกเลิกแล้ว</button>
             </div>
 
-            <div class="empty" id="mineEmpty" style="display:none; text-align:center; padding: 40px; color: var(--muted); background: white; border-radius: 16px; margin-top: 20px;">
-                ยังไม่มีรายการจอง
-            </div>
+            <!-- รายการการ์ดข้อมูลการจอง -->
+            <div id="myBookingsList" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
         </div>
     </main>
 </div>
 
-<!-- Modal แก้ไขข้อมูล -->
-<div id="iosEditModal" class="ios-modal-backdrop">
-    <div class="ios-modal-card">
-        <div style="padding: 20px 24px 16px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f3f4f6;">
-            <h3 style="margin: 0; font-size: 17px; font-weight: 700; color: #111827;">แก้ไขการจอง</h3>
-            <button onclick="closeEditModal()" style="background: #f3f4f6; border: none; width: 28px; height: 28px; border-radius: 50%; font-size: 12px; cursor: pointer; color: #6b7280; display: flex; align-items: center; justify-content: center;">✕</button>
+<!-- MODAL 1: แก้ไขการจอง -->
+<div id="editBookingModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden items-center justify-center p-4 z-50 transition-all">
+    <div class="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-gray-100 overflow-hidden">
+        <div class="p-6 pb-4 border-b border-gray-100 flex justify-between items-start">
+            <div>
+                <span id="editRefBadge" class="font-mono text-[11px] font-bold text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded-md">#KMITL</span>
+                <h3 id="editRoomTitle" class="text-lg font-bold text-gray-900 mt-1.5">แก้ไขการจองห้องประชุม</h3>
+                <p id="editRoomLoc" class="text-xs text-gray-500 mt-0.5">สถานที่</p>
+            </div>
+            <button type="button" onclick="closeEditModal()" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-bold border-none cursor-pointer">✕</button>
         </div>
-        <form id="editForm" onsubmit="handleEditSubmit(event)" style="padding: 20px 24px 24px 24px;">
-            <input type="hidden" id="editBookingId">
-            <p id="editError" role="alert" hidden style="margin:0 0 12px;color:#dc2626;font-size:12px;"></p>
-            <div class="ios-input-group">
-                <label>
-                    <svg class="icon-svg" style="color:#7c3aed;" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                    วันที่ต้องการใช้งาน
-                </label>
-                <input type="date" id="editDate" required class="ios-input">
+
+        <form id="editBookingForm" class="p-6 space-y-4">
+            <!-- แสดงช่วงเวลาที่ถูกจองแล้วในวันที่เลือก -->
+            <div id="editBookedSlotsNotice" class="hidden bg-rose-50 border border-rose-200 rounded-2xl p-3 text-xs text-rose-700 space-y-1">
+                <div class="font-bold">ช่วงเวลาที่ถูกจองแล้วในวันนี้ (ไม่สามารถเลือกซ้ำได้):</div>
+                <div id="editBookedSlotsList" class="flex flex-wrap gap-1.5"></div>
             </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;" class="ios-input-group">
+
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1.5">วันที่ต้องการใช้งาน</label>
+                <input type="date" id="editInputDate" required class="ios-input-pill">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label>
-                        <svg class="icon-svg" style="color:#7c3aed;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                        เวลาเริ่มต้น
-                    </label>
-                    <input type="time" id="editStart" required class="ios-input">
+                    <label class="block text-xs font-semibold text-gray-700 mb-1.5">เวลาเริ่มต้น (07:00–17:00)</label>
+                    <input type="time" id="editInputStart" min="07:00" max="17:00" required class="ios-input-pill">
                 </div>
                 <div>
-                    <label>
-                        <svg class="icon-svg" style="color:#7c3aed;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                        เวลาสิ้นสุด
-                    </label>
-                    <input type="time" id="editEnd" required class="ios-input">
+                    <label class="block text-xs font-semibold text-gray-700 mb-1.5">เวลาสิ้นสุด (07:00–17:00)</label>
+                    <input type="time" id="editInputEnd" min="07:00" max="17:00" required class="ios-input-pill">
                 </div>
             </div>
-            <div style="display: flex; gap: 10px; margin-top: 24px;">
-                <button type="button" onclick="closeEditModal()" class="ios-btn" style="flex: 1; background: #f3f4f6; color: #4b5563;">ยกเลิก</button>
-                <button type="submit" class="ios-btn" style="flex: 1.5; background: #7c3aed; color: #ffffff; box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);">บันทึก</button>
+
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1.5">วัตถุประสงค์การจอง</label>
+                <input type="text" id="editInputPurpose" placeholder="เช่น ประชุมงาน Senior Project" class="ios-input-pill">
+            </div>
+
+            <p id="editModalErrorMsg" class="text-xs text-rose-500 font-bold text-center hidden pt-1"></p>
+
+            <div class="flex items-center gap-3 pt-4 border-t border-gray-100">
+                <button type="button" onclick="closeEditModal()" class="w-1/3 py-3 btn-gray-back font-semibold text-xs cursor-pointer">
+                    ยกเลิก
+                </button>
+                <button type="submit" id="saveEditBtn" class="w-2/3 py-3 btn-purple-pill font-semibold text-xs cursor-pointer">
+                    บันทึกการแก้ไข
+                </button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- Modal ยกเลิกการจอง -->
-<div id="iosCancelModal" class="ios-modal-backdrop">
-    <div class="ios-modal-card" style="text-align: center; padding: 24px;">
-        <div style="width: 56px; height: 56px; background: #fee2e2; color: #ef4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto;">
-            <svg class="icon-svg" style="width:28px; height:28px;" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+<!-- MODAL 2: ยืนยันการยกเลิกการจอง -->
+<div id="cancelConfirmModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden items-center justify-center p-4 z-50 transition-all">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-gray-100 text-center space-y-5">
+        <div class="w-14 h-14 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center mx-auto">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
         </div>
-        <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 700; color: #111827;">ยืนยันการยกเลิกจอง</h3>
-        <p style="margin: 0 0 20px 0; font-size: 13px; color: #6b7280; line-height: 1.4;">คุณแน่ใจหรือไม่ว่าต้องการยกเลิกการจองรายการนี้?</p>
-        <div style="display: flex; gap: 10px;">
-            <button onclick="closeCancelModal()" class="ios-btn" style="flex: 1; background: #f3f4f6; color: #4b5563;">ยกเลิก</button>
-            <button id="confirmCancelBtn" class="ios-btn" style="flex: 1; background: #ef4444; color: #ffffff; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);">ยืนยันยกเลิก</button>
+        <div>
+            <h3 class="text-lg font-bold text-gray-900">ยืนยันการยกเลิกการจอง?</h3>
+            <p class="text-xs text-gray-500 mt-1.5 leading-relaxed">หากยกเลิกแล้ว ช่วงเวลานี้จะถูกเปิดให้ผู้ใช้งานอื่นจองได้ทันที</p>
+        </div>
+        <div class="flex gap-3 pt-1">
+            <button type="button" onclick="closeCancelModal()" class="w-1/2 py-2.5 btn-gray-back text-xs font-semibold cursor-pointer">
+                ปิด
+            </button>
+            <button type="button" id="confirmCancelBtn" class="w-1/2 py-2.5 rounded-full border-none bg-rose-500 hover:bg-rose-600 text-white text-xs font-semibold cursor-pointer shadow-sm">
+                ยืนยันยกเลิก
+            </button>
         </div>
     </div>
 </div>
 
-<script type="module">
-import { validateBookingTime } from './src/utils/bookingTime.ts';
-window.validateBookingTime = validateBookingTime;
-</script>
+<script src="js/common.js"></script>
 <script>
-let pendingCancelId = null;
+let allSystemBookings = [];
+let myBookings = [];
+let currentFilter = 'approved';
+let bookingIdToCancel = null;
+let editingBooking = null;
 
-function getSavedBookingsData() {
-    const raw = localStorage.getItem('kmitlBookings');
-    if (!raw) return [];
-
-    const bookings = JSON.parse(raw);
-    if (!Array.isArray(bookings)) {
-        throw new Error('ข้อมูลรายการจองต้องเป็นรายการ array');
-    }
-    return bookings;
+function getLocalToday() {
+    const d = new Date();
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
 }
 
-function renderMyBookings() {
-    let items = getSavedBookingsData();
-    let grid = document.getElementById('mineCardsGrid');
-    let emptyState = document.getElementById('mineEmpty');
-    grid.innerHTML = '';
+function getCurrentUser() {
+    try {
+        const keys = ['kmitl_current_user', 'kmitlCurrentUser', 'currentUser', 'user'];
+        for (const k of keys) {
+            const raw = localStorage.getItem(k);
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                if (parsed && (parsed.id || parsed.email)) return parsed;
+            }
+        }
+        return null;
+    } catch {
+        return null;
+    }
+}
 
-    if (!items || items.length === 0) {
-        emptyState.style.display = 'block';
-        grid.style.display = 'none';
+function timeToMinutes(t) {
+    if (!t) return 0;
+    const [h, m] = t.split(':').map(Number);
+    return h * 60 + m;
+}
+
+function setFilter(filter, btnEl) {
+    currentFilter = filter;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    if (btnEl) btnEl.classList.add('active');
+    renderBookings();
+}
+
+async function loadMyBookings() {
+    const user = getCurrentUser();
+    const container = document.getElementById('myBookingsList');
+
+    if (!user) {
+        container.innerHTML = `
+            <div class="col-span-full bg-white rounded-2xl p-10 text-center border border-gray-100 space-y-3">
+                <p class="text-gray-500 text-sm font-medium">กรุณาเข้าสู่ระบบเพื่อดูรายการจองของคุณ</p>
+                <button onclick="location.href='login.html'" class="px-6 py-2.5 btn-purple-pill text-xs font-semibold cursor-pointer">
+                    ไปหน้าเข้าสู่ระบบ
+                </button>
+            </div>
+        `;
         return;
     }
 
-    emptyState.style.display = 'none';
-    grid.style.display = 'grid';
-
-    items.forEach(b => {
-        let roomName = b.roomName || b.name || 'ห้องประชุม KMITL';
-        let location = b.location || 'อาคารเรียนรวม KMITL';
-        let image = b.image || 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&q=80';
-        let capacity = b.capacity || 10;
-        let dateVal = b.date || '-';
-        let startVal = b.startTime || b.start || '09:00';
-        let endVal = b.endTime || b.end || '11:00';
-        let isCancelled = b.status === 'cancelled' || b.status === 'ยกเลิกแล้ว';
-
-        let card = document.createElement('div');
-        card.className = 'room-card';
-        card.style.cssText = 'background:white; border-radius:16px; overflow:hidden; border:1px solid #e5e7eb; display:flex; flex-direction:column; justify-content:space-between; box-shadow:0 2px 4px rgba(0,0,0,0.02);';
-
-        card.innerHTML = `
-            <div>
-                <div style="position:relative; height:180px; width:100%; background:#f3f4f6;">
-                    <img src="${image}" alt="${roomName}" style="width:100%; height:100%; object-fit:cover;">
-                    <div style="position:absolute; top:12px; left:12px;">
-                        <span style="background:${isCancelled ? '#ef4444' : '#10b981'}; color:white; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:bold; display:inline-flex; align-items:center; gap:4px;">
-                            <span style="width:6px; height:6px; background:white; border-radius:50%;"></span>
-                            ${isCancelled ? 'ยกเลิกแล้ว' : 'ยืนยันแล้ว'}
-                        </span>
-                    </div>
-                    <div style="position:absolute; top:12px; right:12px; background:rgba(255,255,255,0.92); backdrop-filter:blur(4px); padding:4px 10px; border-radius:20px; font-size:11px; font-weight:bold; color:#374151; display:inline-flex; align-items:center; gap:4px;">
-                        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                        ${capacity} คน
-                    </div>
-                </div>
-                <div style="padding:16px;">
-                    <h3 style="margin:0 0 6px 0; font-size:16px; font-weight:bold; color:#111827;">${roomName}</h3>
-                    <p style="margin:0 0 10px 0; font-size:12px; color:#6b7280; display:flex; align-items:center; gap:4px;">
-                        <svg class="icon-svg" style="color:#ef4444;" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                        ${location}
-                    </p>
-                    <div style="background:#f9fafb; padding:10px; border-radius:10px; border:1px solid #f3f4f6; font-size:12px; color:#374151; margin-bottom:12px;">
-                        <div style="display:flex; align-items:center; gap:6px;">
-                            <svg class="icon-svg" style="color:#6b7280;" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                            <b>วันที่:</b> ${dateVal}
-                        </div>
-                        <div style="margin-top:4px; display:flex; align-items:center; gap:6px;">
-                            <svg class="icon-svg" style="color:#6b7280;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                            <b>เวลา:</b> ${startVal} – ${endVal} น.
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div style="padding:0 16px 16px 16px; display:flex; gap:8px;">
-                ${!isCancelled ? `
-                    <button onclick="openEditModal('${b.id}', '${dateVal}', '${startVal}', '${endVal}')" style="flex:1; padding:9px; background:#f3f4f6; color:#374151; border:1px solid #d1d5db; border-radius:10px; font-size:12px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:4px;">
-                        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                        แก้ไข
-                    </button>
-                    <button onclick="openCancelModal('${b.id}')" style="flex:1; padding:9px; background:#fee2e2; color:#dc2626; border:1px solid #fca5a5; border-radius:10px; font-size:12px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:4px;">
-                        <svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
-                        ยกเลิก
-                    </button>
-                ` : `
-                    <button disabled style="width:100%; padding:9px; background:#f3f4f6; color:#9ca3af; border:none; border-radius:10px; font-size:12px; font-weight:600; cursor:not-allowed;">
-                        รายการถูกยกเลิกแล้ว
-                    </button>
-                `}
+    try {
+        const res = await fetch('/api/bookings');
+        allSystemBookings = await res.json();
+        myBookings = allSystemBookings.filter(b => b.userId === user.id || b.userEmail === user.email);
+        renderBookings();
+    } catch (err) {
+        container.innerHTML = `
+            <div class="col-span-full bg-white rounded-2xl p-8 text-center border border-gray-100 text-rose-500 text-sm">
+                ไม่สามารถโหลดข้อมูลการจองได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง
             </div>
         `;
-        grid.appendChild(card);
+    }
+}
+
+function renderBookings() {
+    const container = document.getElementById('myBookingsList');
+    const filtered = myBookings.filter(b => {
+        if (currentFilter === 'cancelled') return b.status === 'cancelled';
+        return b.status !== 'cancelled';
     });
+
+    if (filtered.length === 0) {
+        const emptyText = currentFilter === 'cancelled'
+            ? 'ไม่มีรายการจองที่ถูกยกเลิก'
+            : 'ยังไม่มีรายการจองที่ยืนยันแล้ว';
+        container.innerHTML = `
+            <div class="col-span-full bg-white rounded-2xl p-12 text-center border border-gray-100 space-y-3">
+                <p class="text-gray-400 text-sm font-medium">${emptyText}</p>
+                ${currentFilter === 'approved' ? `
+                    <button onclick="location.href='index.html'" class="px-5 py-2.5 btn-purple-pill text-xs font-semibold cursor-pointer">
+                        เลือกจองห้องประชุม
+                    </button>
+                ` : ''}
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = filtered.map(b => {
+        const isCancelled = b.status === 'cancelled';
+        const statusBadge = isCancelled
+            ? `<span class="px-3 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-600 border border-rose-200">ยกเลิกแล้ว</span>`
+            : `<span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-600 border border-emerald-200">● ยืนยันแล้ว</span>`;
+
+        return `
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col justify-between p-5 space-y-4">
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="font-mono text-xs font-bold text-purple-700 bg-purple-50 px-2.5 py-1 rounded-lg">
+                            ${b.refCode ? (b.refCode.startsWith('#') ? b.refCode : '#' + b.refCode) : '#KMITL'}
+                        </span>
+                        ${statusBadge}
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 text-base">${b.roomName || 'ห้องประชุม'}</h3>
+                        <p class="text-xs text-gray-500 mt-0.5">📍 ${b.location || 'สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง'}</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-xl p-3.5 grid grid-cols-2 gap-3 text-xs border border-gray-100">
+                        <div>
+                            <span class="text-gray-400 block mb-0.5">วันที่ใช้งาน</span>
+                            <strong class="text-gray-800 text-sm">${b.date}</strong>
+                        </div>
+                        <div>
+                            <span class="text-gray-400 block mb-0.5">ช่วงเวลา</span>
+                            <strong class="text-purple-700 text-sm">${b.startTime} - ${b.endTime} น.</strong>
+                        </div>
+                        <div class="col-span-2 pt-2 border-t border-gray-200/70">
+                            <span class="text-gray-400 block mb-0.5">วัตถุประสงค์การจอง</span>
+                            <span class="text-gray-700 font-medium">${b.purpose || '-'}</span>
+                        </div>
+                    </div>
+                </div>
+
+                ${!isCancelled ? `
+                    <div class="grid grid-cols-2 gap-2.5 pt-1">
+                        <button onclick="openEditModal('${b.id}')" class="py-2.5 rounded-xl border border-purple-200 bg-purple-50/70 hover:bg-purple-100 text-purple-700 font-semibold text-xs transition cursor-pointer">
+                            ✎ แก้ไขการจอง
+                        </button>
+                        <button onclick="openCancelModal('${b.id}')" class="py-2.5 rounded-xl border border-rose-200 bg-rose-50/70 hover:bg-rose-100 text-rose-600 font-semibold text-xs transition cursor-pointer">
+                            ✕ ยกเลิกการจอง
+                        </button>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    }).join('');
 }
 
-function updateStorageData(updatedList) {
-    localStorage.setItem('kmitlBookings', JSON.stringify(updatedList));
-}
+// ===== ระบบแก้ไขการจอง + ตรวจสอบเวลาชนกัน =====
+function openEditModal(bookingId) {
+    editingBooking = myBookings.find(b => b.id === bookingId);
+    if (!editingBooking) return;
 
-function openCancelModal(bookingId) {
-    pendingCancelId = bookingId;
-    document.getElementById('iosCancelModal').classList.add('active');
-}
+    document.getElementById('editRefBadge').textContent = editingBooking.refCode || '#KMITL';
+    document.getElementById('editRoomTitle').textContent = editingBooking.roomName || 'ห้องประชุม';
+    document.getElementById('editRoomLoc').textContent = '📍 ' + (editingBooking.location || '');
 
-function closeCancelModal() {
-    pendingCancelId = null;
-    document.getElementById('iosCancelModal').classList.remove('active');
-}
+    const dateInput = document.getElementById('editInputDate');
+    dateInput.min = getLocalToday();
+    dateInput.value = editingBooking.date;
 
-document.getElementById('confirmCancelBtn').addEventListener('click', function() {
-    if (!pendingCancelId) return;
-    let items = getSavedBookingsData();
-    let updated = items.map(b => String(b.id) === String(pendingCancelId) ? { ...b, status: 'cancelled' } : b);
-    updateStorageData(updated);
-    closeCancelModal();
-    renderMyBookings();
-});
+    document.getElementById('editInputStart').value = editingBooking.startTime;
+    document.getElementById('editInputEnd').value = editingBooking.endTime;
+    document.getElementById('editInputPurpose').value = editingBooking.purpose || '';
+    document.getElementById('editModalErrorMsg').classList.add('hidden');
 
-function openEditModal(id, date, start, end) {
-    document.getElementById('editBookingId').value = id;
-    document.getElementById('editDate').value = date;
-    document.getElementById('editStart').value = start;
-    document.getElementById('editEnd').value = end;
-    document.getElementById('editError').hidden = true;
-    document.getElementById('iosEditModal').classList.add('active');
+    renderEditBookedSlots();
+    const modal = document.getElementById('editBookingModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
 }
 
 function closeEditModal() {
-    document.getElementById('iosEditModal').classList.remove('active');
-    document.getElementById('editError').hidden = true;
+    editingBooking = null;
+    const modal = document.getElementById('editBookingModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
 }
 
-function validateBookingEdit(bookingId, date, start, end, items = getSavedBookingsData()) {
-    const booking = items.find(item => String(item.id) === String(bookingId));
-    if (!booking) return 'ไม่พบรายการจองที่ต้องการแก้ไข';
-    if (!booking.roomId) return 'ไม่พบข้อมูลห้องของรายการจอง';
-    if (typeof window.validateBookingTime !== 'function') {
-        return 'โหลดระบบตรวจสอบเวลาไม่สำเร็จ กรุณาลองใหม่';
-    }
+document.getElementById('editInputDate').addEventListener('change', renderEditBookedSlots);
 
-    const normalize = item => ({
-        id: item.id,
-        roomId: String(item.roomId || ''),
-        roomName: item.roomName || item.name || '',
-        location: item.location || '',
-        date: item.date || '',
-        startTime: item.startTime || item.start || '',
-        endTime: item.endTime || item.end || '',
-        status: item.status || 'approved',
-        userEmail: item.userEmail || '',
-    });
-    const normalizedItems = items.map(normalize);
-    const editedBooking = normalizedItems.find(item => String(item.id) === String(bookingId));
-    if (!editedBooking) return 'ไม่พบรายการจองที่ต้องการแก้ไข';
+function renderEditBookedSlots() {
+    const noticeBox = document.getElementById('editBookedSlotsNotice');
+    const listBox = document.getElementById('editBookedSlotsList');
+    if (!editingBooking) return;
 
-    return window.validateBookingTime(
-        { ...editedBooking, date, startTime: start, endTime: end },
-        normalizedItems,
-        new Date(),
-        bookingId,
-    ) || '';
-}
+    const selectedDate = document.getElementById('editInputDate').value;
+    const otherBookings = allSystemBookings
+        .filter(b =>
+            b.id !== editingBooking.id &&
+            b.status !== 'cancelled' &&
+            (b.roomId === editingBooking.roomId || b.roomName === editingBooking.roomName) &&
+            b.date === selectedDate
+        )
+        .sort((a, b) => timeToMinutes(a.startTime) - timeToMinutes(b.startTime));
 
-function handleEditSubmit(e) {
-    e.preventDefault();
-    let id = document.getElementById('editBookingId').value;
-    let newDate = document.getElementById('editDate').value;
-    let newStart = document.getElementById('editStart').value;
-    let newEnd = document.getElementById('editEnd').value;
-
-    let items = getSavedBookingsData();
-    const error = validateBookingEdit(id, newDate, newStart, newEnd, items);
-    const errorElement = document.getElementById('editError');
-    if (error) {
-        errorElement.textContent = error;
-        errorElement.hidden = false;
+    if (otherBookings.length === 0) {
+        noticeBox.classList.add('hidden');
+        listBox.innerHTML = '';
         return;
     }
 
-    let updated = items.map(b => {
-        if (String(b.id) === String(id)) {
-            return { ...b, date: newDate, start: newStart, end: newEnd, startTime: newStart, endTime: newEnd };
-        }
-        return b;
-    });
-
-    updateStorageData(updated);
-    errorElement.hidden = true;
-    closeEditModal();
-    renderMyBookings();
+    listBox.innerHTML = otherBookings.map(b =>
+        `<span class="bg-rose-100 text-rose-700 border border-rose-300 px-2 py-0.5 rounded-full font-semibold">${b.startTime} - ${b.endTime} น. (ถูกจองแล้ว)</span>`
+    ).join('');
+    noticeBox.classList.remove('hidden');
 }
 
-document.addEventListener('DOMContentLoaded', renderMyBookings);
+function checkEditTimeConflict(date, startTime, endTime) {
+    const newStart = timeToMinutes(startTime);
+    const newEnd = timeToMinutes(endTime);
+
+    if (newStart < 420 || newEnd > 1020) {
+        return {
+            hasConflict: true,
+            message: 'เปิดให้บริการเฉพาะช่วงเวลา 07:00 - 17:00 น. เท่านั้น กรุณาเลือกเวลาใหม่'
+        };
+    }
+    if (newStart >= newEnd) {
+        return { hasConflict: true, message: 'เวลาเริ่มต้นต้องน้อยกว่าเวลาสิ้นสุด' };
+    }
+
+    for (const b of allSystemBookings) {
+        if (b.id === editingBooking.id || b.status === 'cancelled') continue;
+        const sameRoom = (b.roomId === editingBooking.roomId || b.roomName === editingBooking.roomName);
+        const sameDate = (b.date === date);
+        if (sameRoom && sameDate) {
+            const bStart = timeToMinutes(b.startTime);
+            const bEnd = timeToMinutes(b.endTime);
+            if (Math.max(newStart, bStart) < Math.min(newEnd, bEnd)) {
+                return {
+                    hasConflict: true,
+                    message: `ถูกจองแล้ว ในช่วงเวลา ${b.startTime} - ${b.endTime} น. กรุณาเลือกช่วงเวลาอื่น`
+                };
+            }
+        }
+    }
+    return { hasConflict: false, message: '' };
+}
+
+document.getElementById('editBookingForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!editingBooking) return;
+
+    const newDate = document.getElementById('editInputDate').value;
+    const newStart = document.getElementById('editInputStart').value;
+    const newEnd = document.getElementById('editInputEnd').value;
+    const newPurpose = document.getElementById('editInputPurpose').value;
+    const errorBox = document.getElementById('editModalErrorMsg');
+
+    const check = checkEditTimeConflict(newDate, newStart, newEnd);
+    if (check.hasConflict) {
+        errorBox.textContent = check.message;
+        errorBox.classList.remove('hidden');
+        return;
+    }
+
+    const saveBtn = document.getElementById('saveEditBtn');
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'กำลังบันทึก...';
+
+    try {
+        const res = await fetch(`/api/bookings/${editingBooking.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                date: newDate,
+                startTime: newStart,
+                endTime: newEnd,
+                purpose: newPurpose || 'ประชุมงานทั่วไป'
+            })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+            errorBox.textContent = data.error || 'ช่วงเวลานี้ถูกจองแล้ว กรุณาเลือกช่วงเวลาอื่น';
+            errorBox.classList.remove('hidden');
+            return;
+        }
+
+        closeEditModal();
+        await loadMyBookings();
+    } catch (err) {
+        errorBox.textContent = 'ไม่สามารถเชื่อมต่อระบบได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง';
+        errorBox.classList.remove('hidden');
+    } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'บันทึกการแก้ไข';
+    }
+});
+
+// ===== ระบบยกเลิกการจอง =====
+function openCancelModal(id) {
+    bookingIdToCancel = id;
+    const modal = document.getElementById('cancelConfirmModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function closeCancelModal() {
+    bookingIdToCancel = null;
+    const modal = document.getElementById('cancelConfirmModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+
+document.getElementById('confirmCancelBtn').onclick = async () => {
+    if (!bookingIdToCancel) return;
+    const btn = document.getElementById('confirmCancelBtn');
+    btn.disabled = true;
+    btn.textContent = 'กำลังยกเลิก...';
+
+    try {
+        const res = await fetch(`/api/bookings/${bookingIdToCancel}/cancel`, {
+            method: 'PATCH'
+        });
+        if (res.ok) {
+            closeCancelModal();
+            await loadMyBookings();
+        }
+    } catch (err) {
+        console.error('ยกเลิกการจองไม่สำเร็จ:', err);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'ยืนยันยกเลิก';
+    }
+};
+
+document.addEventListener('DOMContentLoaded', loadMyBookings);
 </script>
 </body>
 </html>

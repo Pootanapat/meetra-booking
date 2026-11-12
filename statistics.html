@@ -1,17 +1,318 @@
 <!DOCTYPE html>
-<html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>สถิติการจอง | KMITL Room Booking</title><link rel="stylesheet" href="css/style.css"></head><body>
-<div class="app"><aside class="sidebar">
-<div class="brand"><div class="brand-mark">K</div><div><strong>KMITL</strong><small>ROOM BOOKING</small></div></div>
-<div><div class="nav-label">WORKSPACE</div><nav class="nav"><a href="index.html" class=""><span class="ico">▦</span>ระบบจองห้องประชุม</a><a href="my-bookings.html" class=""><span class="ico">▣</span>การจองของฉัน</a><a href="statistics.html" class="active"><span class="ico">▤</span>สถิติการจอง</a><a href="rooms.html" class=""><span class="ico">▧</span>ข้อมูลห้องประชุม</a></nav></div>
-<div class="side-help"><b>เริ่มต้นจองห้องประชุม</b>เลือกห้องและช่วงเวลาที่ต้องการ ระบบจะตรวจสอบเวลาว่างให้อัตโนมัติ</div>
-<div class="profile"><div class="avatar" id="avatar">G</div><div><b id="userLabel">ผู้เยี่ยมชม</b><br><small style="color:var(--muted)">KMITL Room Booking</small></div></div>
-</aside><main class="main"><header class="topbar"><div class="crumb">KMITL / สถิติการจอง</div><div class="top-actions"><button id="loginTop" onclick="location.href='login.html'">เข้าสู่ระบบ</button><button id="registerTop" onclick="location.href='register.html'">สมัครสมาชิก</button><button id="logoutTop" style="display:none" onclick="logout()">ออกจากระบบ</button></div></header>
-<div class="content">
-<div class="eyebrow">BOOKING ANALYTICS</div><div class="page-title"><div><h1>สถิติการจอง</h1><p class="sub">ภาพรวมการใช้งานห้องประชุมในระบบ</p></div></div>
-<div class="stats"><div class="stat"><div class="stat-icon">▣</div><div><small>การจองทั้งหมด</small><strong id="total">0</strong></div></div><div class="stat"><div class="stat-icon">◷</div><div><small>ชั่วโมงที่ถูกจอง</small><strong id="hours">0</strong></div></div><div class="stat"><div class="stat-icon">▦</div><div><small>ห้องที่มีการใช้งาน</small><strong id="used">0</strong></div></div><div class="stat"><div class="stat-icon">✓</div><div><small>ห้องประชุมในระบบ</small><strong>5</strong></div></div></div>
-<div class="data-card"><h3 style="font-size:14px;margin:0 0 20px">จำนวนการจองแยกตามห้อง</h3><div class="bar-list" id="statsRows"></div></div>
-</div></main></div>
-<script src="js/common.js"></script><script>
-let bs=getBookings(),mins=t=>{let [h,m]=t.split(':').map(Number);return h*60+m};document.getElementById('total').textContent=bs.length;document.getElementById('hours').textContent=bs.reduce((s,b)=>s+(mins(b.end)-mins(b.start))/60,0);document.getElementById('used').textContent=new Set(bs.map(b=>b.roomId)).size;ROOMS.forEach(r=>{let n=bs.filter(b=>b.roomId===r.id).length,row=document.createElement('div');row.className='bar-row';row.innerHTML='<span>'+r.name+' ('+r.id+')</span><div class="bar"><i style="width:'+(bs.length?n/bs.length*100:0)+'%"></i></div><b>'+n+'</b>';document.getElementById('statsRows').append(row)});
-</script></body></html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สถิติการจอง | KMITL Room Booking</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .stat-number {
+            font-size: 36px;
+            font-weight: bold;
+            color: #7c3aed;
+        }
+        .stat-label {
+            font-size: 14px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+        .chart-container {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid #e5e7eb;
+            margin-top: 24px;
+        }
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            height: 200px;
+            padding: 20px 0 30px 0;
+        }
+        .bar-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+            justify-content: flex-end;
+        }
+        .bar {
+            width: 100%;
+            max-width: 60px;
+            background: linear-gradient(180deg, #7c3aed 0%, #9f7aea 100%);
+            border-radius: 8px 8px 0 0;
+            min-height: 20px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .bar:hover {
+            opacity: 0.8;
+        }
+        .bar-value {
+            font-size: 12px;
+            font-weight: bold;
+            color: #7c3aed;
+            margin-bottom: 4px;
+        }
+        .bar-label {
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 8px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100px;
+        }
+        .recent-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .recent-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: #f9fafb;
+            border-radius: 10px;
+            border: 1px solid #f3f4f6;
+        }
+        .recent-info {
+            flex: 1;
+        }
+        .recent-title {
+            font-weight: 600;
+            color: #111827;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+        .recent-meta {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            color: white;
+        }
+        .status-approved { background: #10b981; }
+        .status-cancelled { background: #ef4444; }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #9ca3af;
+            background: white;
+            border-radius: 16px;
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-mark">K</div>
+            <div><strong>KMITL</strong><small>ROOM BOOKING</small></div>
+        </div>
+        <div>
+            <div class="nav-label">WORKSPACE</div>
+            <nav class="nav">
+                <a href="index.html" class=""><span class="ico">▦</span>ระบบจองห้องประชุม</a>
+                <a href="my-bookings.html" class=""><span class="ico">▣</span>การจองของฉัน</a>
+                <a href="statistics.html" class="active"><span class="ico">▤</span>สถิติการจอง</a>
+                <a href="rooms.html" class=""><span class="ico">▧</span>ข้อมูลห้องประชุม</a>
+            </nav>
+        </div>
+        <div class="side-help"><b>เริ่มต้นจองห้องประชุม</b>เลือกห้องและช่วงเวลาที่ต้องการ ระบบจะตรวจสอบเวลาว่างให้อัตโนมัติ</div>
+        <div class="profile">
+            <div class="avatar" id="avatar">G</div>
+            <div><b id="userLabel">ผู้เยี่ยมชม</b><br><small style="color:var(--muted)">KMITL Room Booking</small></div>
+        </div>
+    </aside>
+
+    <main class="main">
+        <header class="topbar">
+            <div class="crumb">KMITL / สถิติการจอง</div>
+            <div class="top-actions">
+                <button id="loginTop" onclick="location.href='login.html'">เข้าสู่ระบบ</button>
+                <button id="registerTop" onclick="location.href='register.html'">สมัครสมาชิก</button>
+                <button id="logoutTop" style="display:none" onclick="logout()">ออกจากระบบ</button>
+            </div>
+        </header>
+
+        <div class="content">
+            <div class="eyebrow">ANALYTICS</div>
+            <div class="page-title">
+                <div>
+                    <h1>สถิติการจอง</h1>
+                    <p class="sub">ภาพรวมการใช้งานระบบจองห้องประชุม</p>
+                </div>
+            </div>
+
+            <!-- การ์ดสถิติ -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalBookings">0</div>
+                    <div class="stat-label">การจองทั้งหมด</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="activeBookings">0</div>
+                    <div class="stat-label">การจองที่ใช้งานอยู่</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="cancelledBookings">0</div>
+                    <div class="stat-label">การจองที่ถูกยกเลิก</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalRooms">5</div>
+                    <div class="stat-label">จำนวนห้องประชุม</div>
+                </div>
+            </div>
+
+            <!-- กราฟแท่ง: การจองแยกตามห้อง -->
+            <div class="chart-container">
+                <h3 style="margin: 0 0 16px 0; font-size: 16px; font-weight: bold; color: #111827;">
+                    📊 สถิติการจองแยกตามห้องประชุม
+                </h3>
+                <div class="bar-chart" id="roomChart">
+                    <div class="empty-state" style="width:100%;">ยังไม่มีข้อมูลการจอง</div>
+                </div>
+            </div>
+
+            <!-- รายการจองล่าสุด -->
+            <div class="chart-container">
+                <h3 style="margin: 0 0 16px 0; font-size: 16px; font-weight: bold; color: #111827;">
+                    🕐 รายการจองล่าสุด
+                </h3>
+                <div id="recentBookings" class="recent-list">
+                    <div class="empty-state">ยังไม่มีรายการจอง</div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="js/common.js"></script>
+<script>
+// ข้อมูลห้องประชุม (ใช้ร่วมกัน)
+const ROOMS = [
+    { id: 'room-101', name: 'ห้อง 101' },
+    { id: 'room-lab-b', name: 'ห้อง Lab B' },
+    { id: 'room-sem-b', name: 'ห้องสัมมนา B' },
+    { id: 'room-coworking', name: 'Co-Working' },
+    { id: 'room-mac-lab', name: 'Mac Lab' }
+];
+
+function renderStatistics() {
+    const allBookings = getAllBookings();
+    
+    // นับสถิติ
+    const total = allBookings.length;
+    const active = allBookings.filter(b => b.status !== 'cancelled' && b.status !== 'ยกเลิกแล้ว').length;
+    const cancelled = allBookings.filter(b => b.status === 'cancelled' || b.status === 'ยกเลิกแล้ว').length;
+    
+    // อัปเดตการ์ดสถิติ
+    document.getElementById('totalBookings').textContent = total;
+    document.getElementById('activeBookings').textContent = active;
+    document.getElementById('cancelledBookings').textContent = cancelled;
+    
+    // สร้างกราฟแท่ง
+    renderRoomChart(allBookings);
+    
+    // แสดงรายการล่าสุด
+    renderRecentBookings(allBookings);
+}
+
+function renderRoomChart(bookings) {
+    const chartContainer = document.getElementById('roomChart');
+    
+    if (bookings.length === 0) {
+        chartContainer.innerHTML = '<div class="empty-state" style="width:100%;">ยังไม่มีข้อมูลการจอง</div>';
+        return;
+    }
+    
+    // นับจำนวนการจองแยกตามห้อง
+    const roomCounts = {};
+    ROOMS.forEach(room => {
+        roomCounts[room.id] = 0;
+    });
+    
+    bookings.forEach(b => {
+        if (b.roomId && roomCounts[b.roomId] !== undefined) {
+            roomCounts[b.roomId]++;
+        }
+    });
+    
+    const maxCount = Math.max(...Object.values(roomCounts), 1);
+    
+    let html = '';
+    ROOMS.forEach(room => {
+        const count = roomCounts[room.id];
+        const height = (count / maxCount) * 100;
+        html += `
+            <div class="bar-wrapper">
+                <div class="bar-value">${count}</div>
+                <div class="bar" style="height: ${Math.max(height, 10)}%;"></div>
+                <div class="bar-label">${room.name}</div>
+            </div>
+        `;
+    });
+    
+    chartContainer.innerHTML = html;
+}
+
+function renderRecentBookings(bookings) {
+    const container = document.getElementById('recentBookings');
+    
+    if (bookings.length === 0) {
+        container.innerHTML = '<div class="empty-state">ยังไม่มีรายการจอง</div>';
+        return;
+    }
+    
+    // แสดง 5 รายการล่าสุด
+    const recent = bookings.slice(0, 5);
+    
+    let html = '';
+    recent.forEach(b => {
+        const isCancelled = b.status === 'cancelled' || b.status === 'ยกเลิกแล้ว';
+        const statusClass = isCancelled ? 'status-cancelled' : 'status-approved';
+        const statusText = isCancelled ? 'ยกเลิกแล้ว' : 'ยืนยันแล้ว';
+        
+        html += `
+            <div class="recent-item">
+                <div class="recent-info">
+                    <div class="recent-title">${b.roomName || 'ไม่ระบุห้อง'}</div>
+                    <div class="recent-meta">
+                        📅 ${b.date || '-'} | 🕐 ${b.startTime || b.start || '-'} - ${b.endTime || b.end || '-'} น.
+                    </div>
+                </div>
+                <span class="status-badge ${statusClass}">${statusText}</span>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
+// เรียกใช้เมื่อหน้าโหลดเสร็จ
+document.addEventListener('DOMContentLoaded', renderStatistics);
+</script>
+</body>
+</html>

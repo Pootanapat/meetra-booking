@@ -50,5 +50,7 @@ function logout() {
   location.href = 'index.html';
 }
 
+Object.assign(window, { getSession, getUser, setSession, clearSession, apiFetch, updateUserUI, logout });
+
 document.addEventListener('DOMContentLoaded', updateUserUI);
 window.addEventListener('pageshow', updateUserUI);

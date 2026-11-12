@@ -1,17 +1,164 @@
 <!DOCTYPE html>
-<html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>สถิติการจอง | KMITL Room Booking</title><link rel="stylesheet" href="css/style.css"></head><body>
-<div class="app"><aside class="sidebar">
-<div class="brand"><div class="brand-mark">K</div><div><strong>KMITL</strong><small>ROOM BOOKING</small></div></div>
-<div><div class="nav-label">WORKSPACE</div><nav class="nav"><a href="index.html" class=""><span class="ico">▦</span>ระบบจองห้องประชุม</a><a href="my-bookings.html" class=""><span class="ico">▣</span>การจองของฉัน</a><a href="statistics.html" class="active"><span class="ico">▤</span>สถิติการจอง</a><a href="rooms.html" class=""><span class="ico">▧</span>ข้อมูลห้องประชุม</a></nav></div>
-<div class="side-help"><b>เริ่มต้นจองห้องประชุม</b>เลือกห้องและช่วงเวลาที่ต้องการ ระบบจะตรวจสอบเวลาว่างให้อัตโนมัติ</div>
-<div class="profile"><div class="avatar" id="avatar">G</div><div><b id="userLabel">ผู้เยี่ยมชม</b><br><small style="color:var(--muted)">KMITL Room Booking</small></div></div>
-</aside><main class="main"><header class="topbar"><div class="crumb">KMITL / สถิติการจอง</div><div class="top-actions"><button id="loginTop" onclick="location.href='login.html'">เข้าสู่ระบบ</button><button id="registerTop" onclick="location.href='register.html'">สมัครสมาชิก</button><button id="logoutTop" style="display:none" onclick="logout()">ออกจากระบบ</button></div></header>
-<div class="content">
-<div class="eyebrow">BOOKING ANALYTICS</div><div class="page-title"><div><h1>สถิติการจอง</h1><p class="sub">ภาพรวมการใช้งานห้องประชุมในระบบ</p></div></div>
-<div class="stats"><div class="stat"><div class="stat-icon">▣</div><div><small>การจองทั้งหมด</small><strong id="total">0</strong></div></div><div class="stat"><div class="stat-icon">◷</div><div><small>ชั่วโมงที่ถูกจอง</small><strong id="hours">0</strong></div></div><div class="stat"><div class="stat-icon">▦</div><div><small>ห้องที่มีการใช้งาน</small><strong id="used">0</strong></div></div><div class="stat"><div class="stat-icon">✓</div><div><small>ห้องประชุมในระบบ</small><strong>5</strong></div></div></div>
-<div class="data-card"><h3 style="font-size:14px;margin:0 0 20px">จำนวนการจองแยกตามห้อง</h3><div class="bar-list" id="statsRows"></div></div>
-</div></main></div>
-<script src="js/common.js"></script><script>
-let bs=getBookings(),mins=t=>{let [h,m]=t.split(':').map(Number);return h*60+m};document.getElementById('total').textContent=bs.length;document.getElementById('hours').textContent=bs.reduce((s,b)=>s+(mins(b.end)-mins(b.start))/60,0);document.getElementById('used').textContent=new Set(bs.map(b=>b.roomId)).size;ROOMS.forEach(r=>{let n=bs.filter(b=>b.roomId===r.id).length,row=document.createElement('div');row.className='bar-row';row.innerHTML='<span>'+r.name+' ('+r.id+')</span><div class="bar"><i style="width:'+(bs.length?n/bs.length*100:0)+'%"></i></div><b>'+n+'</b>';document.getElementById('statsRows').append(row)});
-</script></body></html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>สถิติการจอง | KMITL Room Booking</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/statistics.css">
+</head>
+<body class="ios-theme">
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">K</div>
+        <div>
+          <strong>KMITL</strong>
+          <small>ROOM BOOKING</small>
+        </div>
+      </div>
+
+      <div>
+        <div class="nav-label">WORKSPACE</div>
+        <nav class="nav">
+          <a href="index.html"><span class="ico">▦</span>ระบบจองห้องประชุม</a>
+          <a href="my-bookings.html"><span class="ico">▣</span>การจองของฉัน</a>
+          <a href="statistics.html" class="active"><span class="ico">▤</span>สถิติการจอง</a>
+          <a href="rooms.html"><span class="ico">▧</span>ข้อมูลห้องประชุม</a>
+        </nav>
+      </div>
+
+      <div class="side-help">
+        <b>เริ่มต้นจองห้องประชุม</b>เลือกห้องและช่วงเวลาที่ต้องการ ระบบจะตรวจสอบเวลาว่างให้อัตโนมัติ
+      </div>
+
+      <div class="profile">
+        <div class="avatar" id="avatar">G</div>
+        <div>
+          <b id="userLabel">ผู้เยี่ยมชม</b><br>
+          <small style="color:var(--muted)">KMITL Room Booking</small>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar ios-glass-bar">
+        <div class="crumb">KMITL / สถิติการจอง</div>
+        <div class="top-actions">
+          <button id="loginTop" onclick="location.href='login.html'">เข้าสู่ระบบ</button>
+          <button id="registerTop" onclick="location.href='register.html'">สมัครสมาชิก</button>
+          <button id="logoutTop" style="display:none" onclick="logout()">ออกจากระบบ</button>
+        </div>
+      </header>
+
+      <div class="content ios-canvas">
+        <section class="ios-hero">
+          <div class="ios-hero-text">
+            <div class="ios-pill-eyebrow">
+              <span class="pulse-dot"></span>
+              <span>ANALYTICS & TELEMETRY</span>
+            </div>
+            <h1 class="ios-title">สถิติการจอง</h1>
+            <p class="ios-subtitle">แดชบอร์ดวิเคราะห์อัตราการใช้งานห้องประชุม ชั่วโมงการจอง และสถานะระบบแบบเรียลไทม์</p>
+          </div>
+
+          <div class="ios-action-dock">
+            <button class="ios-btn ios-btn-secondary" onclick="location.href='rooms.html'">
+              <span class="btn-ico">▧</span> ข้อมูลห้องประชุม
+            </button>
+            <button class="ios-btn ios-btn-primary" onclick="location.href='index.html'">+ จองห้องใหม่</button>
+          </div>
+        </section>
+
+        <section class="ios-bento-metrics" aria-label="สรุปตัวเลขสำคัญ">
+          <div class="ios-widget metric-widget">
+            <div class="widget-top">
+              <span class="squircle-icon sq-indigo">▣</span>
+              <span class="widget-tag">ACTIVE</span>
+            </div>
+            <div class="widget-body">
+              <strong class="metric-number" id="total">0</strong>
+              <span class="metric-label">การจองที่ยืนยันแล้ว</span>
+            </div>
+          </div>
+
+          <div class="ios-widget metric-widget">
+            <div class="widget-top">
+              <span class="squircle-icon sq-blue">◷</span>
+              <span class="widget-tag">DURATION</span>
+            </div>
+            <div class="widget-body">
+              <strong class="metric-number" id="hours">0</strong>
+              <span class="metric-label">ชั่วโมงที่ถูกจองรวม</span>
+            </div>
+          </div>
+
+          <div class="ios-widget metric-widget">
+            <div class="widget-top">
+              <span class="squircle-icon sq-mint">▦</span>
+              <span class="widget-tag">UTILIZED</span>
+            </div>
+            <div class="widget-body">
+              <strong class="metric-number" id="used">0</strong>
+              <span class="metric-label">ห้องที่มีการใช้งาน</span>
+            </div>
+          </div>
+
+          <div class="ios-widget metric-widget">
+            <div class="widget-top">
+              <span class="squircle-icon sq-amber">✓</span>
+              <span class="widget-tag">CAPACITY</span>
+            </div>
+            <div class="widget-body">
+              <strong class="metric-number" id="totalRooms">5</strong>
+              <span class="metric-label">ห้องประชุมทั้งหมดในระบบ</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="ios-bento-main">
+          <div class="ios-widget chart-widget">
+            <div class="widget-header">
+              <div>
+                <h2>จำนวนการจองแยกตามห้อง</h2>
+                <p>สัดส่วนความถี่ในการจองแต่ละห้องประชุม (นับเฉพาะรายการที่ยืนยันแล้ว)</p>
+              </div>
+              <span class="ios-badge-highlight" id="peakRoomBadge">กำลังประมวลผล...</span>
+            </div>
+            <div class="bar-list ios-bar-list" id="statsRows"></div>
+          </div>
+
+          <div class="ios-widget insight-widget">
+            <div class="widget-header">
+              <div>
+                <h2>สรุปข้อมูลเชิงลึก</h2>
+                <p>ตัวชี้วัดประสิทธิภาพภาพรวม</p>
+              </div>
+              <span class="ios-badge-live">
+                <span class="live-indicator"></span> Live Sync
+              </span>
+            </div>
+            <div class="insight-stack ios-insight-stack" id="insightList"></div>
+          </div>
+        </section>
+
+        <section class="ios-widget feed-widget">
+          <div class="widget-header">
+            <div>
+              <h2>รายการจองล่าสุดในระบบ</h2>
+              <p>อัปเดตประวัติการทำรายการ 5 รายการล่าสุด (ซิงก์ตรงกับหน้าการจองของฉัน)</p>
+            </div>
+            <a href="my-bookings.html" class="ios-link-pill">
+              จัดการการจองของฉัน <span aria-hidden="true">›</span>
+            </a>
+          </div>
+          <div id="recentBookingsContainer"></div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/common.js"></script>
+  <script src="js/statistics.js"></script>
+</body>
+</html>

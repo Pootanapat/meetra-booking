@@ -1,7 +1,8 @@
 import { Router } from 'express';
 
-export function createApiRouter({ authController, bookingController, roomController, requireAuthentication }) {
+export function createApiRouter({ authController, bookingController, roomController, systemController, requireAuthentication }) {
   const router = Router();
+  router.get('/health', systemController.health.bind(systemController));
   router.post('/register', authController.register.bind(authController));
   router.post('/login', authController.login.bind(authController));
   router.get('/rooms', roomController.list.bind(roomController));

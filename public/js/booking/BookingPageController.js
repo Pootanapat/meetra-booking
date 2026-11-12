@@ -1,19 +1,25 @@
 import { BookingApiClient } from './BookingApiClient.js';
 import { BookingPolicy } from './BookingPolicy.js';
+import { RoomFilterPolicy } from './RoomFilterPolicy.js';
 
 export class BookingPageController {
   constructor({
     apiClient = new BookingApiClient({ authenticatedFetch: window.apiFetch }),
     bookingPolicy = new BookingPolicy(),
+    roomFilterPolicy = new RoomFilterPolicy(),
   } = {}) {
     this.apiClient = apiClient;
     this.bookingPolicy = bookingPolicy;
+    this.roomFilterPolicy = roomFilterPolicy;
+    this.timelineStart = null;
     this.rooms = [];
     this.serverBookings = [];
     this.selectedRoom = null;
     this.gridContainer = document.getElementById('roomGridContainer');
     this.searchInput = document.getElementById('searchInput');
     this.capacityFilter = document.getElementById('capacityFilter');
+    this.equipmentFilter = document.getElementById('equipmentFilter');
+    this.buildingFilter = document.getElementById('buildingFilter');
     this.dateInput = document.getElementById('bookingDateInput');
     this.formModal = document.getElementById('bookingFormModal');
     this.bookingForm = document.getElementById('bookingDetailsForm');
@@ -56,6 +62,7 @@ export class BookingPageController {
       const { response, data } = await this.apiClient.listRooms();
       if (!response.ok) throw new Error('โหลดข้อมูลห้องไม่สำเร็จ');
       this.rooms = data;
+      this.populateSmartFilters();
     } catch (error) {
       console.error(error);
       this.rooms = [];
@@ -86,6 +93,9 @@ export class BookingPageController {
     if (this.capacityFilter) {
       this.capacityFilter.addEventListener('change', () => this.handleFilter());
     }
+    for (const filter of [this.equipmentFilter, this.buildingFilter]) {
+      filter?.addEventListener('change', () => this.handleFilter());
+    }
     if (this.dateInput) {
       this.dateInput.addEventListener('change', () => {
         this.handleFilter();
@@ -94,7 +104,14 @@ export class BookingPageController {
     }
     const modalDateInput = document.getElementById('inputBookingDate');
     if (modalDateInput) {
-      modalDateInput.addEventListener('change', () => this.renderBookedSlotsInModal());
+      modalDateInput.addEventListener('change', () => {
+        this.timelineStart = null;
+        this.renderBookedSlotsInModal();
+        this.renderTimeline();
+      });
+    }
+    for (const inputId of ['inputStartTime', 'inputEndTime']) {
+      document.getElementById(inputId)?.addEventListener('change', () => this.renderTimeline());
     }
     const todayBtn = document.getElementById('todayBtn');
     if (todayBtn) {
@@ -132,16 +149,32 @@ export class BookingPageController {
   }
 
   handleFilter() {
-    const query = (this.searchInput?.value || '').toLowerCase();
-    const capType = this.capacityFilter?.value || 'all';
-    const filtered = this.rooms.filter(room => {
-      const matchQuery = room.name.toLowerCase().includes(query) || room.location.toLowerCase().includes(query);
-      let matchCap = true;
-      if (capType === 'small') matchCap = room.capacity <= 15;
-      if (capType === 'large') matchCap = room.capacity > 15;
-      return matchQuery && matchCap;
+    const filtered = this.roomFilterPolicy.filter(this.rooms, {
+      query: this.searchInput?.value,
+      capacity: this.capacityFilter?.value,
+      equipment: this.equipmentFilter?.value,
+      building: this.buildingFilter?.value,
     });
     this.renderRooms(filtered);
+  }
+
+  populateSmartFilters() {
+    this.replaceFilterOptions(
+      this.equipmentFilter,
+      'ทุกอุปกรณ์',
+      this.roomFilterPolicy.getEquipmentOptions(this.rooms),
+    );
+    this.replaceFilterOptions(
+      this.buildingFilter,
+      'ทุกอาคาร',
+      this.roomFilterPolicy.getBuildingOptions(this.rooms),
+    );
+  }
+
+  replaceFilterOptions(select, allLabel, options) {
+    if (!select) return;
+    select.replaceChildren(new Option(allLabel, 'all'));
+    for (const value of options) select.add(new Option(value, value));
   }
 
   getRoomStatus(roomId, date) {
@@ -278,6 +311,8 @@ export class BookingPageController {
     document.getElementById('modalErrorMsg').classList.add('hidden');
 
     this.renderBookedSlotsInModal();
+    this.timelineStart = null;
+    this.renderTimeline();
     this.formModal.classList.remove('hidden');
     this.formModal.classList.add('flex');
   }
@@ -308,6 +343,75 @@ export class BookingPageController {
   closeFormModal() {
     this.formModal.classList.add('hidden');
     this.formModal.classList.remove('flex');
+  }
+
+  renderTimeline() {
+    const container = document.getElementById('bookingTimeline');
+    const date = document.getElementById('inputBookingDate')?.value;
+    if (!container || !date || !this.selectedRoom) return;
+    const selectedStart = document.getElementById('inputStartTime')?.value;
+    const selectedEnd = document.getElementById('inputEndTime')?.value;
+    const selectedStartMinutes = this.timeToMinutes(selectedStart);
+    const selectedEndMinutes = this.timeToMinutes(selectedEnd);
+    const slots = this.bookingPolicy.buildTimeline({
+      roomId: this.selectedRoom.id,
+      roomName: this.selectedRoom.name,
+      date,
+      bookings: this.serverBookings,
+    });
+    const styles = {
+      available: 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100',
+      booked: 'border-rose-200 bg-rose-100 text-rose-500 cursor-not-allowed',
+      past: 'border-slate-300 bg-slate-200 text-slate-500 cursor-not-allowed',
+      selected: 'border-purple-600 bg-purple-600 text-white ring-2 ring-purple-200',
+    };
+    container.innerHTML = slots.map(slot => {
+      const slotStart = this.timeToMinutes(slot.startTime);
+      const isSelected = slot.status === 'available' &&
+        slotStart >= selectedStartMinutes && slotStart < selectedEndMinutes;
+      const visualStatus = isSelected ? 'selected' : slot.status;
+      const disabled = slot.status !== 'available';
+      const label = `${slot.startTime}-${slot.endTime} ${slot.status === 'booked' ? 'จองแล้ว' : slot.status === 'past' ? 'ผ่านไปแล้ว' : 'ว่าง'}`;
+      return `<button type="button" data-start="${slot.startTime}" data-end="${slot.endTime}"
+        aria-label="${label}" ${disabled ? 'disabled' : ''}
+        class="timeline-slot rounded-lg border px-1 py-2 text-[11px] font-semibold transition ${styles[visualStatus]}">${slot.startTime}</button>`;
+    }).join('');
+    container.querySelectorAll('.timeline-slot:not(:disabled)').forEach(button => {
+      button.addEventListener('click', () => this.handleTimelineSlotClick(button.dataset.start, button.dataset.end));
+    });
+  }
+
+  handleTimelineSlotClick(startTime, endTime) {
+    const startInput = document.getElementById('inputStartTime');
+    const endInput = document.getElementById('inputEndTime');
+    const date = document.getElementById('inputBookingDate')?.value;
+    if (!startInput || !endInput || !date) return;
+
+    if (!this.timelineStart || this.timeToMinutes(startTime) <= this.timeToMinutes(this.timelineStart)) {
+      this.timelineStart = startTime;
+      startInput.value = startTime;
+      endInput.value = endTime;
+      this.renderTimeline();
+      return;
+    }
+
+    const conflict = this.checkTimeConflict(this.selectedRoom.id, date, this.timelineStart, endTime);
+    if (conflict.hasConflict) {
+      const errorBox = document.getElementById('modalErrorMsg');
+      errorBox.textContent = conflict.message;
+      errorBox.classList.remove('hidden');
+      this.timelineStart = startTime;
+      startInput.value = startTime;
+      endInput.value = endTime;
+      this.renderTimeline();
+      return;
+    }
+
+    startInput.value = this.timelineStart;
+    endInput.value = endTime;
+    this.timelineStart = null;
+    document.getElementById('modalErrorMsg')?.classList.add('hidden');
+    this.renderTimeline();
   }
 
   timeToMinutes(t) {

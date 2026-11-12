@@ -234,7 +234,7 @@ function renderMyBookings() {
         const room = ROOMS.find(room => room.id === b.roomId);
         let roomName = room?.name || b.roomName || b.name || 'ห้องประชุม KMITL';
         let location = room?.location || b.location || 'อาคารเรียนรวม KMITL';
-        let image = room?.image || b.image || 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&q=80';
+        let image = room?.image || 'assets/rooms/meeting-room.jpg';
         let capacity = room?.capacity || b.capacity || 10;
         let dateVal = b.date || '-';
         let startVal = b.startTime || b.start || '09:00';

@@ -1,0 +1,33 @@
+# Meetra Booking
+
+## ติดตั้งและรัน
+
+ต้องมี Node.js 18 ขึ้นไปพร้อม npm และ Python 3.10 ขึ้นไป โดยเรียก Python ได้ด้วยคำสั่ง `python`
+
+เปิดเทอร์มินัลในโฟลเดอร์โปรเจกต์แล้วรัน
+
+```bash
+npm ci
+npm run dev
+```
+
+เปิด <http://127.0.0.1:8000/> ในเบราว์เซอร์ คำสั่ง `npm run dev` สร้างไฟล์เว็บและเปิด Python server จากพอร์ต 8000 หากแก้ HTML, JavaScript หรือ CSS ให้กด `Ctrl+C` แล้วรัน `npm run dev` ใหม่
+
+| คำสั่ง | ใช้ทำอะไร |
+| --- | --- |
+| `npm run build` | สร้างหน้าเว็บ รูป และ Tailwind CSS ใน `dist/` |
+| `npm start` | เปิด Python server จากไฟล์ที่ build แล้ว |
+| `npm start -- --port 8001` | เปิดเซิร์ฟเวอร์ด้วยพอร์ตอื่น |
+| `npm test` | รันชุดทดสอบ Python ด้วย `unittest` |
+
+ถ้า PowerShell บล็อก `npm.ps1` ให้ใช้ `npm.cmd` ในคำสั่งด้านบน หรือรันผ่าน Git Bash
+
+## การเชื่อม Python กับหน้าเว็บ
+
+ให้เปิดหน้าเว็บผ่าน Python server เพื่อให้เรียก API ได้ โดย `POST /api/rooms/filter` ใช้ `RoomFilterService` กรองชื่อ รหัส สถานที่ และความจุ ส่วน `POST /api/bookings/check` ใช้ `TimeRange` และ `find_conflicts` ตรวจเวลาเริ่ม เวลาสิ้นสุด และช่วงเวลาซ้อนก่อนสร้างรายการจอง
+
+รายการจองอยู่ใน Local Storage ของแต่ละเบราว์เซอร์ API ตรวจจากรายการในเบราว์เซอร์นั้นและส่งผลกลับ จึงต้องรัน Python server ควบคู่กับ `dist/` และข้อมูลการจองแยกตามเบราว์เซอร์ พอร์ต และ hostname ที่ใช้เปิดเว็บ
+
+## CSS และรูปห้อง
+
+Tailwind CLI สร้าง `dist/css/tailwind.css` ตอน build ส่วนรูปห้องเดิมจาก Unsplash เก็บไว้ใน `assets/rooms/` เบราว์เซอร์โหลด CSS และรูปจากเซิร์ฟเวอร์เดียวกับหน้าเว็บ

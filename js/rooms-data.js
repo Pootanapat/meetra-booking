@@ -5,7 +5,8 @@ const ROOMS = [
         capacity: 10,
         status: 'available',
         location: 'ชั้น 1 อาคารเรียนรวม KMITL',
-        image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&q=80',
+        floor: 1,
+        image: 'assets/rooms/meeting-room.jpg',
         description: 'ห้องประชุมขนาดกลาง พร้อมระบบ VDO Conference และ Smart Board'
     },
     {
@@ -14,7 +15,8 @@ const ROOMS = [
         capacity: 30,
         status: 'available',
         location: 'ชั้น 3 คณะเทคโนโลยีสารสนเทศ',
-        image: 'https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=600&q=80',
+        floor: 3,
+        image: 'assets/rooms/computer-lab.jpg',
         description: 'ห้องปฏิบัติการคอมพิวเตอร์ 30 เครื่อง เหมาะสำหรับการอบรมเชิงปฏิบัติการ'
     },
     {
@@ -23,7 +25,8 @@ const ROOMS = [
         capacity: 50,
         status: 'booked',
         location: 'ชั้น 2 อาคารหอประชุมใหญ่',
-        image: 'https://images.unsplash.com/photo-1431540015161-0bf868a2d407?auto=format&fit=crop&w=600&q=80',
+        floor: 2,
+        image: 'assets/rooms/seminar-room.jpg',
         description: 'ห้องสัมมนาพร้อมเวที ระบบเครื่องเสียง และไมโครโฟนไร้สายครบชุด'
     },
     {
@@ -32,7 +35,8 @@ const ROOMS = [
         capacity: 15,
         status: 'selected',
         location: 'ชั้น 1 สำนักหอสมุดกลาง',
-        image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80',
+        floor: 1,
+        image: 'assets/rooms/coworking.jpg',
         description: 'พื้นที่ทำงานกลุ่มแบบเป็นกันเอง พร้อมปลั๊กไฟและ Wi-Fi ความเร็วสูง'
     },
     {
@@ -41,7 +45,8 @@ const ROOMS = [
         capacity: 25,
         status: 'available',
         location: 'ชั้น 4 คณะเทคโนโลยีสารสนเทศ',
-        image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=600&q=80',
+        floor: 4,
+        image: 'assets/rooms/mac-lab.jpg',
         description: 'ห้องปฏิบัติการ iMac สำหรับงานดีไซน์ ออกแบบ และตัดต่อสื่อประสม'
     },
     {
@@ -52,7 +57,7 @@ const ROOMS = [
         building: 'อาคารเรียนรวม A',
         location: 'ชั้น 7 อาคารเรียนรวม A',
         status: 'available',
-        image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&q=80',
+        image: 'assets/rooms/meeting-room.jpg',
         equipment: 'โปรเจกเตอร์ • ไมโครโฟน • จอแสดงผล',
         description: 'โปรเจกเตอร์ • ไมโครโฟน • จอแสดงผล',
         equipmentItems: ['โปรเจกเตอร์', 'ไมโครโฟน', 'จอแสดงผล'],
@@ -66,7 +71,7 @@ const ROOMS = [
         building: 'อาคารเรียนรวม A',
         location: 'ชั้น 7 อาคารเรียนรวม A',
         status: 'available',
-        image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&q=80',
+        image: 'assets/rooms/meeting-room.jpg',
         equipment: 'จอแสดงผล • กระดานไวท์บอร์ด',
         description: 'จอแสดงผล • กระดานไวท์บอร์ด',
         equipmentItems: ['จอแสดงผล', 'กระดานไวท์บอร์ด'],
@@ -80,7 +85,7 @@ const ROOMS = [
         building: 'อาคารเรียนรวม B',
         location: 'ชั้น 7 อาคารเรียนรวม B',
         status: 'available',
-        image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&q=80',
+        image: 'assets/rooms/meeting-room.jpg',
         equipment: 'โปรเจกเตอร์ • ไมโครโฟน',
         description: 'โปรเจกเตอร์ • ไมโครโฟน',
         equipmentItems: ['โปรเจกเตอร์', 'ไมโครโฟน'],
@@ -94,7 +99,7 @@ const ROOMS = [
         building: 'อาคารเรียนรวม B',
         location: 'ชั้น 7 อาคารเรียนรวม B',
         status: 'available',
-        image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&q=80',
+        image: 'assets/rooms/meeting-room.jpg',
         equipment: 'จอแสดงผล • ไมโครโฟน • Wi-Fi',
         description: 'จอแสดงผล • ไมโครโฟน • Wi-Fi',
         equipmentItems: ['จอแสดงผล', 'ไมโครโฟน', 'Wi-Fi'],
@@ -108,7 +113,7 @@ const ROOMS = [
         building: 'อาคารเรียนรวม A',
         location: 'ชั้น 7 อาคารเรียนรวม A',
         status: 'available',
-        image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&q=80',
+        image: 'assets/rooms/meeting-room.jpg',
         equipment: 'จอแสดงผล • กระดานไวท์บอร์ด',
         description: 'จอแสดงผล • กระดานไวท์บอร์ด',
         equipmentItems: ['จอแสดงผล', 'กระดานไวท์บอร์ด'],

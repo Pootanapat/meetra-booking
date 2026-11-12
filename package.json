@@ -1,0 +1,14 @@
+{
+  "name": "meetra-booking",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "python build_site.py && tailwindcss -i ./css/tailwind-input.css -o ./dist/css/tailwind.css --minify",
+    "dev": "npm run build && python server.py",
+    "start": "python server.py",
+    "test": "python -m unittest discover -s tests"
+  },
+  "devDependencies": {
+    "tailwindcss": "3.4.17"
+  }
+}

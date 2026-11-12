@@ -45,9 +45,10 @@ flowchart LR
     PythonRules["timeline.py domain rules"] --> PythonTests["tests/test_timeline.py"]
 ```
 
-The Python rules are not called directly by the static browser pages; they
-provide a tested domain implementation for Python workflows and future API
-integration. The browser applies the same half-open overlap rule locally.
+The booking form calls `POST /api/bookings/check`. The Python server converts
+the requested slot and the browser's active bookings to `TimeRange` values and
+uses `find_conflicts` to check for overlaps. The browser saves the reservation
+to Local Storage after a successful check.
 
 ## Room filtering
 
@@ -95,6 +96,6 @@ criteria conjunctively. `MOCK_ROOMS` provides sample data through
 `mock_data.py`; production storage can be added behind `RoomRepository` without
 changing the filtering service.
 
-The current browser pages continue to use their existing JavaScript behavior.
-The Python service is not connected to the browser or exposed over HTTP; an API
-adapter can be added separately if server-side integration is needed.
+The booking page sends its shared room catalog and active filters to
+`POST /api/rooms/filter`. The adapter applies `RoomFilterService` and returns the
+matching room IDs for the browser to render.

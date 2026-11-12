@@ -6,72 +6,7 @@
     <title>ระบบจองห้องประชุม | KMITL Room Booking</title>
 
     <link rel="stylesheet" href="css/style.css">
-    
-    <style>
-        .btn-purple-pill {
-            background: #7c3aed !important;
-            color: #ffffff !important;
-            border-radius: 9999px !important;
-            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3) !important;
-            border: none !important;
-            transition: all 0.2s ease !important;
-        }
-        .btn-purple-pill:hover {
-            background: #6d28d9 !important;
-            box-shadow: 0 6px 16px rgba(124, 58, 237, 0.4) !important;
-        }
-        .btn-gray-back {
-            background: #f3f4f6 !important;
-            color: #4b5563 !important;
-            border: 1px solid #d1d5db !important;
-            border-radius: 9999px !important;
-            transition: all 0.2s ease !important;
-        }
-        .btn-gray-back:hover {
-            background: #e5e7eb !important;
-            color: #1f2937 !important;
-        }
-        .icon-box-purple {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 22px;
-            height: 22px;
-            border-radius: 6px;
-            border: 1.5px solid #7c3aed;
-            color: #7c3aed;
-            font-size: 12px;
-            background: #ffffff;
-            flex-shrink: 0;
-        }
-        .ios-input-pill {
-            width: 100%;
-            border: 1px solid #e5e7eb;
-            border-radius: 16px;
-            padding: 10px 16px;
-            font-size: 14px;
-            outline: none;
-            background-color: #f9fafb;
-            box-sizing: border-box;
-            transition: all 0.2s;
-        }
-        .ios-input-pill:focus {
-            background-color: #ffffff;
-            border-color: #7c3aed;
-            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
-        }
-        .icon-svg {
-            width: 14px;
-            height: 14px;
-            stroke-width: 2;
-            stroke: currentColor;
-            fill: none;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            display: inline-block;
-            vertical-align: middle;
-        }
-    </style>
+    <link rel="stylesheet" href="css/home.css">
 </head>
 <body>
     <div class="app">
@@ -88,19 +23,19 @@
                 <div class="nav-label">WORKSPACE</div>
                 <nav class="nav">
                     <a href="index.html" class="active">
-                        <span class="nav-icon">⣿</span>
+                        <span class="ico">▦</span>
                         <span>ระบบจองห้องประชุม</span>
                     </a>
                     <a href="my-bookings.html">
-                        <span class="nav-icon">▣</span>
+                        <span class="ico">▣</span>
                         <span>การจองของฉัน</span>
                     </a>
                     <a href="statistics.html">
-                        <span class="nav-icon">▤</span>
+                        <span class="ico">▤</span>
                         <span>สถิติการจอง</span>
                     </a>
                     <a href="rooms.html">
-                        <span class="nav-icon">▧</span>
+                        <span class="ico">▧</span>
                         <span>ข้อมูลห้องประชุม</span>
                     </a>
                 </nav>
@@ -125,7 +60,7 @@
                 </div>
             </header>
 
-            <div class="content">
+            <div class="content home-page">
                 <div class="eyebrow">KMITL MEETING SPACES</div>
                 <div class="page-title">
                     <div>
@@ -134,11 +69,24 @@
                     </div>
                 </div>
 
-                <div class="hero">
-                    <div>
+                <div class="hero home-hero">
+                    <div class="home-hero-copy">
                         <span class="eyebrow">READY FOR YOUR NEXT BIG IDEA</span>
-                        <h2>ทุกการประชุมที่ดี เริ่มต้นจาก พื้นที่ที่ใช่</h2>
+                        <h2>ทุกการประชุมที่ดี<br>เริ่มต้นจาก <span>พื้นที่ที่ใช่</span></h2>
                         <p>เลือกห้องประชุม พร้อมอุปกรณ์ให้คุณเริ่มต้นทำงานได้อย่างลงตัว</p>
+                    </div>
+                    <div class="home-hero-art" aria-hidden="true">
+                        <div class="home-hero-orbit"></div>
+                        <div class="home-hero-window">
+                            <span class="home-hero-window-dot"></span>
+                            <span class="home-hero-window-dot"></span>
+                            <span class="home-hero-window-dot"></span>
+                            <div class="home-hero-screen">K</div>
+                            <div class="home-hero-table"></div>
+                            <div class="home-hero-chair home-hero-chair-left"></div>
+                            <div class="home-hero-chair home-hero-chair-right"></div>
+                        </div>
+                        <div class="home-hero-note"><span>✓</span> พร้อมให้จอง</div>
                     </div>
                 </div>
 
@@ -149,11 +97,11 @@
                     </div>
                     <div class="stat">
                         <div class="stat-icon">✓</div>
-                        <div><small>ห้องว่างวันนี้</small><strong id="availableCount">3</strong></div>
+                        <div><small>ห้องว่างวันที่เลือก</small><strong id="availableCount">3</strong></div>
                     </div>
                     <div class="stat">
                         <div class="stat-icon">▢</div>
-                        <div><small>รายการจองวันนี้</small><strong id="todayBookingCount">2</strong></div>
+                        <div><small>รายการจองวันที่เลือก</small><strong id="todayBookingCount">0</strong></div>
                     </div>
                     <div class="stat">
                         <div class="stat-icon">◷</div>
@@ -161,43 +109,43 @@
                     </div>
                 </div>
 
-                <div class="section-head">
+                <div class="section-head home-section-head">
                     <div>
                         <h2>เลือกห้องประชุมของคุณ</h2>
                         <p class="sub">คลิกแล้วเลือกห้องและช่วงเวลาที่ต้องการ</p>
                     </div>
                 </div>
 
-                <div class="toolbar flex flex-wrap gap-3 items-center">
-                    <div class="date-controls flex items-center gap-2">
+                <div class="toolbar home-toolbar">
+                    <div class="date-controls home-date-controls">
                         <button class="secondary" id="prevDay">&lt;</button>
-                        <input type="date" id="bookingDateInput" class="border px-3 py-1.5 rounded-lg text-sm bg-white" value="2026-11-20">
+                        <input type="date" id="bookingDateInput" value="2026-11-20">
                         <button class="secondary" id="nextDay">></button>
                         <button class="secondary" id="todayBtn">วันนี้</button>
                     </div>
-                    <div class="flex-1 min-w-[200px]">
-                        <input type="text" id="searchInput" placeholder="ค้นหาชื่อห้องหรือสถานที่..." class="w-full border border-gray-200 px-4 py-2 rounded-xl text-sm focus:outline-none focus:border-purple-500 bg-white shadow-sm transition">
+                    <div class="home-search">
+                        <input type="search" id="searchInput" placeholder="ค้นหาชื่อห้องหรือสถานที่...">
                     </div>
-                    <select id="capacityFilter" class="border border-gray-200 px-3 py-2 rounded-xl text-sm bg-white shadow-sm text-gray-700">
+                    <select id="capacityFilter" class="home-capacity-filter">
                         <option value="all">ทุกขนาดห้อง</option>
                         <option value="small">1-15 คน</option>
                         <option value="large">16 คนขึ้นไป</option>
                     </select>
                 </div>
 
-                <div class="legend flex items-center gap-5 text-xs text-gray-500 my-4 bg-gray-50/60 p-2.5 rounded-xl border border-gray-100/80 w-fit">
-                    <span class="flex items-center gap-1.5 font-medium"><i class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm"></i>ว่าง</span>
-                    <span class="flex items-center gap-1.5 font-medium"><i class="w-2.5 h-2.5 rounded-full bg-rose-500 shadow-sm"></i>จองแล้ว</span>
-                    <span class="flex items-center gap-1.5 font-medium"><i class="w-2.5 h-2.5 rounded-full bg-purple-600 shadow-sm"></i>กำลังเลือก</span>
+                <div class="legend home-legend">
+                    <span><i class="home-dot home-dot-available"></i>ว่าง</span>
+                    <span><i class="home-dot home-dot-booked"></i>จองแล้ว</span>
+                    <span><i class="home-dot home-dot-selected"></i>กำลังเลือก</span>
                 </div>
 
-                <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm space-y-4">
-                    <div class="flex justify-between items-center pb-3 border-b border-gray-100">
-                        <h3 class="font-bold text-gray-800 text-base tracking-tight">ห้องประชุม / MEETING ROOM</h3>
-                        <span class="text-xs text-gray-400 font-medium">เวลาทำการ 07:00–17:00 น.</span>
+                <div class="home-room-panel">
+                    <div class="home-room-panel-heading">
+                        <h3>ห้องประชุม <span>/ MEETING ROOM</span></h3>
+                        <span>เวลาทำการ 07:00–17:00 น.</span>
                     </div>
 
-                    <div id="roomGridContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-2">
+                    <div id="roomGridContainer" class="home-room-grid">
                     </div>
                 </div>
             </div>
@@ -205,28 +153,29 @@
     </div>
 
     <!-- MODAL 1: แบบฟอร์มจองห้องประชุม -->
-    <div id="bookingFormModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden items-center justify-center p-4 z-50 transition-all">
-        <div class="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-gray-100 overflow-hidden space-y-0 animate-in fade-in zoom-in duration-200">
-            <div class="relative h-32 bg-gray-900">
-                <img id="formRoomImg" src="" alt="Room Preview" class="w-full h-full object-cover opacity-60">
-                <button type="button" onclick="window.bookingController.closeFormModal()" class="absolute top-4 right-4 bg-black/40 hover:bg-black/60 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold backdrop-blur-md transition">✕</button>
-                <div class="absolute bottom-3 left-5 right-5 text-white">
-                    <span id="formRoomCap" class="text-[10px] bg-purple-600/90 font-semibold px-2.5 py-0.5 rounded-full uppercase tracking-wider backdrop-blur-md inline-flex items-center gap-1">
+    <dialog id="bookingFormModal" class="home-booking-dialog" aria-labelledby="formRoomTitle">
+        <div class="home-dialog-card">
+            <div class="home-dialog-cover">
+                <img id="formRoomImg" src="" alt="">
+                <button type="button" class="home-dialog-close" aria-label="ปิดหน้าต่าง"
+                    onclick="window.bookingController.closeFormModal()">✕</button>
+                <div class="home-dialog-cover-copy">
+                    <span id="formRoomCap" class="home-modal-capacity">
                         10 คน
                     </span>
-                    <h3 id="formRoomTitle" class="text-lg font-bold mt-1 leading-snug drop-shadow-sm">ชื่อห้องประชุม</h3>
+                    <h2 id="formRoomTitle">ชื่อห้องประชุม</h2>
                 </div>
             </div>
 
-            <form id="bookingDetailsForm" class="p-6 space-y-4">
-                <p id="formRoomLoc" class="text-xs text-gray-500 font-medium flex items-center gap-1 -mt-1">
+            <form id="bookingDetailsForm" class="home-booking-form">
+                <p id="formRoomLoc" class="home-modal-location">
                     <svg class="icon-svg text-rose-500" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
                     สถานที่
                 </p>
 
-                <div class="space-y-4 pt-1">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1.5 flex items-center gap-2">
+                <div class="home-booking-fields">
+                    <div class="home-booking-field">
+                        <label>
                             <span class="icon-box-purple">
                                 <svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                             </span>
@@ -235,29 +184,29 @@
                         <input type="date" id="inputBookingDate" required class="ios-input-pill">
                     </div>
 
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-700 mb-1.5 flex items-center gap-2">
+                    <div class="home-time-fields">
+                        <div class="home-booking-field">
+                            <label>
                                 <span class="icon-box-purple">
                                     <svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                                 </span>
                                 เวลาเริ่มต้น
                             </label>
-                            <input type="time" id="inputStartTime" required value="09:00" class="ios-input-pill">
+                            <input type="time" id="inputStartTime" required min="07:00" max="17:00" value="09:00" class="ios-input-pill">
                         </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-700 mb-1.5 flex items-center gap-2">
+                        <div class="home-booking-field">
+                            <label>
                                 <span class="icon-box-purple">
                                     <svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                                 </span>
                                 เวลาสิ้นสุด
                             </label>
-                            <input type="time" id="inputEndTime" required value="11:00" class="ios-input-pill">
+                            <input type="time" id="inputEndTime" required min="07:00" max="17:00" value="11:00" class="ios-input-pill">
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1.5 flex items-center gap-2">
+                    <div class="home-booking-field">
+                        <label>
                             <span class="icon-box-purple">
                                 <svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
                             </span>
@@ -268,13 +217,13 @@
                 </div>
 
                 <!-- กล่องข้อความแจ้งเตือนกรณีเวลาชนกัน -->
-                <p id="modalErrorMsg" class="text-xs text-rose-500 font-bold text-center hidden pt-1"></p>
+                <p id="modalErrorMsg" class="home-modal-error" hidden role="alert"></p>
 
-                <div class="flex items-center gap-3 pt-5 border-t border-gray-100">
-                    <button type="button" onclick="window.bookingController.closeFormModal()" class="w-1/3 py-3 btn-gray-back font-semibold text-xs transition cursor-pointer">
+                <div class="home-modal-actions">
+                    <button type="button" onclick="window.bookingController.closeFormModal()" class="btn-gray-back">
                         ย้อนกลับ
                     </button>
-                    <button type="submit" class="w-2/3 py-3 btn-purple-pill font-semibold text-xs tracking-wide cursor-pointer flex items-center justify-center gap-1">
+                    <button type="submit" class="btn-purple-pill">
                         <span>ยืนยันการจองห้อง</span>
                     </button>
                 </div>
@@ -283,58 +232,52 @@
     </div>
 
     <!-- MODAL 2 -->
-    <div id="receiptModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden items-center justify-center p-4 z-50 transition-all">
-        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-gray-100 relative text-center space-y-5 animate-in fade-in zoom-in duration-200">
-            <div class="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+    <dialog id="receiptModal" class="home-receipt-dialog" aria-labelledby="receiptTitle">
+        <div class="home-receipt-card">
+            <div class="home-receipt-icon">
+                <svg class="icon-svg" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>
             </div>
 
             <div>
-                <h3 class="text-xl font-bold text-gray-900 tracking-tight">การจองสำเร็จ</h3>
-                <p class="text-xs text-gray-400 mt-1">ระบบได้ทำการบันทึกข้อมูลการจองของคุณเรียบร้อยแล้ว</p>
+                <h3 id="receiptTitle" class="home-receipt-title">การจองสำเร็จ</h3>
+                <p class="home-receipt-subtitle">ระบบได้ทำการบันทึกข้อมูลการจองของคุณเรียบร้อยแล้ว</p>
             </div>
 
-            <div class="bg-gray-50/80 rounded-2xl p-4 border border-gray-100 text-left space-y-3 text-xs">
-                <div class="flex justify-between items-center pb-2 border-b border-gray-200/60">
-                    <span class="text-gray-400 font-medium">รหัสอ้างอิง</span>
-                    <span id="recRefCode" class="font-mono font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-md">#KMITL-89421</span>
+            <div class="home-receipt-details">
+                <div class="home-receipt-reference">
+                    <span>รหัสอ้างอิง</span>
+                    <span id="recRefCode">#KMITL-89421</span>
                 </div>
-                <div>
-                    <span class="text-gray-400 block mb-0.5">ห้องประชุม</span>
-                    <span id="recRoomName" class="font-bold text-gray-800 text-sm block leading-snug">ห้องประชุม 101</span>
+                <div class="home-receipt-detail">
+                    <span>ห้องประชุม</span>
+                    <strong id="recRoomName">ห้องประชุม 101</strong>
                 </div>
-                <div>
-                    <span class="text-gray-400 block mb-0.5">สถานที่</span>
-                    <span id="recLocation" class="text-gray-600 font-medium block">ชั้น 1 อาคารเรียนรวม KMITL</span>
+                <div class="home-receipt-detail">
+                    <span>สถานที่</span>
+                    <strong id="recLocation">ชั้น 1 อาคารเรียนรวม KMITL</strong>
                 </div>
-                <div class="grid grid-cols-2 gap-2 pt-1">
-                    <div>
-                        <span class="text-gray-400 block mb-0.5">วันที่</span>
-                        <span id="recDate" class="font-semibold text-gray-800">2026-11-20</span>
+                <div class="home-receipt-time">
+                    <div class="home-receipt-detail">
+                        <span>วันที่</span>
+                        <strong id="recDate">2026-11-20</strong>
                     </div>
-                    <div>
-                        <span class="text-gray-400 block mb-0.5">ช่วงเวลา</span>
-                        <span id="recTime" class="font-semibold text-gray-800">09:00 - 11:00 น.</span>
+                    <div class="home-receipt-detail">
+                        <span>ช่วงเวลา</span>
+                        <strong id="recTime">09:00 - 11:00 น.</strong>
                     </div>
                 </div>
             </div>
 
-            <div class="space-y-2 pt-1">
-                <button 
-                    id="goToBookingsBtn"
-                    class="w-full py-3 btn-purple-pill font-medium text-xs tracking-wide cursor-pointer"
-                >
+            <div class="home-receipt-actions">
+                <button id="goToBookingsBtn" class="home-room-book-button">
                     ดูรายการจองของฉัน
                 </button>
-                <button 
-                    onclick="document.getElementById('receiptModal').classList.add('hidden'); document.getElementById('receiptModal').classList.remove('flex');"
-                    class="w-full py-2.5 text-gray-400 hover:text-gray-600 font-medium text-xs transition cursor-pointer"
-                >
+                <button type="button" class="home-receipt-close" onclick="document.getElementById('receiptModal').close()">
                     ปิดหน้าต่างนี้
                 </button>
             </div>
         </div>
-    </div>
+    </dialog>
 
     <script type="module" src="js/common.js"></script>
     <script type="module" src="js/booking.js"></script>
@@ -365,7 +308,7 @@
                 id: 'room-sem-b',
                 name: 'ห้องสัมมนาใหญ่ B',
                 capacity: 50,
-                status: 'booked',
+                status: 'available',
                 statusText: 'จองแล้ว',
                 location: 'ชั้น 2 อาคารหอประชุมใหญ่',
                 image: 'https://images.unsplash.com/photo-1431540015161-0bf868a2d407?auto=format&fit=crop&w=600&q=80',
@@ -375,7 +318,7 @@
                 id: 'room-coworking',
                 name: 'Co-Working Space Zone A',
                 capacity: 15,
-                status: 'selected',
+                status: 'available',
                 statusText: 'กำลังเลือก',
                 location: 'ชั้น 1 สำนักหอสมุดกลาง',
                 image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80',
@@ -405,13 +348,43 @@
 
                 this.formModal = document.getElementById('bookingFormModal');
                 this.bookingForm = document.getElementById('bookingDetailsForm');
+                this.receiptModal = document.getElementById('receiptModal');
+                this.bookingDateInput = document.getElementById('inputBookingDate');
+                this.startTimeInput = document.getElementById('inputStartTime');
+                this.endTimeInput = document.getElementById('inputEndTime');
 
                 this.init();
             }
 
             init() {
+                this.setToday();
                 this.renderRooms(this.rooms);
+                this.updateSummary();
                 this.bindEvents();
+            }
+
+            setToday() {
+                const now = new Date();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                const today = `${now.getFullYear()}-${month}-${day}`;
+                this.dateInput.value = today;
+                this.bookingDateInput.min = today;
+            }
+
+            updateSummary() {
+                const totalRooms = document.getElementById('roomCount');
+                const availableRooms = document.getElementById('availableCount');
+                const bookingsToday = document.getElementById('todayBookingCount');
+                const selectedDate = this.dateInput.value;
+
+                totalRooms.textContent = this.rooms.length;
+                availableRooms.textContent = this.rooms.filter(room =>
+                    this.hasAvailableTime(room, selectedDate)).length;
+                bookingsToday.textContent = window.getBookings()
+                    .filter(booking => booking.date === selectedDate
+                        && booking.status !== 'cancelled'
+                        && booking.status !== 'ยกเลิกแล้ว').length;
             }
 
             bindEvents() {
@@ -425,54 +398,95 @@
                 const todayBtn = document.getElementById('todayBtn');
                 if (todayBtn) {
                     todayBtn.addEventListener('click', () => {
-                        const today = new Date().toISOString().split('T')[0];
-                        if (this.dateInput) this.dateInput.value = today;
+                        this.setToday();
+                        this.refreshDate();
                     });
                 }
 
+                document.getElementById('prevDay').addEventListener('click', () => this.shiftDate(-1));
+                document.getElementById('nextDay').addEventListener('click', () => this.shiftDate(1));
+                this.dateInput.addEventListener('change', () => this.refreshDate());
                 if (this.bookingForm) {
                     this.bookingForm.addEventListener('submit', (e) => this.handleFormSubmit(e));
                 }
+                this.formModal.addEventListener('click', event => {
+                    if (event.target === this.formModal) this.closeFormModal();
+                });
+                this.formModal.addEventListener('keydown', event => {
+                    if (event.key === 'Escape') {
+                        event.preventDefault();
+                        this.closeFormModal();
+                    }
+                }, true);
+                this.receiptModal.addEventListener('click', event => {
+                    if (event.target === this.receiptModal) this.receiptModal.close();
+                });
+            }
+
+            shiftDate(amount) {
+                const date = new Date(`${this.dateInput.value}T12:00:00`);
+                date.setDate(date.getDate() + amount);
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const nextDate = `${date.getFullYear()}-${month}-${day}`;
+                if (nextDate < this.dateInput.min) return;
+                this.dateInput.value = nextDate;
+                this.refreshDate();
+            }
+
+            refreshDate() {
+                this.renderRooms(this.filteredRooms());
+                this.updateSummary();
+            }
+
+            filteredRooms() {
+                const query = (this.searchInput.value || '').trim().toLocaleLowerCase();
+                const capType = this.capacityFilter.value || 'all';
+                return this.rooms.filter(room => {
+                    const matchQuery = `${room.name} ${room.location}`.toLocaleLowerCase().includes(query);
+                    const matchesCapacity = capType === 'small'
+                        ? room.capacity <= 15
+                        : capType === 'large'
+                            ? room.capacity > 15
+                            : true;
+                    return matchQuery && matchesCapacity;
+                });
             }
 
             handleFilter() {
-                const query = (this.searchInput?.value || '').toLowerCase();
-                const capType = this.capacityFilter?.value || 'all';
+                this.renderRooms(this.filteredRooms());
+            }
 
-                const filtered = this.rooms.filter(room => {
-                    const matchQuery = room.name.toLowerCase().includes(query) || room.location.toLowerCase().includes(query);
-                    let matchCap = true;
-                    if (capType === 'small') matchCap = room.capacity <= 15;
-                    if (capType === 'large') matchCap = room.capacity > 15;
-                    return matchQuery && matchCap;
-                });
+            getRoomStatus(room) {
+                const hasBooking = window.getBookings().some(booking =>
+                    (booking.roomId === room.id || booking.roomName === room.name)
+                    && booking.date === this.dateInput.value
+                    && booking.status !== 'cancelled'
+                    && booking.status !== 'ยกเลิกแล้ว');
+                return hasBooking ? 'booked' : 'available';
+            }
 
-                this.renderRooms(filtered);
+            hasAvailableTime(room, date) {
+                const bookings = window.getBookings().filter(booking =>
+                    (booking.roomId === room.id || booking.roomName === room.name)
+                    && booking.date === date
+                    && booking.status !== 'cancelled'
+                    && booking.status !== 'ยกเลิกแล้ว');
+                for (let start = 7 * 60; start < 17 * 60; start += 30) {
+                    const end = start + 30;
+                    const overlaps = bookings.some(booking => {
+                        const bookingStart = this.timeToMinutes(booking.startTime || booking.start);
+                        const bookingEnd = this.timeToMinutes(booking.endTime || booking.end);
+                        return start < bookingEnd && end > bookingStart;
+                    });
+                    if (!overlaps) return true;
+                }
+                return false;
             }
 
             getStatusBadge(status) {
-                if (status === 'booked') {
-                    return `
-                        <span class="bg-rose-500/90 text-white backdrop-blur-md text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm border border-rose-400/30 flex items-center gap-1.5">
-                            <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
-                            จองแล้ว
-                        </span>
-                    `;
-                }
-                if (status === 'selected') {
-                    return `
-                        <span class="bg-purple-600/90 text-white backdrop-blur-md text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm border border-purple-400/30 flex items-center gap-1.5">
-                            <span class="w-2 h-2 rounded-full bg-white"></span>
-                            กำลังเลือก
-                        </span>
-                    `;
-                }
-                return `
-                    <span class="bg-emerald-500/90 text-white backdrop-blur-md text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm border border-emerald-400/30 flex items-center gap-1.5">
-                        <span class="w-2 h-2 rounded-full bg-white"></span>
-                        ว่าง
-                    </span>
-                `;
+                const labels = { booked: 'มีรายการจอง', available: 'ว่าง' };
+                return `<span class="home-room-badge home-room-badge-${status}">${labels[status] || labels.available}</span>`;
             }
 
             renderRooms(data) {
@@ -480,7 +494,7 @@
 
                 if (data.length === 0) {
                     this.gridContainer.innerHTML = `
-                        <div class="col-span-full text-center py-12 text-gray-400 font-medium">
+                        <div class="home-room-empty">
                             ไม่พบห้องประชุมที่ตรงกับเงื่อนไขการค้นหา
                         </div>
                     `;
@@ -488,53 +502,24 @@
                 }
 
                 this.gridContainer.innerHTML = data.map(room => `
-                    <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md hover:border-purple-100 transition duration-200 flex flex-col justify-between group">
-                        <div>
-                            <div class="relative overflow-hidden h-44">
-                                <img 
-                                    src="${room.image}" 
-                                    alt="${room.name}" 
-                                    class="w-full h-full object-cover group-hover:scale-105 transition duration-500 ease-out"
-                                />
-                                
-                                <div class="absolute top-3 left-3">
-                                    ${this.getStatusBadge(room.status)}
-                                </div>
-
-                                <span class="absolute top-3 right-3 bg-white/90 backdrop-blur-md text-gray-800 text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm border border-white/50 flex items-center gap-1">
-                                    <svg class="icon-svg text-gray-500" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
-                                    ${room.capacity} คน
-                                </span>
-                            </div>
-
-                            <div class="p-4 space-y-2">
-                                <h4 class="font-bold text-gray-900 text-base leading-snug tracking-tight group-hover:text-purple-700 transition">${room.name}</h4>
-                                <p class="text-xs text-gray-500 flex items-center gap-1 font-medium">
-                                    <svg class="icon-svg text-rose-500" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                    <article class="home-room-card">
+                        <div class="home-room-image">
+                            <img src="${room.image}" alt="${room.name}" loading="lazy">
+                            ${this.getStatusBadge(this.getRoomStatus(room))}
+                            <span class="home-room-capacity">${room.capacity} คน</span>
+                        </div>
+                        <div class="home-room-content">
+                            <h4>${room.name}</h4>
+                            <p class="home-room-location">
+                                <svg class="icon-svg" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
                                     ${room.location}
-                                </p>
-                                <p class="text-xs text-gray-500 leading-relaxed line-clamp-2 pt-1 border-t border-gray-50">${room.description}</p>
-                            </div>
+                            </p>
+                            <p class="home-room-description">${room.description}</p>
                         </div>
-
-                        <div class="p-4 pt-0">
-                            ${room.status === 'booked' ? `
-                                <button 
-                                    disabled
-                                    class="w-full py-2.5 bg-gray-100 text-gray-400 rounded-xl font-medium text-xs tracking-wide cursor-not-allowed flex items-center justify-center gap-1"
-                                >
-                                    <span>ถูกจองแล้ว</span>
-                                </button>
-                            ` : `
-                                <button 
-                                    onclick="window.bookingController.openFormModal('${room.id}')"
-                                    class="w-full py-3 btn-purple-pill font-semibold text-xs tracking-wide cursor-pointer flex items-center justify-center gap-1.5"
-                                >
-                                    <span>＋ เลือกจองห้องนี้</span>
-                                </button>
-                            `}
+                        <div class="home-room-footer">
+                            <button onclick="window.bookingController.openFormModal('${room.id}')" class="home-room-book-button">＋ เลือกจองห้องนี้</button>
                         </div>
-                    </div>
+                    </article>
                 `).join('');
             }
 
@@ -544,19 +529,18 @@
 
                 document.getElementById('formRoomImg').src = this.selectedRoom.image;
                 document.getElementById('formRoomTitle').textContent = this.selectedRoom.name;
-                document.getElementById('formRoomLoc').innerHTML = '<svg class="icon-svg text-rose-500" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> ' + this.selectedRoom.location;
+                document.getElementById('formRoomImg').alt = this.selectedRoom.name;
+                document.getElementById('formRoomLoc').innerHTML = '<svg class="icon-svg" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> ' + this.selectedRoom.location;
                 document.getElementById('formRoomCap').textContent = this.selectedRoom.capacity + ' คน';
-                
-                document.getElementById('inputBookingDate').value = this.dateInput?.value || new Date().toISOString().split('T')[0];
-                document.getElementById('modalErrorMsg').classList.add('hidden');
-
-                this.formModal.classList.remove('hidden');
-                this.formModal.classList.add('flex');
+                this.bookingForm.reset();
+                this.bookingDateInput.value = this.dateInput.value;
+                document.getElementById('modalErrorMsg').hidden = true;
+                this.formModal.showModal();
+                this.bookingDateInput.focus();
             }
 
             closeFormModal() {
-                this.formModal.classList.add('hidden');
-                this.formModal.classList.remove('flex');
+                if (this.formModal.open) this.formModal.close();
             }
 
             timeToMinutes(t) {
@@ -573,6 +557,14 @@
 
                 if (newStart >= newEnd) {
                     return { hasConflict: true, message: 'เวลาเริ่มต้นต้องน้อยกว่าเวลาสิ้นสุด' };
+                }
+
+                const today = this.dateInput.min;
+                if (date < today) {
+                    return { hasConflict: true, message: 'ไม่สามารถจองวันที่ผ่านมาแล้วได้' };
+                }
+                if (newStart < 7 * 60 || newEnd > 17 * 60) {
+                    return { hasConflict: true, message: 'เวลาให้บริการคือ 07:00–17:00 น.' };
                 }
 
                 for (let b of allBookings) {
@@ -609,7 +601,7 @@
                 const conflictCheck = this.checkTimeConflict(this.selectedRoom.id, dateVal, startVal, endVal);
                 if (conflictCheck.hasConflict) {
                     errorBox.textContent = conflictCheck.message;
-                    errorBox.classList.remove('hidden');
+                    errorBox.hidden = false;
                     return;
                 }
 
@@ -633,8 +625,10 @@
                 };
 
                 const currentUser = window.getUser();
-                newBooking.userEmail = currentUser ? currentUser.email : newBooking.userEmail;
+                newBooking.userEmail = currentUser ? currentUser.email : '';
                 window.bookingStorage.add(newBooking);
+                this.renderRooms(this.filteredRooms());
+                this.updateSummary();
 
                 this.closeFormModal();
 
@@ -649,8 +643,7 @@
                 };
 
                 const receiptModal = document.getElementById('receiptModal');
-                receiptModal.classList.remove('hidden');
-                receiptModal.classList.add('flex');
+                receiptModal.showModal();
             }
         }
 

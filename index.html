@@ -172,9 +172,9 @@
 
             <div class="toolbar flex flex-wrap gap-3 items-center">
                 <div class="date-controls flex items-center gap-2">
-                    <button class="secondary" id="prevDay"><</button>
+                    <button class="secondary" id="prevDay" aria-label="วันก่อนหน้า">&lt;</button>
                     <input type="date" id="bookingDateInput" class="border px-3 py-1.5 rounded-lg text-sm bg-white">
-                    <button class="secondary" id="nextDay">></button>
+                    <button class="secondary" id="nextDay" aria-label="วันถัดไป">&gt;</button>
                     <button class="secondary" id="todayBtn">วันนี้</button>
                 </div>
                 <div class="flex-1 min-w-[200px]">
@@ -352,54 +352,11 @@
     </div>
 </div>
 
-<script src="js/common.js"></script>
+<script src="/js/common.js"></script>
 <script>
-const ROOM_DATABASE = [
-  {
-    id: 'room-101',
-    name: 'ห้องประชุม 101 - อาคารเรียนรวม',
-    capacity: 10,
-    location: 'ชั้น 1 อาคารเรียนรวม KMITL',
-    image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&q=80',
-    description: 'ห้องประชุมขนาดกลาง พร้อมระบบ VDO Conference และ Smart Board'
-  },
-  {
-    id: 'room-lab-b',
-    name: 'ห้องปฏิบัติการคอมพิวเตอร์ B',
-    capacity: 30,
-    location: 'ชั้น 3 คณะเทคโนโลยีสารสนเทศ',
-    image: 'https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=600&q=80',
-    description: 'ห้องปฏิบัติการคอมพิวเตอร์ 30 เครื่อง เหมาะสำหรับการอบรมเชิงปฏิบัติการ'
-  },
-  {
-    id: 'room-sem-b',
-    name: 'ห้องสัมมนาใหญ่ B',
-    capacity: 50,
-    location: 'ชั้น 2 อาคารหอประชุมใหญ่',
-    image: 'https://images.unsplash.com/photo-1431540015161-0bf868a2d407?auto=format&fit=crop&w=600&q=80',
-    description: 'ห้องสัมมนาพร้อมเวที ระบบเครื่องเสียง และไมโครโฟนไร้สายครบชุด'
-  },
-  {
-    id: 'room-coworking',
-    name: 'Co-Working Space Zone A',
-    capacity: 15,
-    location: 'ชั้น 1 สำนักหอสมุดกลาง',
-    image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80',
-    description: 'พื้นที่ทำงานกลุ่มแบบเป็นกันเอง พร้อมปลั๊กไฟและ Wi-Fi ความเร็วสูง'
-  },
-  {
-    id: 'room-mac-lab',
-    name: 'ห้องปฏิบัติการ Mac Lab 402',
-    capacity: 25,
-    location: 'ชั้น 4 คณะเทคโนโลยีสารสนเทศ',
-    image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=600&q=80',
-    description: 'ห้องปฏิบัติการ iMac สำหรับงานดีไซน์ ออกแบบ และตัดต่อสื่อประสม'
-  }
-];
-
 class BookingPageController {
   constructor() {
-    this.rooms = ROOM_DATABASE;
+    this.rooms = [];
     this.serverBookings = [];
     this.selectedRoom = null;
     this.gridContainer = document.getElementById('roomGridContainer');
@@ -420,37 +377,7 @@ class BookingPageController {
   }
 
   getCurrentUser() {
-    try {
-      const userLabelEl = document.getElementById('userLabel');
-      const logoutBtnEl = document.getElementById('logoutTop');
-      if (userLabelEl && userLabelEl.textContent.trim() === 'ผู้เยี่ยมชม') {
-        return null;
-      }
-      if (logoutBtnEl && logoutBtnEl.style.display === 'none') {
-        return null;
-      }
-
-      const keys = ['kmitl_current_user', 'kmitlCurrentUser', 'currentUser', 'user'];
-      for (const k of keys) {
-        const raw = localStorage.getItem(k);
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          if (
-            parsed &&
-            parsed.email &&
-            parsed.id &&
-            parsed.name &&
-            parsed.name !== 'ผู้เยี่ยมชม' &&
-            parsed.role !== 'guest'
-          ) {
-            return parsed;
-          }
-        }
-      }
-      return null;
-    } catch {
-      return null;
-    }
+    return getUser();
   }
 
   showLoginModal() {
@@ -468,12 +395,24 @@ class BookingPageController {
       this.dateInput.min = today;
     }
     this.bindEvents();
+    await this.syncRoomsFromServer();
     await this.syncBookingsFromServer();
+  }
+
+  async syncRoomsFromServer() {
+    try {
+      const response = await fetch('/api/rooms');
+      if (!response.ok) throw new Error('โหลดข้อมูลห้องไม่สำเร็จ');
+      this.rooms = await response.json();
+    } catch (error) {
+      console.error(error);
+      this.rooms = [];
+    }
   }
 
   async syncBookingsFromServer() {
     try {
-      const res = await fetch('/api/bookings');
+      const res = await fetch('/api/availability');
       if (res.ok) {
         this.serverBookings = await res.json();
       }
@@ -824,7 +763,7 @@ class BookingPageController {
     };
 
     try {
-      const res = await fetch('/api/bookings', {
+      const res = await apiFetch('/api/bookings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newBooking)

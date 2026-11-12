@@ -165,7 +165,7 @@
     </div>
 </div>
 
-<script src="js/common.js"></script>
+<script src="/js/common.js"></script>
 <script>
 let modalRedirectUrl = null;
 
@@ -216,22 +216,6 @@ function closeIosModal() {
     }
 }
 
-async function hashPasswordSHA256(password) {
-    if (window.crypto && window.crypto.subtle) {
-        const encoder = new TextEncoder();
-        const data = encoder.encode(password);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    }
-    let hash = 0;
-    for (let i = 0; i < password.length; i++) {
-        hash = ((hash << 5) - hash) + password.charCodeAt(i);
-        hash |= 0;
-    }
-    return 'hash_' + Math.abs(hash).toString(16);
-}
-
 document.getElementById('authForm').onsubmit = async (e) => {
     e.preventDefault();
 
@@ -243,13 +227,12 @@ document.getElementById('authForm').onsubmit = async (e) => {
     loginBtn.textContent = 'กำลังตรวจสอบ...';
 
     try {
-        const hashedInput = await hashPasswordSHA256(passwordInput);
-        const response = await fetch('http://localhost:3000/api/login', {
+        const response = await fetch('/api/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 email: emailInput,
-                passwordHash: hashedInput
+                password: passwordInput
             })
         });
 
@@ -266,9 +249,7 @@ document.getElementById('authForm').onsubmit = async (e) => {
         }
 
         const safeSessionUser = result.user;
-        localStorage.setItem('kmitl_current_user', JSON.stringify(safeSessionUser));
-        localStorage.setItem('kmitlCurrentUser', JSON.stringify(safeSessionUser));
-        localStorage.setItem('currentUser', JSON.stringify(safeSessionUser));
+        setSession(safeSessionUser, result.token);
 
         showIosModal(
             'success',
@@ -281,7 +262,7 @@ document.getElementById('authForm').onsubmit = async (e) => {
         showIosModal(
             'error',
             'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้',
-            'กรุณาตรวจสอบว่าเปิด MySQL ใน XAMPP และรัน node server.js แล้ว',
+            'กรุณาตรวจสอบว่ารัน npm start แล้ว',
             'ตกลง'
         );
     } finally {

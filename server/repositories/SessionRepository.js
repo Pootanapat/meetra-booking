@@ -13,5 +13,9 @@ export class SessionRepository {
       FROM sessions s JOIN users u ON u.id = s.user_id
       WHERE s.token_hash = ? AND s.expires_at > ?`, [tokenHash, currentTime]);
   }
+
+  deleteByTokenHash(tokenHash) {
+    return this.database.run('DELETE FROM sessions WHERE token_hash = ?', [tokenHash]);
+  }
 }
 

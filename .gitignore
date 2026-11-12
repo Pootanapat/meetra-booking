@@ -156,3 +156,6 @@ vite.config.ts.timestamp-*
 # Python
 __pycache__/
 *.py[cod]
+
+# Local database backups contain user and booking data
+backups/

@@ -249,7 +249,7 @@ document.getElementById('authForm').onsubmit = async (e) => {
         }
 
         const safeSessionUser = result.user;
-        setSession(safeSessionUser, result.token);
+        setSession(safeSessionUser);
 
         showIosModal(
             'success',

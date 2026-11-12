@@ -1,0 +1,9 @@
+@layer theme, base, components, utilities;
+
+/* Keep the existing handcrafted base styles; only generate Tailwind utilities. */
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@source "../index.html";
+@source "../my-bookings.html";
+@source "../public/js/booking/*.js";

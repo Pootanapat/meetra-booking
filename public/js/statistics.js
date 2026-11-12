@@ -19,7 +19,7 @@ const escapeHtml = value => String(value ?? '')
 
 async function initPage() {
   try {
-    const response = await fetch('/api/statistics');
+    const response = await apiFetch('/api/statistics');
     if (!response.ok) throw new Error('โหลดสถิติไม่สำเร็จ');
     const { rooms, bookings } = await response.json();
     renderStatistics(rooms, bookings);

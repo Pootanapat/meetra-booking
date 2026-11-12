@@ -58,5 +58,9 @@ export class AuthService {
     if (!user) throw new ApplicationError(401, 'เซสชันหมดอายุ กรุณาเข้าสู่ระบบใหม่');
     return user;
   }
+
+  logout(token) {
+    return this.sessionRepository.deleteByTokenHash(hashToken(token));
+  }
 }
 

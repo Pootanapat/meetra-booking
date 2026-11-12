@@ -171,7 +171,7 @@
     </div>
 </div>
 
-<script src="js/common.js"></script>
+<script src="/js/common.js"></script>
 <script>
 let modalRedirectUrl = null;
 
@@ -215,22 +215,6 @@ function closeIosModal() {
     }
 }
 
-async function hashPasswordSHA256(password) {
-    if (window.crypto && window.crypto.subtle) {
-        const encoder = new TextEncoder();
-        const data = encoder.encode(password);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    }
-    let hash = 0;
-    for (let i = 0; i < password.length; i++) {
-        hash = ((hash << 5) - hash) + password.charCodeAt(i);
-        hash |= 0;
-    }
-    return 'hash_' + Math.abs(hash).toString(16);
-}
-
 document.getElementById('registerForm').onsubmit = async (e) => {
     e.preventDefault();
 
@@ -245,8 +229,8 @@ document.getElementById('registerForm').onsubmit = async (e) => {
         return;
     }
 
-    if (passVal.length < 4) {
-        showIosModal('error', 'รหัสผ่านสั้นเกินไป', 'กรุณาตั้งรหัสผ่านอย่างน้อย 4 ตัวอักษร', 'ตกลง');
+    if (passVal.length < 6) {
+        showIosModal('error', 'รหัสผ่านสั้นเกินไป', 'กรุณาตั้งรหัสผ่านอย่างน้อย 6 ตัวอักษร', 'ตกลง');
         return;
     }
 
@@ -259,15 +243,13 @@ document.getElementById('registerForm').onsubmit = async (e) => {
     submitBtn.textContent = 'กำลังบันทึกข้อมูล...';
 
     try {
-        const hashedPassword = await hashPasswordSHA256(passVal);
-        const response = await fetch('http://localhost:3000/api/register', {
+        const response = await fetch('/api/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                id: 'user-' + Date.now(),
                 name: nameVal,
                 email: emailVal,
-                passwordHash: hashedPassword
+                password: passVal
             })
         });
 
@@ -283,10 +265,7 @@ document.getElementById('registerForm').onsubmit = async (e) => {
             return;
         }
 
-        // เคลียร์ session เก่า แล้วพาไปหน้า login.html เพื่อให้กรอกรหัสผ่านเข้าสู่ระบบ
-        localStorage.removeItem('kmitl_current_user');
-        localStorage.removeItem('kmitlCurrentUser');
-        localStorage.removeItem('currentUser');
+        clearSession();
 
         showIosModal(
             'success',
@@ -299,7 +278,7 @@ document.getElementById('registerForm').onsubmit = async (e) => {
         showIosModal(
             'error',
             'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้',
-            'กรุณาตรวจสอบว่าเปิด MySQL ใน XAMPP และรัน node server.js แล้ว',
+            'กรุณาตรวจสอบว่ารัน npm start แล้ว',
             'ตกลง'
         );
     } finally {

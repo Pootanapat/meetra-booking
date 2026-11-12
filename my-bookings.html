@@ -224,7 +224,7 @@
     </div>
 </div>
 
-<script src="js/common.js"></script>
+<script src="/js/common.js"></script>
 <script>
 let allSystemBookings = [];
 let myBookings = [];
@@ -241,19 +241,7 @@ function getLocalToday() {
 }
 
 function getCurrentUser() {
-    try {
-        const keys = ['kmitl_current_user', 'kmitlCurrentUser', 'currentUser', 'user'];
-        for (const k of keys) {
-            const raw = localStorage.getItem(k);
-            if (raw) {
-                const parsed = JSON.parse(raw);
-                if (parsed && (parsed.id || parsed.email)) return parsed;
-            }
-        }
-        return null;
-    } catch {
-        return null;
-    }
+    return getUser();
 }
 
 function timeToMinutes(t) {
@@ -286,7 +274,7 @@ async function loadMyBookings() {
     }
 
     try {
-        const res = await fetch('/api/bookings');
+        const res = await apiFetch('/api/bookings');
         allSystemBookings = await res.json();
         myBookings = allSystemBookings.filter(b => b.userId === user.id || b.userEmail === user.email);
         renderBookings();
@@ -487,7 +475,7 @@ document.getElementById('editBookingForm').addEventListener('submit', async (e) 
     saveBtn.textContent = 'กำลังบันทึก...';
 
     try {
-        const res = await fetch(`/api/bookings/${editingBooking.id}`, {
+        const res = await apiFetch(`/api/bookings/${editingBooking.id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -538,7 +526,7 @@ document.getElementById('confirmCancelBtn').onclick = async () => {
     btn.textContent = 'กำลังยกเลิก...';
 
     try {
-        const res = await fetch(`/api/bookings/${bookingIdToCancel}/cancel`, {
+        const res = await apiFetch(`/api/bookings/${bookingIdToCancel}/cancel`, {
             method: 'PATCH'
         });
         if (res.ok) {

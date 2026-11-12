@@ -1,144 +1,112 @@
-// js/common.js - โค้ดกลางที่ใช้ในทุกหน้า
-// หน้าที่: จัดการ Authentication, UI กลาง, และ Utility Functions
+// js/common.js (เวอร์ชันรวม - รองรับทั้งข้อมูลเก่าและใหม่)
 
 // ============================================
-// 1. ระบบ Authentication
+// 1. จัดการ LocalStorage (รวม Key เก่าและใหม่)
 // ============================================
+const getBookings = () => {
+    // อ่านจาก Key ใหม่
+    let savedNew = localStorage.getItem('kmitlBookings');
+    // อ่านจาก Key เก่า
+    let savedOld1 = localStorage.getItem('bookings');
+    let savedOld2 = localStorage.getItem('my_bookings_preview_data');
 
-// ตรวจสอบสถานะ login และ redirect ถ้าจำเป็น
-function checkAuth() {
-    const currentUser = localStorage.getItem('kmitlCurrentUser');
-    const currentPage = window.location.pathname.split('/').pop();
-    
-    // หน้าที่ไม่ต้อง login ก็เข้าได้
-    const publicPages = [
-        'index.html', 
-        'rooms.html', 
-        'my-bookings.html', 
-        'login.html', 
-        'register.html', 
-        'statistics.html'
-    ];
-    
-    // ถ้ายังไม่ login และไม่ใช่หน้าสาธารณะ → redirect ไปหน้า login
-    if (!currentUser && !publicPages.includes(currentPage)) {
-        window.location.href = 'login.html';
-        return null;
+    let bookings = [];
+
+    // แปลงข้อมูลใหม่
+    if (savedNew) {
+        try { bookings.push(...JSON.parse(savedNew)); } catch (e) {}
     }
+    // แปลงข้อมูลเก่า
+    if (savedOld1) {
+        try { bookings.push(...JSON.parse(savedOld1)); } catch (e) {}
+    }
+    if (savedOld2) {
+        try { bookings.push(...JSON.parse(savedOld2)); } catch (e) {}
+    }
+
+    // ลบข้อมูลซ้ำ (ใช้ id เป็นตัวเช็ค)
+    const uniqueMap = new Map();
+    bookings.forEach(b => {
+        if (b && b.id) uniqueMap.set(String(b.id), normalizeBooking(b));
+    });
+
+    const finalBookings = Array.from(uniqueMap.values());
     
-    return currentUser ? JSON.parse(currentUser) : null;
+    // บันทึกกลับไปที่ Key เดียว (kmitlBookings) เพื่อความสะอาดในอนาคต
+    localStorage.setItem('kmitlBookings', JSON.stringify(finalBookings));
+    
+    // ถ้าไม่มีข้อมูลเลย ให้ใช้ Mock Data
+    if (finalBookings.length === 0 && typeof MOCK_BOOKINGS !== 'undefined') {
+        saveBookings(MOCK_BOOKINGS.map(normalizeBooking));
+        return MOCK_BOOKINGS.map(normalizeBooking);
+    }
+
+    return finalBookings;
+};
+
+const saveBookings = (bookings) => {
+    const normalized = bookings.map(normalizeBooking);
+    // บันทึกลง Key ใหม่เป็นหลัก
+    localStorage.setItem('kmitlBookings', JSON.stringify(normalized));
+    // บันทึกลง Key เก่าด้วย (เผื่อหน้าเก่าเรียกใช้)
+    localStorage.setItem('bookings', JSON.stringify(normalized));
+    localStorage.setItem('my_bookings_preview_data', JSON.stringify(normalized));
+};
+
+// ฟังก์ชันแปลงโครงสร้างข้อมูลเก่า -> ใหม่ (Adapter)
+function normalizeBooking(b) {
+    return {
+        id: b.id,
+        roomId: b.roomId || b.roomName || '', // รองรับทั้ง id และชื่อ
+        date: b.date,
+        start: b.start || b.startTime || '09:00', // แปลง startTime -> start
+        end: b.end || b.endTime || '10:00',       // แปลง endTime -> end
+        owner: b.owner || b.userName || b.userEmail || 'ผู้เยี่ยมชม',
+        status: b.status || 'ยืนยันแล้ว',
+        // เก็บข้อมูลอื่นๆ ไว้เผื่อหน้าเก่าใช้
+        roomName: b.roomName,
+        location: b.location,
+        image: b.image,
+        capacity: b.capacity,
+        userEmail: b.userEmail,
+        purpose: b.purpose
+    };
 }
 
-// อัปเดต UI ตามสถานะ login (เรียกใช้ในทุกหน้า)
-function updateAuthUI() {
-    const user = checkAuth();
-    const userLabel = document.getElementById('userLabel');
+// ============================================
+// 2. จัดการ User (Login)
+// ============================================
+const getUser = () => JSON.parse(localStorage.getItem('kmitlCurrentUser') || 'null');
+
+const todayISO = () => {
+    let d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+
+function updateUserUI() {
+    const u = getUser();
+    const label = document.getElementById('userLabel');
     const avatar = document.getElementById('avatar');
     const loginBtn = document.getElementById('loginTop');
-    const registerBtn = document.getElementById('registerTop');
+    const regBtn = document.getElementById('registerTop');
     const logoutBtn = document.getElementById('logoutTop');
+
+    if (label) label.textContent = u ? u.name : 'ผู้เยี่ยมชม';
+    if (avatar) avatar.textContent = u ? u.name.charAt(0) : 'G';
     
-    if (user) {
-        // แสดงข้อมูลผู้ใช้
-        if (userLabel) {
-            userLabel.textContent = user.name || user.email || 'ผู้ใช้';
-        }
-        if (avatar) {
-            const initial = (user.name || user.email || 'G').charAt(0).toUpperCase();
-            avatar.textContent = initial;
-        }
-        
-        // ซ่อนปุ่ม login/register แสดงปุ่ม logout
-        if (loginBtn) loginBtn.style.display = 'none';
-        if (registerBtn) registerBtn.style.display = 'none';
-        if (logoutBtn) logoutBtn.style.display = 'block';
-    } else {
-        // แสดงปุ่ม login/register ซ่อนปุ่ม logout
-        if (loginBtn) loginBtn.style.display = 'block';
-        if (registerBtn) registerBtn.style.display = 'block';
-        if (logoutBtn) logoutBtn.style.display = 'none';
-    }
+    if (loginBtn) loginBtn.style.display = u ? 'none' : '';
+    if (regBtn) regBtn.style.display = u ? 'none' : '';
+    if (logoutBtn) logoutBtn.style.display = u ? '' : 'none';
 }
 
-// ฟังก์ชัน logout
 function logout() {
-    if (confirm('คุณต้องการออกจากระบบใช่หรือไม่?')) {
+    if(confirm('ต้องการออกจากระบบใช่หรือไม่?')) {
         localStorage.removeItem('kmitlCurrentUser');
-        window.location.href = 'index.html';
+        location.href = 'index.html';
     }
 }
 
 // ============================================
-// 2. Utility Functions
+// 3. Auto-run เมื่อโหลดหน้า
 // ============================================
-
-// แปลงเวลาเป็นนาที (สำหรับคำนวณเวลาชนกัน)
-function timeToMinutes(t) {
-    if (!t) return 0;
-    const [h, m] = t.split(':').map(Number);
-    return h * 60 + m;
-}
-
-// ตรวจสอบเวลาชนกัน (ใช้ร่วมกันทุกหน้า)
-function checkTimeConflict(roomId, roomName, date, startTime, endTime, excludeBookingId = null) {
-    const previewData = JSON.parse(localStorage.getItem('my_bookings_preview_data') || '[]');
-    const bookingsData = JSON.parse(localStorage.getItem('bookings') || '[]');
-    const allBookings = [...previewData, ...bookingsData];
-    
-    const newStart = timeToMinutes(startTime);
-    const newEnd = timeToMinutes(endTime);
-    
-    // ตรวจสอบว่าเวลาเริ่มต้นน้อยกว่าเวลาสิ้นสุด
-    if (newStart >= newEnd) {
-        return { hasConflict: true, message: 'เวลาเริ่มต้นต้องน้อยกว่าเวลาสิ้นสุด' };
-    }
-    
-    for (let b of allBookings) {
-        if (!b || b.status === 'cancelled' || b.status === 'ยกเลิกแล้ว') continue;
-        if (excludeBookingId && b.id === excludeBookingId) continue;
-        
-        const sameRoom = (b.roomId === roomId || b.roomName === roomName);
-        const sameDate = (b.date === date);
-        
-        if (sameRoom && sameDate) {
-            const bStart = timeToMinutes(b.startTime || b.start);
-            const bEnd = timeToMinutes(b.endTime || b.end);
-            
-            if (Math.max(newStart, bStart) < Math.min(newEnd, bEnd)) {
-                return {
-                    hasConflict: true,
-                    message: `ช่วงเวลานี้ถูกจองแล้ว (${b.startTime || b.start} - ${b.endTime || b.end} น.) กรุณาเลือกช่วงเวลาอื่น`
-                };
-            }
-        }
-    }
-    
-    return { hasConflict: false, message: '' };
-}
-
-// ดึงข้อมูลการจองทั้งหมด
-function getAllBookings() {
-    const previewData = JSON.parse(localStorage.getItem('my_bookings_preview_data') || '[]');
-    const bookingsData = JSON.parse(localStorage.getItem('bookings') || '[]');
-    const combined = [...previewData, ...bookingsData];
-    
-    const uniqueMap = new Map();
-    combined.forEach(item => {
-        if (item && item.id) uniqueMap.set(item.id, item);
-    });
-    
-    return Array.from(uniqueMap.values());
-}
-
-// บันทึกข้อมูลการจอง (เขียนลงทั้ง 2 keys พร้อมกัน)
-function saveBookings(bookings) {
-    localStorage.setItem('my_bookings_preview_data', JSON.stringify(bookings));
-    localStorage.setItem('bookings', JSON.stringify(bookings));
-}
-
-// ============================================
-// 3. Auto-run เมื่อหน้าโหลดเสร็จ
-// ============================================
-document.addEventListener('DOMContentLoaded', () => {
-    updateAuthUI();
-});
+document.addEventListener('DOMContentLoaded', updateUserUI);

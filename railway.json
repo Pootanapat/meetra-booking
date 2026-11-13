@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
@@ -12,3 +13,8 @@
     "restartPolicyMaxRetries": 10
   }
 }
+=======
+{
+  "$schema": "https://railway.com/railway.schema.json"
+}
+>>>>>>> d0bc3aee147fa2951a40f30e4fb6f26361bf6f18

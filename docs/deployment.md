@@ -21,6 +21,15 @@ Workflow `.github/workflows/ci.yml` ทำงานเมื่อเปิด P
 6. เปิด GitHub Autodeploy และ **Wait for CI**
 7. Generate public domain จาก Railway Networking
 
+Railway เป็น URL หลักสำหรับ Demo ฟีเจอร์เต็ม เพราะรัน Express API และ SQLite ได้
+ส่วน GitHub Pages เป็น Static UI preview เท่านั้น จึงไม่รองรับ Login/Booking/API โดยลำพัง
+
+## Static preview — GitHub Pages
+
+Workflow `.github/workflows/pages.yml` Build ด้วย Vite และ Publish เฉพาะโฟลเดอร์
+`dist/` เพื่อให้ CSS และ JavaScript paths ถูกต้อง ห้ามตั้ง Pages ให้ Publish repository
+root เพราะไฟล์ Tailwind source ยังไม่ผ่านการ Compile
+
 ระบบอ่าน `PORT` จาก Environment ของ Railway อยู่แล้ว ไม่ต้อง hardcode port เพิ่ม
 
 ## หลักฐานที่ต้องบันทึก

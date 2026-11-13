@@ -227,51 +227,57 @@ export class BookingPageController {
 
     this.gridContainer.innerHTML = data.map(room => {
       const roomStatus = this.getRoomStatus(room.id, currentDate);
+      const image = window.escapeForHtml(room.image);
+      const name = window.escapeForHtml(room.name);
+      const location = window.escapeForHtml(room.location);
+      const description = window.escapeForHtml(room.description);
 
       return `
-        <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md hover:border-purple-100 transition duration-200 flex flex-col justify-between group">
-          <div>
-            <div class="relative overflow-hidden h-44">
+        <article class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md hover:border-purple-200 transition-shadow duration-200 flex flex-col group">
+          <div class="relative overflow-hidden h-48 bg-gray-100">
               <img
-                src="${room.image}"
-                alt="${room.name}"
-                class="w-full h-full object-cover group-hover:scale-105 transition duration-500 ease-out"
+                src="${image}"
+                alt="${name}"
+                loading="lazy"
+                decoding="async"
+                class="w-full h-full object-cover"
               />
               <div class="absolute top-3 left-3">
                 ${this.getStatusBadge(roomStatus)}
               </div>
-              <span class="absolute top-3 right-3 bg-white/90 backdrop-blur-md text-gray-800 text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm border border-white/50 flex items-center gap-1">
+              <span class="absolute top-3 right-3 bg-white/95 text-gray-800 text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm border border-white flex items-center gap-1 tabular-nums">
                 <svg class="icon-svg text-gray-500" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
                 ${room.capacity} คน
               </span>
-            </div>
-            <div class="p-4 space-y-2">
-              <h4 class="font-bold text-gray-900 text-base leading-snug tracking-tight group-hover:text-purple-700 transition">${room.name}</h4>
-              <p class="text-xs text-gray-500 flex items-center gap-1 font-medium">
-                <svg class="icon-svg text-rose-500" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                ${room.location}
-              </p>
-              <p class="text-xs text-gray-500 leading-relaxed line-clamp-2 pt-1 border-t border-gray-50">${room.description}</p>
-            </div>
           </div>
-          <div class="p-4 pt-0">
+          <div class="p-5 flex flex-1 flex-col">
+            <div class="space-y-2 flex-1">
+              <h4 class="font-bold text-gray-900 text-base leading-snug text-balance">${name}</h4>
+              <p class="text-xs text-gray-500 flex items-start gap-1.5 font-medium text-pretty">
+                <svg class="icon-svg text-rose-500" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                <span>${location}</span>
+              </p>
+              <p class="text-xs text-gray-500 leading-relaxed line-clamp-2 text-pretty">${description}</p>
+            </div>
+            <div class="pt-4 mt-4 border-t border-gray-100">
             ${roomStatus.isFullDay ? `
               <button
                 disabled
-                class="w-full py-2.5 bg-gray-100 text-gray-400 rounded-xl font-medium text-xs tracking-wide cursor-not-allowed flex items-center justify-center gap-1"
+                class="w-full min-h-11 px-4 bg-gray-100 text-gray-400 rounded-xl font-semibold text-xs cursor-not-allowed flex items-center justify-center gap-1"
               >
                 <span>ถูกจองแล้ว</span>
               </button>
             ` : `
               <button
                 onclick="window.bookingController.openFormModal('${room.id}')"
-                class="w-full py-3 btn-purple-pill font-semibold text-xs tracking-wide cursor-pointer flex items-center justify-center gap-1.5"
+                class="w-full min-h-11 px-4 btn-purple-pill font-semibold text-xs cursor-pointer flex items-center justify-center gap-1.5"
               >
                 <span>＋ เลือกจองห้องนี้</span>
               </button>
             `}
+            </div>
           </div>
-        </div>
+        </article>
       `;
     }).join('');
   }

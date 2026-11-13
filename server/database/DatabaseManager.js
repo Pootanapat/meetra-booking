@@ -46,9 +46,17 @@ export class DatabaseManager {
   }
 
   async seedRooms() {
-    const statement = await this.database.prepare(`INSERT OR IGNORE INTO rooms
+    const statement = await this.database.prepare(`INSERT INTO rooms
       (id, name, capacity, floor, equipment, location, image, description)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`);
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(id) DO UPDATE SET
+        name = excluded.name,
+        capacity = excluded.capacity,
+        floor = excluded.floor,
+        equipment = excluded.equipment,
+        location = excluded.location,
+        image = excluded.image,
+        description = excluded.description`);
     try {
       for (const room of ROOM_SEED) await statement.run(...room);
     } finally {

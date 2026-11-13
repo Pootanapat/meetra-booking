@@ -45,11 +45,20 @@
         const rooms = await response.json();
         grid.innerHTML = rooms.map(room => `
           <article class="room-card">
-            <div class="room-thumb">🏢</div>
-            <h3>${escapeHtml(room.name)} <span style="color:var(--purple)">#${escapeHtml(room.id)}</span></h3>
-            <p>รองรับ ${escapeHtml(room.capacity)} คน • ชั้น ${escapeHtml(room.floor)}</p>
-            <p>${escapeHtml(room.equipment)}</p>
-            <a class="secondary" style="display:inline-block;text-decoration:none" href="index.html?roomId=${encodeURIComponent(room.id)}">ดูตารางเวลาจอง</a>
+            <img class="room-card-image" src="${escapeHtml(room.image)}" alt="${escapeHtml(room.name)}" loading="lazy" decoding="async">
+            <div class="room-card-body">
+              <div class="room-card-heading">
+                <h3>${escapeHtml(room.name)}</h3>
+                <span class="room-capacity">${escapeHtml(room.capacity)} คน</span>
+              </div>
+              <p class="room-location">📍 ${escapeHtml(room.location)}</p>
+              <p class="room-description">${escapeHtml(room.description)}</p>
+              <div class="room-equipment">
+                <strong>อุปกรณ์</strong>
+                <span>${escapeHtml(room.equipment)}</span>
+              </div>
+              <a class="primary room-card-action" href="index.html?roomId=${encodeURIComponent(room.id)}">ดูตารางเวลาจอง</a>
+            </div>
           </article>`).join('');
       } catch {
         grid.innerHTML = '<p class="sub">ไม่สามารถโหลดข้อมูลห้องได้ กรุณาลองใหม่</p>';

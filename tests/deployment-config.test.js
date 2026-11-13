@@ -28,3 +28,10 @@ test('GitHub Pages workflow builds and publishes dist', async () => {
   assert.match(workflow, /path:\s*\.\/dist/);
   assert.match(workflow, /actions\/deploy-pages@v4/);
 });
+
+test('Docker image rebuilds sqlite3 against the runtime Linux ABI', async () => {
+  const dockerfile = await fs.readFile(path.join(root, 'Dockerfile'), 'utf8');
+  assert.match(dockerfile, /npm rebuild sqlite3 --build-from-source/);
+  assert.match(dockerfile, /FROM node:22-bookworm-slim AS build/);
+  assert.match(dockerfile, /FROM node:22-bookworm-slim AS runtime/);
+});

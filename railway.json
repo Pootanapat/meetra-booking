@@ -1,20 +1,13 @@
-<<<<<<< HEAD
-///{
-  //"$schema": "https://railway.app/railway.schema.json",
-  //"build": {
-    //"builder": "RAILPACK",
-    //"buildCommand": "npm ci && npm run build"
-  //},
-  //"deploy": {
-    //"startCommand": "npm start",
-    //"healthcheckPath": "/api/rooms",
-    //"healthcheckTimeout": 60,
-    //"restartPolicyType": "ON_FAILURE",
-    //"restartPolicyMaxRetries": 10
-  //}
-//}
-=======
-//{
-  //"$schema": "https://railway.com/railway.schema.json"
-//}
->>>>>>> d0bc3aee147fa2951a40f30e4fb6f26361bf6f18
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {
+    "builder": "DOCKERFILE"
+  },
+  "deploy": {
+    "startCommand": "npm start",
+    "healthcheckPath": "/api/health",
+    "healthcheckTimeout": 120,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+  }
+}

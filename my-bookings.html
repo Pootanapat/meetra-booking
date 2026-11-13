@@ -139,7 +139,7 @@
             </div>
 
             <!-- รายการการ์ดข้อมูลการจอง -->
-            <div id="myBookingsList" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
+            <div id="myBookingsList" class="grid grid-cols-1 gap-4 max-w-5xl"></div>
         </div>
     </main>
 </div>
@@ -313,53 +313,60 @@ function renderBookings() {
         const isCancelled = b.status === 'cancelled';
         const bookingIdArgument = escapeForHtml(JSON.stringify(String(b.id)));
         const reference = b.refCode ? (b.refCode.startsWith('#') ? b.refCode : '#' + b.refCode) : '#KMITL';
+        const roomImage = escapeForHtml(b.image || 'https://images.unsplash.com/photo-1745920770891-b46fc1799646?auto=format&fit=crop&w=1200&q=82');
         const statusBadge = isCancelled
             ? `<span class="px-3 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-600 border border-rose-200">ยกเลิกแล้ว</span>`
             : `<span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-600 border border-emerald-200">● ยืนยันแล้ว</span>`;
 
         return `
-            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col justify-between p-5 space-y-4">
-                <div class="space-y-3">
-                    <div class="flex justify-between items-center">
-                        <span class="font-mono text-xs font-bold text-purple-700 bg-purple-50 px-2.5 py-1 rounded-lg">
-                            ${escapeForHtml(reference)}
-                        </span>
+            <article class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden flex flex-col md:flex-row">
+                <div class="relative h-44 md:h-auto md:w-52 md:flex-none bg-gray-100">
+                    <img src="${roomImage}" alt="${escapeForHtml(b.roomName || 'ห้องประชุม')}" loading="lazy" decoding="async" class="w-full h-full object-cover">
+                    <span class="absolute top-3 left-3 font-mono text-xs font-bold text-purple-700 bg-white/95 px-2.5 py-1 rounded-lg shadow-sm">
+                        ${escapeForHtml(reference)}
+                    </span>
+                </div>
+                <div class="p-5 flex-1 min-w-0 space-y-4">
+                    <div class="flex flex-wrap justify-between items-start gap-3">
+                        <div class="min-w-0">
+                            <h3 class="font-bold text-gray-900 text-base text-balance">${escapeForHtml(b.roomName || 'ห้องประชุม')}</h3>
+                            <p class="text-xs text-gray-500 mt-1 flex items-start gap-1.5 text-pretty">
+                                <span aria-hidden="true">📍</span>
+                                <span>${escapeForHtml(b.location || 'สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง')}</span>
+                            </p>
+                        </div>
                         ${statusBadge}
                     </div>
-                    <div>
-                        <h3 class="font-bold text-gray-900 text-base">${escapeForHtml(b.roomName || 'ห้องประชุม')}</h3>
-                        <p class="text-xs text-gray-500 mt-0.5">📍 ${escapeForHtml(b.location || 'สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง')}</p>
-                    </div>
-                    <div class="bg-gray-50 rounded-xl p-3.5 grid grid-cols-2 gap-3 text-xs border border-gray-100">
+                    <div class="bg-gray-50 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs border border-gray-100">
                         <div>
                             <span class="text-gray-400 block mb-0.5">วันที่ใช้งาน</span>
-                            <strong class="text-gray-800 text-sm">${escapeForHtml(b.date)}</strong>
+                            <strong class="text-gray-800 text-sm tabular-nums">${escapeForHtml(b.date)}</strong>
                         </div>
                         <div>
                             <span class="text-gray-400 block mb-0.5">ช่วงเวลา</span>
-                            <strong class="text-purple-700 text-sm">${escapeForHtml(b.startTime)} - ${escapeForHtml(b.endTime)} น.</strong>
+                            <strong class="text-purple-700 text-sm tabular-nums">${escapeForHtml(b.startTime)} - ${escapeForHtml(b.endTime)} น.</strong>
                         </div>
-                        <div class="col-span-2 pt-2 border-t border-gray-200/70">
+                        <div class="sm:col-span-2 pt-2 border-t border-gray-200">
                             <span class="text-gray-400 block mb-0.5">วัตถุประสงค์การจอง</span>
-                            <span class="text-gray-700 font-medium">${escapeForHtml(b.purpose || '-')}</span>
+                            <span class="text-gray-700 font-medium text-pretty">${escapeForHtml(b.purpose || '-')}</span>
                         </div>
                     </div>
-                </div>
 
                 ${!isCancelled ? `
-                    <div class="grid grid-cols-3 gap-2.5 pt-1">
-                        <button onclick="exportBookingCalendar(${bookingIdArgument})" class="py-2.5 rounded-xl border border-emerald-200 bg-emerald-50/70 hover:bg-emerald-100 text-emerald-700 font-semibold text-xs transition cursor-pointer" aria-label="ดาวน์โหลดปฏิทินสำหรับ ${escapeForHtml(b.refCode || b.id)}">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
+                        <button onclick="exportBookingCalendar(${bookingIdArgument})" class="min-h-11 px-3 rounded-xl border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold text-xs transition-colors duration-200 cursor-pointer" aria-label="ดาวน์โหลดปฏิทินสำหรับ ${escapeForHtml(b.refCode || b.id)}">
                             ↓ .ics
                         </button>
-                        <button onclick="openEditModal(${bookingIdArgument})" class="py-2.5 rounded-xl border border-purple-200 bg-purple-50/70 hover:bg-purple-100 text-purple-700 font-semibold text-xs transition cursor-pointer">
+                        <button onclick="openEditModal(${bookingIdArgument})" class="min-h-11 px-3 rounded-xl border border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-700 font-semibold text-xs transition-colors duration-200 cursor-pointer">
                             ✎ แก้ไขการจอง
                         </button>
-                        <button onclick="openCancelModal(${bookingIdArgument})" class="py-2.5 rounded-xl border border-rose-200 bg-rose-50/70 hover:bg-rose-100 text-rose-600 font-semibold text-xs transition cursor-pointer">
+                        <button onclick="openCancelModal(${bookingIdArgument})" class="min-h-11 px-3 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-600 font-semibold text-xs transition-colors duration-200 cursor-pointer">
                             ✕ ยกเลิกการจอง
                         </button>
                     </div>
                 ` : ''}
-            </div>
+                </div>
+            </article>
         `;
     }).join('');
 }
